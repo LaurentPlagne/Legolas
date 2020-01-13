@@ -1,0 +1,74 @@
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include "UTILITES.hxx" 
+
+#include "Legolas/Vector/Vector.hxx"
+#include "MyDiagonalMatrix.hxx" 
+#include "MyDiagonalBlockMatrix.hxx" 
+
+#include "Legolas/BlockMatrix/Structures/Sparse/SparseGaussSeidelSolver.hxx"
+#include "Legolas/BlockMatrix/Structures/Diagonal/DiagonalSolver.hxx"
+
+#include "Legolas/BlockMatrix/tst/LegolasTestSolver.hxx"
+
+int main( int argc,  char *argv[] )
+{
+  
+ //  //Level 1
+  {
+    
+    typedef double RealType;
+    
+    const int s1=10;
+    
+    Legolas::MultiVector<RealType,1>  Xref(s1);
+    
+    for (int i=0 ; i<s1 ; ++i) Xref[i]=RealType(i+1);
+    
+    INFOS("Xref="<<Xref);
+
+    Legolas::MatrixShape<1> ms1(s1,s1);
+    MyDiagonalMatrix<RealType> A(ms1,2.0);
+    
+    solveAndCheckResidual(A,Xref);
+
+    A.displayLatex("A1.tex");
+    A.displaySVG("A1.svg");
+ 
+    INFOS("FIN LEVEL 1");
+    
+  }
+
+  //Level 2
+  {
+
+    INFOS("DEBUT LEVEL 2");
+
+    typedef double RealType;
+    
+    const int s1=5;
+    const int s2=2;
+    
+    Legolas::MultiVector<RealType,2>::Shape  shape(s1,s2);
+    Legolas::MultiVector<RealType,2>  Xref(shape);
+    Xref=1.0;
+
+    Legolas::MatrixShape<2>::Shape rowShape(s1,s2);
+    Legolas::MatrixShape<2> ms2(rowShape,rowShape);
+    MyDiagonalBlockMatrix  A(ms2);
+
+    solveAndCheckResidual(A,Xref);
+    
+    A.setSolverPtr( new Legolas::SparseGaussSeidelSolver() );
+
+    A.displayLatex("A2.tex");
+    A.displaySVG("A2.svg");
+
+    
+    solveAndCheckResidual(A,Xref);
+    
+  }
+  
+  
+}

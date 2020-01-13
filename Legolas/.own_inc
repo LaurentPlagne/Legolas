@@ -1,0 +1,10 @@
+Ce fichier est utilisé par le script ${DKROOT}/DATA/bin/dk-mklinks.sh.
+
+Lorsqu'un répertoire contient un fichier .own_inc, il est ignoré pour
+l'établissement des liens dans ${DKROOT}/../include. Ses sous-répertoires
+sont aussi ignorés.
+
+MAIS ATTENTION
+
+Un lien vers le répertoire non traité est créé dans le répertoire ${DKROOT}/../include
+-----------------------------------------------------------------

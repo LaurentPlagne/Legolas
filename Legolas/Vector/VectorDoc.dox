@@ -1,0 +1,360 @@
+
+/**
+ * \defgroup VectorGroup Vecteurs Legolas++
+ */
+
+/**
+ * \defgroup VectorShapeGroup Tailles multidimensionnelles des vecteurs Legolas++ (Shape)
+ * \ingroup VectorGroup
+ */
+
+/**
+ * \defgroup VectorExpressionGroup Les patrons d'expression des vecteurs Legolas++ (Expression)
+ * \ingroup VectorGroup
+ */
+
+/**
+ * \defgroup VectorAssignGroup Les opérations vectorisables sur les vecteurs Legolas++ (Assign)
+ * \ingroup VectorGroup
+ */
+
+/*! \mainpage Legolas++ : Notice d'implémentation
+
+Dans cette partie on décrit l'implémentation de la bibliothèque Legolas++.
+
+\ref VectorMainPage
+		
+*/	
+
+
+
+
+/*! \page VectorMainPage Les vecteurs Legolas++
+
+Dans cette partie on décrit l'implémentation des vecteurs Legolas++.
+
+- \subpage VectorUserMan
+- \subpage VectorOrga
+- \subpage VectorPrinciple
+*/
+
+
+/*! \page VectorOrga Organisation générale
+Les fichiers concernant les vecteurs Legolas++ sont regroupés dans le répertoire Legolas/Vector
+
+Ce répertoire contient la classe principale d'implémentation Legolas::RectangularMultiVector. Les autres classes du
+      répertoire Legolas/Vector implémentent des sous-parties de cette classe.
+
+Ce répertoire contient trois sous-répertoires d'implémentation:
+- \ref VectorShapeGroup "Legolas/Vector/Shape"
+- \ref VectorExpressionGroup "Legolas/Vector/Expression"
+- \ref VectorAssignGroup "Legolas/Vector/Assign"
+	
+*/
+
+
+/*! \page VectorPrinciple Principes de conception des vecteurs Legolas::RectangularMultiVector
+Dans cette partie on introduit successivement les notions importantes qui régissent l'implémentation de la classe Legolas::RectangularMultiVector. Il s'agit d'une lecture guidée de la classe et l'ordre de lecture des points suivant devrait être respectée.
+
+-# \subpage VectorShapeImplementation : Implémentation des tailles généralisées (<b>shape</b>) des vecteurs Legolas++
+
+
+-# \subpage RecursiveElements : Les <b>éléments d'un vecteur</b> de type <tt>Legolas::MultiVector<double,D> </tt> 
+sont de type:
+	- <tt>Legolas::MultiVector<double,D-1> </tt> si D>1,
+	- \p double si D=1.
+-# \subpage RealDataPointer : Les <b>éléments scalaires d'un vecteur <tt>Legolas::MultiVector<double,D> </tt> sont stockés a plat dans le tableau membre <tt> realDataPtr</tt>
+
+*/
+
+/*! \page RecursiveElements Définition récursive du type des éléments de vecteur
+
+Les vecteurs Legolas sont multidimensionnels. Dans cette partie nous utiliserons l'exemple d'un vecteur Legolas++ 2D \p X contenant des réels en double précision définis par (Tuto1Test.cxx):
+\dontinclude tst/Tuto1Test/Tuto1Test.cxx
+\skip MultiVector
+\until cout
+Cet extrait de code définit un vecteur 2D \p X qui contient 3 vecteurs 1D de tailles respectives 2, 3 et 3. La sortie correspondante est:
+\verbatim
+	X= -- realDataPtr_=0x211a1c0
+
+	[       0       ]={ 1 1 }
+	[       1       ]={ 1 1 1 }
+	[       2       ]={ 1 1 1 }
+\endverbatim
+Les éléments de \p X sont donc des vecteurs Legolas++ 1D et l'on peut écrire:
+\dontinclude tst/Tuto1Test/Tuto1Test.cxx
+\skip X1D0
+\until cout
+où \p X1D0 est une référence sur le vecteur 1D retourné par l'opérateur \p [\p ] des vecteurs Legolas++. Dès lors le premier élément de \p X est mis à 3 et l'on obtient: 
+\verbatim
+	X= -- realDataPtr_=0x10751c0
+
+	[       0       ]={ 3 3 }
+	[       1       ]={ 1 1 1 }
+	[       2       ]={ 1 1 1 }
+\endverbatim
+
+Ceci permet d'illustrer le fait que les éléments d'un vecteur de type <tt>Legolas::MultiVector<double,D> </tt> 
+
+sont des vecteurs Legolas++ de type:
+
+- <tt>Legolas::MultiVector<double,D-1> </tt> si D>1,
+- \p double si D=1.
+
+Le type des éléments de vecteur est calculé via le patron de classe Legolas::RecursiveTraits qui permet d'implémenter statiquement le test sur la dimension ci-dessus. Voici l'extrait de code correspondant (RectangularMultiVector.hxx):
+\dontinclude RectangularMultiVector.hxx
+\skip template
+\until Element
+*/
+
+/*! \page RealDataPointer Stockage des éléments scalaires des vecteurs Legolas++
+
+La \ref RecursiveElements "section précédente" à montré que les vecteurs multidimensionnels Legolas++ permettent de manipuler leur éléments simplement comme s'ils étaient des vecteurs multidimensionels de dimension inférieure. Dans cette section nous rappelons brievement les propriétés des vecteurs multidimensionnels de la bibliothèque standard C++ (STL) qui partage cette représentation des éléments de vecteur. Nous montrerons alors comment le stockage des données contigüe des éléments scalaires des vecteurs Legolas++ diffèrent de celui, éclaté, de la STL.
+
+
+\section SSTL Stockage des données scalaires des vecteurs STL multidimensionnels
+
+La bibliothèque standart C++ STL permet de définir simplement des vecteurs multidimensionnels de scalaire. Ainsi un vecteur 2D de flottant en double précision X peut-il etre définit et modifié comme suit (Tuto1Test.cxx):
+\dontinclude tst/Tuto1Test/Tuto1Test.cxx
+\skip X(3)
+\until display2D
+
+ce qui conduit à la sortie suivante:
+
+\verbatim
+	Vector Elements :
+	X[0]={0,1}
+	X[1]={2,3,4}
+	X[2]={5,6,7}
+\endverbatim
+
+Les 3 éléments de <tt>X</tt> que sont <tt>X[0]</tt>, <tt>X[1]</tt> et <tt>X[2]</tt> sont des vecteurs de type <tt>std::vector<double></tt>. Dans ce cas, les 8 éléments scalaires sont stockés dans 3 tableaux disjoints selon qu'ils appartiennent à <tt>X[0]</tt>, <tt>X[1]</tt> ou <tt>X[2]</tt>. La figure suivante représente ce stockage de donnée.
+
+
+\dot
+digraph G1{
+	nodesep=.05;
+	rankdir=LR;
+
+	node [shape=plaintext]
+	X2DTAB [label=< 
+	<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">  
+	<TR>  
+	<TD>X</TD>  
+	<TD >int size=3</TD>  
+	<TD PORT="e0"> Element * elementPtr_</TD>  
+	</TR>
+	</TABLE>>];	
+
+
+	X1DTAB [label=< 
+	<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">  
+
+	<TR>  
+	<TD >X[0]</TD>  
+	<TD >int size=2</TD>  
+	<TD PORT="e0"> Element * elementPtr_</TD>  
+	</TR>
+
+
+	<TR>  
+	<TD >X[1]</TD>  
+	<TD >int size=3</TD>  
+	<TD PORT="e1"> Element * elementPtr_</TD>  
+	</TR>
+
+	<TR>  
+	<TD >X[2]</TD>  
+	<TD >int size=3</TD>  
+	<TD PORT="e2"> Element * elementPtr_</TD>  
+	</TR>
+	</TABLE>>];	
+
+
+	flat1D0 [label=< 
+	<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" BGCOLOR="lightgrey">  
+	<TR>  
+	<TD>0</TD>  
+	<TD>0.0</TD>  
+	</TR>
+	<TR>  
+	<TD>1</TD>  
+	<TD>1.0</TD>  
+	</TR>
+	</TABLE>>];	
+
+	flat1D1 [label=< 
+	<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" BGCOLOR="lightgrey">  
+	<TR>  
+	<TD>0</TD>  
+	<TD>2.0</TD>  
+	</TR>
+	<TR>  
+	<TD>1</TD>  
+	<TD>3.0</TD>  
+	</TR>
+	<TR>  
+	<TD>2</TD>  
+	<TD>4.0</TD>  
+	</TR>
+	</TABLE>>];	
+
+	flat1D2 [label=< 
+	<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" BGCOLOR="lightgrey">  
+	<TR>  
+	<TD>0</TD>  
+	<TD>5.0</TD>  
+	</TR>
+	<TR>  
+	<TD>1</TD>  
+	<TD>6.0</TD>  
+	</TR>
+	<TR>  
+	<TD>2</TD>  
+	<TD>7.0</TD>  
+	</TR>
+	</TABLE>>];	
+
+	"X2DTAB":<e0>:e->"X1DTAB":w;
+
+	"X1DTAB":<e0>:e->"flat1D0":w;
+	"X1DTAB":<e1>:e->"flat1D1":w;
+	"X1DTAB":<e2>:e->"flat1D2":w;
+
+
+
+
+
+}
+\enddot
+
+\section SLegolas Stockage des données scalaires des vecteurs Legolas++ multidimensionnels
+
+\dontinclude tst/Tuto1Test/Tuto1Test.cxx
+\skip beginTuto3
+\skip {
+\until cout
+
+ce qui conduit à la sortie suivante:
+
+\verbatim
+	X= -- realDataPtr_=0x1f9a280
+
+	[       0       ]={ 0 1 }
+	[       1       ]={ 2 3 4 }
+	[       2       ]={ 5 6 7 }
+\endverbatim
+
+
+\dot
+digraph G1{
+	rankdir=LR;
+
+	node [shape=plaintext]
+
+	flat1D [label=< 
+	<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" BGCOLOR="lightgrey">  
+	<TR>  
+	<TD PORT="f0i">0</TD>  
+	<TD>0.0</TD>  
+	</TR>
+	<TR>  
+	<TD PORT="f1i">1</TD>  
+	<TD>1.0</TD>  
+	</TR>
+	<TR>  
+	<TD PORT="f2i">2</TD>  
+	<TD>2.0</TD>  
+	</TR>
+	<TR>  
+	<TD PORT="f3i">3</TD>  
+	<TD>3.0</TD>  
+	</TR>
+	<TR>  
+	<TD PORT="f4i">4</TD>  
+	<TD>4.0</TD>  
+	</TR>
+	<TR>  
+	<TD PORT="f5i">5</TD>  
+	<TD>5.0</TD>  
+	</TR>
+	<TR>  
+	<TD PORT="f6i">6</TD>  
+	<TD>6.0</TD>  
+	</TR>
+	<TR>  
+	<TD PORT="f7i">7</TD>  
+	<TD>7.0</TD>  
+	</TR>
+
+	</TABLE>>];	
+
+
+
+
+	X1DTAB [label=< 
+	<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">  
+
+	<TR>  
+	<TD ROWSPAN="2">X[0]</TD>  
+	<TD >int size=2</TD>  
+	<TD PORT="e0"> Element * elementPtr_</TD>  
+	</TR>
+	<TR>  
+	<TD >int flatSize=2</TD>  
+	<TD PORT="r0"> double * realDataPtr_</TD>  
+	</TR>
+
+	<TR>  
+	<TD ROWSPAN="2">X[1]</TD>  
+	<TD >int size=2</TD>  
+	<TD PORT="e1"> Element * elementPtr_</TD>  
+	</TR>
+	<TR>  
+	<TD >int flatSize=3</TD>  
+	<TD PORT="r1"> double * realDataPtr_</TD>  
+	</TR>
+
+	<TR>  
+	<TD ROWSPAN="2">X[2]</TD>  
+	<TD >int size=2</TD>  
+	<TD PORT="e2"> Element * elementPtr_</TD>  
+	</TR>
+	<TR>  
+	<TD >int flatSize=3</TD>  
+	<TD PORT="r2"> double * realDataPtr_</TD>  
+	</TR>
+
+	</TABLE>>];	
+	
+	X2DTAB [label=< 
+	<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">  
+	<TR>  
+	<TD ROWSPAN="2">X</TD>  
+	<TD >int size=3</TD>  
+	<TD PORT="e0"> Element * elementPtr_</TD>  
+	</TR>
+	<TR>  
+	<TD >int flatSize=8</TD>  
+	<TD PORT="r0"> double * realDataPtr_</TD>  
+	</TR>
+	</TABLE>>];	
+	
+	"X2DTAB":<e0>:e->"X1DTAB":w;
+	"X2DTAB":<r0>:e->"flat1D":<f0i>:w;
+
+
+	"X1DTAB":<e0>:e->"flat1D":<f0i>:w;
+	"X1DTAB":<r0>:e->"flat1D":<f0i>:w;
+
+	"X1DTAB":<e1>:e->"flat1D":<f2i>:w;
+	"X1DTAB":<r1>:e->"flat1D":<f2i>:w;
+
+	"X1DTAB":<e2>:e->"flat1D":<f5i>:w;
+	"X1DTAB":<r2>:e->"flat1D":<f5i>:w;
+
+}
+\enddot
+
+
+*/

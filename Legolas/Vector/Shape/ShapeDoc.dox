@@ -1,0 +1,183 @@
+/*! \page VectorShapeImplementation Implémentation des shape des vecteurs Legolas++
+
+La définition et l'usage des \em shape des vecteurs multidimensionnels Legolas++ ont été introduits dans une  \ref ShapeUsage "section dédiée" du manuel utilisateur. Dans cette partie nous allons détailler l'implémentation de ces \em shape. Les 4 fichiers qui correspondent à cette implémentation sont contenus dans le répertoire Legolas/Vector/Shape:
+
+- CompressedVector.hxx
+- COWCompressedVector.hxx
+- ShapeTraits.hxx
+- MicroParserHelper.hxx
+
+Dans un premier temps, nous décrirons la structure de donnée fondamentale des \em shape qui est décrite par le patron de classe  \lego{CompressedVector}.
+Le mécanisme de construction statique et récursif des \em shape implémenté par la classe \lego{ShapeTraits} sera ensuite décrit. La classe \lego{COWCompressedVector}  implémentatant un  mécanisme de <em> Copy on Write </em> permettant d'optimiser l'usage des \em shape sera alors introduit. Enfin la classe \lego{MicroParserHelper} dédiée à l'initialisation des \em shape par des chaines de caractère sera présentée.
+
+-\subpage CompressedVectorImplementation
+-\subpage COWCompressedVectorImplementation
+-\subpage ShapeTraitsImplementation
+
+*/	
+
+/*! \page CompressedVectorImplementation La classe CompressedVector
+
+La section \ref ShapeVecteur2DNonRectangulaires montre comment définir un vecteur Legolas 2D non rectangulaire ayant pour éléments 3 vecteurs 1D de tailles 2,2 et 3 (ShapeTest.cxx):
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip Build non rectangular shape (short way)
+\skip MultiVector
+\until INFOS
+\until INFOS
+qui conduit au vecteur suivant:
+\code
+ShapeTest.cxx [68] : X=
+
+[       0       ]={ 0 0 }
+[       1       ]={ 0 0 }
+[       2       ]={ 0 0 0 }
+\endcode
+
+
+
+La classe CompressedVector stocke les information de taille sous une forme factorisée. Plutôt que des stocker la séquence 
+\f[\{ 2 , 2 ,3\}\f]
+on utilise une liste de paires associant le nombre de réalisations successives d'une taille donnée et cette taille. La séquence précédente est donc stockée sous la forme d'une liste de 2 éléments:
+\f[\{(2,2) , (1,3) \}\f]
+où le premier élément \f$(2,2)\f$ signifie que la séquence contient <b>2</b> fois la taille <b>2</b>, et le deuxième éléments \f$(1,3)\f$ indique que la suite de la séquence est composée par <b>1</b> réalisation de la taille <b>3</b>.
+
+\section SectionList Attribut principal : la liste compressée de sous-shape
+
+Le patron de classe CompressedVector stocke ces données via l'attribut privé \p list_ dont le type \p List est défini par :
+
+\dontinclude Shape/CompressedVector.hxx
+\skip  template <class ELEMENT>
+\until List
+
+La section suivante décrira la construction récursive du paramètre de classe \p ELEMENT. \'A ce stade nous supposerons que ce type implémente les shapes pour des vecteurs de dimension inférieure. Pour notre exemple de vecteurs 2D, le type \p ELEMENT est un simple entier. 
+
+Le type \p Index est un alias sur un entier non signé. Le type \p Pair, définie par une \pair STL associant un entier et une shape élémentaire, définie le type des éléments de la liste STL \p List.
+
+\section SectionAppend Les méthodes pour construire la liste 
+
+La méthode de base pour ajouter un élément à cette liste est \p appendNNewElement dont les 2 arguments sont simplements les éléments constitutifs de la paire à ajouter à la liste \p list_;
+
+\dontinclude Shape/CompressedVector.hxx
+\skip  void appendNNewElement
+\until }
+
+On note au passage que l'attribut \p size_ contient le nombre total d'élements de la liste (non compressée).
+
+Cette méthode ne doit pas être appliquée directement car elle n'est valide que si le paramètre \p element est différent du dernier élément de la liste. Dans le cas contraire, on \em compresse l'information en augmentant de \p n le nombre consécutif d'apparitions de l'élément \p element. Cette opération est implémentée par la méthode suivante :
+
+\dontinclude Shape/CompressedVector.hxx
+\skip  void appendNElement
+\until  return
+\until }
+
+La méthode \p appendElement permettant d'ajouter un seul élément fait un simple appel à \p appendNElement et est à son tour utilisée par la méthode \p appendFlatList qui permet d'ajouter une liste non compressée:
+
+\dontinclude Shape/CompressedVector.hxx
+\skip  void appendElement
+\until }
+
+\dontinclude Shape/CompressedVector.hxx
+\skip  void appendFlatList
+\until }
+\until }
+
+\section SectionCalcul Nombre total d'éléments scalaire du vecteur
+
+Le patron de fonction récursif \p getFlatSize permet de calculer le nombre total d'éléments scalaires d'un vecteur:
+
+\dontinclude Shape/CompressedVector.hxx
+
+\code
+  template <class SIZE_TYPE> 
+  inline unsigned long getFlatSize(const SIZE_TYPE & s){
+    return s;
+  }
+
+  template <class ELEMENT> 
+  inline unsigned long getFlatSize(const CompressedVector<ELEMENT> &  shape){
+
+    unsigned long result=0;
+    
+    const typename CompressedVector<ELEMENT>::List & l=shape.getList();
+    typename CompressedVector<ELEMENT>::ConstIterator iter=l.begin();
+
+    for ( ; iter!=l.end(); iter++)
+      result+=iter->first*getFlatSize(iter->second);
+    
+    return result;
+  }
+\endcode
+*/	
+
+/*! \page COWCompressedVectorImplementation La classe COWCompressedVector
+
+Les objets shape sont copiés de nombreuses fois lors de la manipulation des vecteurs multidimensionnels. En particulier, tous les éléments d'un vecteur rectangulaire \em partagent la même \em shape dont les informations devrait être dupliquées ce qui peut entraîner une grande consommation de mémoire ainsi qu'une baisse des performance. Pour eviter cette duplication on utilise un mécanisme de <em> Copy On Write </em>.  
+
+\section CopyOnWriteSection Le mécanisme Copy On Write
+
+Appelons <em>classe d'implémentation</em> une classe définissant un certain nombre de méthodes et dont les instances présentent une empreinte mémoire grande devant celle d'un pointeur. Le principe du <em>Copy On Write </em> (COW) consiste à définir une <em>classe d'interface</em> définissant les mêmes fonctions que la classe d'implémentation et ayant pour attribut unique un pointeur \em intelligent sur un objet de la classe d'implémentation. Les fonctions de la classe d'interface sont alors déléguées à la classe d'implémentation via le pointeur intelligent. La recopie d'un objet de la classe d'interface ne recopie pas l'objet de la classe d'implémentation mais seulement le pointeur intelligent.  L'idée principale du COW est de ne recopier l'objet instance de la classe d'implémentation que lors de l'appel à une fonction qui modifie cet objet. De ce fait tout se passe comme si les différents objets d'interface obtenus par recopie d'une même origine ne partageaient aucune données et étaient indépendants. Autrement dit, le partage des données est transparent pour l'utilisateur. La recopie est alors dîte paraisseuse (\em lazy).
+
+\section Ingrédients principaux de la classe COWCompressedVector
+
+La classe COWCompressedVector est une classe d'interface pour la classe d'implémentation CompressedVector et qui met en oeuvre un mécanisme de <em>Copy On Write</em>. 
+
+L'attribut privé unique de la classe d'interface \p ptr_ est un pointeur intelligent issu de la bibliothèque boost et pointant sur une instance de la classe CompressedVector.
+
+\dontinclude Shape/COWCompressedVector.hxx
+\skip template <class ELEMENT>
+\until ptr_
+
+Les constructeurs de la classe d'interface font appel aux constructeurs correspondants de la classe d'implémentation:
+
+\dontinclude Shape/COWCompressedVector.hxx
+\skip     COWCompressedVector( void )
+\until }
+
+\dontinclude Shape/COWCompressedVector.hxx
+\skip     COWCompressedVector(const std::list<Element> & flatList)
+\until }
+
+Comme on l'a vu précédemment le constructeur par recopie constitue une exception notable et ne copie que le pointeur:
+
+\dontinclude Shape/COWCompressedVector.hxx
+\skip     COWCompressedVector(const COWCompressedVector & source):ptr_(source.ptr_)
+\until }
+
+Les fonctions non constantes sont déléguées à la classe d'implémentation via la méthode \p getMutableRef sur le modèle de la fonction \p appendNElement:
+
+\dontinclude Shape/COWCompressedVector.hxx
+\skip  void appendNElement(const Index & n,const Element & element){
+\until }
+
+\`A l'inverse la méthode \p getConstRef est utilisée pour déléguer les fonctions constantes  comme \p size:
+
+\dontinclude Shape/COWCompressedVector.hxx
+\skip  Index size
+\until }
+
+Bien sûr la méthode \p getConstRef renvoie une simple référence sur l'objet pointé :
+\dontinclude Shape/COWCompressedVector.hxx
+\skip  const CVE & getConstRef
+\until }
+
+alors que \p getMutableRef contruit un nouvel objet d'implémentation si cet objet est partagé:
+\dontinclude Shape/COWCompressedVector.hxx
+\skip  CVE & getMutableRef
+\until }
+\until }
+
+*/
+
+/*! \page ShapeTraitsImplementation La classe ShapeTraits
+
+La classe COWCompressedVector est la classe qui décrit la \em shape d'un vecteur à D dimensions. Il s'agit d'une classe d'interface pour la classe d'implémention CompressedVector qui contient principalement une liste compressée de shapes relatives aux éléments du vecteur. Si ces éléments sont des vecteurs 1D alors la sous shape est un simple entier (\p SizeType). Sinon, les sous-shapes correspondent à des instances de COWCompressedVector pour le niveau inférieur:
+
+\dontinclude Shape/ShapeTraits.hxx
+\skip template
+\until }
+\until }
+
+
+*/
+
+

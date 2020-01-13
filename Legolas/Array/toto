@@ -1,0 +1,2403 @@
+#pragma once
+
+#include <vector>
+#include <iostream>
+#include <Eigen/Core>
+#include <stdexcept>
+#include "Legolas/Allocator.hxx"
+#include "Legolas/Array/ArrayShape.hxx"
+#include "stringConvert.hxx"
+#include "Legolas/Array/BaseArray.hxx"
+#include "Legolas/Array/ForEach.hxx"
+#include "Legolas/Array/Expression.hxx"
+#include "Legolas/Array/Reductions.hxx"
+
+//#define ZEROINIT
+
+namespace Legolas{
+
+  template < class ARRAY, int LEVEL>
+  struct ArrayRecursiveTraits{
+    typedef typename ARRAY::Element GetElement;
+    typedef const typename ARRAY::Element ConstGetElement;
+    static inline GetElement getElement(ARRAY & array, int i){
+      return GetElement(array.shape_.subShape_,array.dataPtr_+array.shape_.computeShift(i));
+    }
+    static inline const GetElement getElement(const ARRAY & array, int i){
+      return GetElement(array.shape_.subShape_,array.dataPtr_+array.shape_.computeShift(i));
+    }
+
+
+    static inline void display(const ARRAY & vec, std::ostream& os, const std::string & prefix){
+      //      os << " -- realDataPtr_=";
+      //      os << vec.realDataPtr() << std::endl;
+      os << std::endl;
+      //      INFOS("vec.size()="<<vec.size());
+
+      for (int i=0 ; i < vec.size() ; i++){
+	std::string indexString(prefix);
+	indexString+="[\t";
+	indexString+=stringConvert(i);
+	indexString+="\t]";
+	vec[i].display(os,indexString);
+      }
+
+      return ;
+    }
+
+    // template <class INIT_FUNCTOR, typename... Args>
+    // static inline void initialize(ARRAY & a, const INIT_FUNCTOR & initFunctor,const Args... rest){
+    //   //      std::cout << "initiliaze Level " << LEVEL << std::endl;
+    //   for(int i=0 ; i< a.size() ; i++ ) {
+    // 	//	std::cout << "i="<< i<< std::endl;
+    // 	a[i].initialize(initFunctor,rest...,i);
+    // 	//	a[i]=initFunctor(rest,i);
+    //   }
+    // }
+
+
+    template <class INIT_FUNCTOR>
+    static inline void initialize(ARRAY & a, const INIT_FUNCTOR & initFunctor){
+      //      std::cout << "initiliaze Level " << LEVEL << std::endl;
+      for(int i=0 ; i< a.size() ; i++ ) {
+	//	std::cout << "i="<< i<< std::endl;
+	a[i].initialize(initFunctor,i);
+	//	a[i]=initFunctor(rest,i);
+      }
+    }
+
+
+
+    static inline void fillNoPad(ARRAY & a, typename ARRAY::RealType value){
+      //      INFOS("LEVEL="<<LEVEL<<" a.size()="<<a.size());
+      for(int i=0 ; i< a.size() ; i++ ) {
+	a[i].fillNoPad(value);
+      }
+    }
+
+
+
+
+  };
+
+  template < class ARRAY>
+  struct ArrayRecursiveTraits<ARRAY,1>{
+    typedef typename ARRAY::RealType & GetElement;
+    typedef const typename ARRAY::RealType & ConstGetElement;
+
+    static const size_t stride_=ARRAY::Shape::stride_;
+
+    static inline GetElement getElement(ARRAY & array, int i){
+      return array.dataPtr_[stride_*i];
+      //      return array.dataPtr_[array.shape_.computeShift(i)];
+    }
+    static inline ConstGetElement getElement(const ARRAY & array, int i){
+      return array.dataPtr_[stride_*i];
+      //      return array.dataPtr_[array.shape_.computeShift(i)];
+    }
+
+    static inline void display(const ARRAY & vec, std::ostream& os, const std::string & prefix){
+      os << prefix << "={ " ;
+
+
+      for(int k=0 ; k< vec.size() ; k++ ) {
+	os  << vec[k] << ' ';
+      }
+      os << "}" << std::endl;
+
+      return ;
+    }
+
+    template <class INIT_FUNCTOR, typename... Args>
+    static inline void initialize(ARRAY & a, const INIT_FUNCTOR & initFunctor,const Args... rest){
+      //      std:: cout << "initiliaze Level 1 " << std::endl;
+      for(int i=0 ; i< a.size() ; i++ ) {
+	//	std::cout << "i="<< i<< std::endl;
+	a[i]=initFunctor(rest...,i);
+      }
+    }
+
+
+    template <class INIT_FUNCTOR>
+    static inline void initialize(ARRAY & a, const INIT_FUNCTOR & initFunctor){
+      //      std:: cout << "initiliaze Level 1 " << std::endl;
+      for(int i=0 ; i< a.size() ; i++ ) {
+	//	std::cout << "i="<< i<< std::endl;
+	a[i]=initFunctor(i);
+      }
+    }
+
+    static inline void fillNoPad(ARRAY & a, typename ARRAY::RealType value){
+      //      INFOS("LEVEL="<<1<<" a.size()="<<a.size());
+      for(int i=0 ; i< a.size() ; i++ ) {
+	a[i]=value;
+      }
+    }
+
+
+
+
+
+
+
+  };
+
+
+  template <class SCALAR_TYPE, int LEVEL, int PACK_SIZE=1, int PACK_LEVEL=1>
+  class Array : public BaseArray< Array<SCALAR_TYPE,LEVEL,PACK_SIZE,PACK_LEVEL> >{
+
+  public:
+    typedef SCALAR_TYPE RealType;
+    typedef ArrayShape<PACK_SIZE,PACK_LEVEL,LEVEL> Shape;
+    typedef const ArrayShape<PACK_SIZE,PACK_LEVEL,LEVEL> & ConstShapeRef;
+    static const int level=LEVEL;
+    static const int packLevel=PACK_LEVEL;
+    static const int packSize=PACK_SIZE;
+    //    static const size_t stride_=Shape::stride_;
+    typedef Array<SCALAR_TYPE,LEVEL-1,PACK_SIZE,PACK_LEVEL> Element;
+
+    typedef Array StoreType;
+    typedef ArrayRecursiveTraits<Array,LEVEL> ART;
+    typedef typename ART::GetElement GetElement;
+    typedef typename ART::ConstGetElement ConstGetElement;
+
+    //    typedef typename ART::ConstGetElement ConstGetElement;
+
+    Shape shape_;
+    bool owner_;
+    //    std::vector< RealType,Eigen::aligned_allocator<RealType> > data_;
+    //std::vector< RealType > data_;
+    typedef Legolas::allocator<RealType> Allocator;
+
+    //typedef tbb::cache_aligned_allocator<RealType> Allocator;
+    //typedef Eigen::aligned_allocator<RealType>  Allocator;
+    //    typedef std::vector<RealType,tbb::cache_aligned_allocator<RealType> >Data;
+    //    Data data_;
+    RealType * dataPtr_;
+
+
+    Array( void ):shape_(),
+		  owner_(false),
+		  dataPtr_(0)
+    {
+    }
+
+    Array( Array && ) = default;
+
+
+    static inline void dataInitialize(const Shape & s, RealType * dataPtr, Array & a){
+      a.shape_=s;
+      a.dataPtr_=dataPtr;
+    }
+
+
+    Array(const Shape & s):shape_(s),owner_(true),dataPtr_(0){
+      //      data_.resize(shape_.dataSize_);
+      //      dataPtr_=&data_[0];
+      Allocator allocator;
+      //      Eigen::aligned_allocator<RealType> allocator;
+      dataPtr_=allocator.allocate(shape_.dataSize_);
+#ifdef ZEROINIT
+      this->fill(RealType(0.0));
+#endif
+
+
+    }
+
+    ~Array( void ){
+
+      if (owner_){
+	//	dataPtr_=0;
+	//	if (dataPtr_!=0){
+	Allocator allocator;
+	allocator.deallocate(dataPtr_,shape_.dataSize_);
+	dataPtr_=0;
+	//	}
+      }
+    }
+
+
+
+    Array(const Shape & shape, RealType * dataPtr_):shape_(shape),
+						    owner_(false),
+						    dataPtr_(dataPtr_){
+    }
+
+    //LP: Require delegating Ctor....
+    template <typename... Args>
+    Array(const Args&... rest):Array(Shape(rest...)){}
+
+    //    template <typename... Args>
+    //    Array(const Args... rest):shape_(Shape(rest...)),
+    //			      owner_(true),
+    //			      dataPtr_(0)
+    //    {
+
+    //      Allocator allocator;
+    //      dataPtr_=allocator.allocate(shape_.dataSize_);
+    //      data_.resize(shape_.dataSize_);
+    //      dataPtr_=&data_[0];
+    //    }
+
+
+    RealType * realDataPtr( void ){ return dataPtr_;}
+    const RealType * realDataPtr( void ) const { return dataPtr_;}
+
+
+    int size( void ) const { return shape_.size_ ; }
+    bool owner( void ) const { return owner_ ; }
+
+
+    // It is a shallow copy (view)
+    Array(Array & other):shape_(other.shape_),
+			 owner_(false),
+			 dataPtr_(other.dataPtr_){
+      //      std::cout << "ici" << std::endl;
+    }
+
+
+    // It is a shallow copy (view)
+    Array(const Array & other):shape_(other.shape_),
+			       owner_(false),
+			       dataPtr_(other.dataPtr_){
+    }
+
+
+    void reshape( void ){
+      //      std::cout << "ici" << std::endl;
+    }
+
+    template <typename... Args>
+    void reshape(const Args... rest){
+      //      std::cout << "ici" << std::endl;
+      Shape s(rest...);
+      //      std::cout << "s.size()=" << s.size_ << std::endl;
+      if (dataPtr_==0){
+	shape_=s;
+	owner_=true;
+	//	Eigen::aligned_allocator<RealType> allocator;
+	Allocator allocator;
+	dataPtr_=allocator.allocate(shape_.dataSize_);
+#ifdef ZEROINIT
+        this->fill(RealType(0.0));
+#endif
+      }
+      else{
+	std::cerr << "Reshape is not allowed" << std::endl;
+	std::cerr << "dataPtr_="<<dataPtr_ << std::endl;
+    throw std::runtime_error("Reshape is not allowed");
+      }
+    }
+
+
+    typedef Eigen::Array<double,PACK_SIZE,1> PackedDoubleType;
+    typedef Eigen::Array<SCALAR_TYPE,PACK_SIZE,1> PackedRealType;
+
+
+    typedef Legolas::Array<PackedRealType,LEVEL,1,1> PackedArrayView;
+    typedef Legolas::Array<PackedRealType,1> FlatPackedArrayView;
+
+    const PackedArrayView getPackedView( void ) const {
+      // INFOS("ICI");
+      // INFOS("this->shape_.size_="<<this->shape_.size_);
+      ArrayShape<1,1,LEVEL> packedShape=this->shape_.getPackedShape();
+      //      INFOS("ICI");
+      PackedRealType * vectorPtr=reinterpret_cast<PackedRealType*>(this->dataPtr_);
+      //      INFOS("ICI");
+      return PackedArrayView(packedShape,vectorPtr);
+    }
+
+    const Array<PackedRealType,1> getFlatPackedView( void ) const {
+      //LP:Rq a.shape_.dataSize_/PACK_SIZE is equal to npack that could be stored in the Shape
+      typename Array<PackedRealType,1>::Shape shape(this->shape_.dataSize_/PACK_SIZE);
+      return Array<PackedRealType,1>(shape,reinterpret_cast<PackedRealType*>(this->dataPtr_));
+    }
+
+
+    PackedArrayView getPackedView( void ) {
+      ArrayShape<1,1,LEVEL> packedShape=this->shape_.getPackedShape();
+      PackedRealType * vectorPtr=reinterpret_cast<PackedRealType*>(this->dataPtr_);
+      return PackedArrayView(packedShape,vectorPtr);
+    }
+
+    Array<PackedRealType,1> getFlatPackedView( void ) {
+      //LP:Rq a.shape_.dataSize_/PACK_SIZE is equal to npack that could be stored in the Shape
+      typename Array<PackedRealType,1>::Shape shape(this->shape_.dataSize_/PACK_SIZE);
+      return Array<PackedRealType,1>(shape,reinterpret_cast<PackedRealType*>(this->dataPtr_));
+    }
+
+    // typedef EigenInterface<SCALAR_TYPE,PACK_SIZE> EI;
+    // typedef typename EI::EigenArray EigenArray;
+    // typedef typename EI::EigenArrayView EigenView;
+    // typedef typename EI::ConstEigenArrayView ConstEigenView;
+
+
+
+    //typedef Eigen::Map<EigenArray,Eigen::Aligned> EigenView;
+    //typedef Eigen::Map<const EigenArray,Eigen::Aligned> ConstEigenView;
+
+    typedef Eigen::Array<RealType,Eigen::Dynamic,1> EigenArray;
+    typedef Eigen::Map<EigenArray,Eigen::Aligned32> EigenView;
+    typedef Eigen::Map<const EigenArray,Eigen::Aligned32> ConstEigenView;
+    //    typedef Eigen::Map<EigenArray,Eigen::Aligned> EigenView;
+    //    typedef Eigen::Map<const EigenArray,Eigen::Aligned> ConstEigenView;
+    //typedef Eigen::Map<EigenArray> EigenView;
+    //    typedef Eigen::Map<const EigenArray> ConstEigenView;
+
+
+    typedef int ArrayView;
+
+    inline size_t flatSize( void ) const { return this->shape_.dataSize_;}
+
+    const EigenView getEigenView( void ) const {
+      return EigenView(this->dataPtr_,this->flatSize());
+    }
+
+    inline EigenView getEigenView( void ) {
+      return EigenView(this->dataPtr_,this->flatSize());
+    }
+
+    inline ConstEigenView getEigenView(size_t begin, size_t chunkSize) const {
+      //      ConstEigenView toto(this->dataPtr_+begin,chunkSize);
+      //      INFOS("ICI");
+      return ConstEigenView(this->dataPtr_+begin,chunkSize);
+    }
+
+    inline EigenView getEigenView(size_t begin, size_t chunkSize) {
+      //      EigenView toto(this->dataPtr_+begin,chunkSize);
+      //      INFOS("LA");
+      return EigenView(this->dataPtr_+begin,chunkSize);
+    }
+
+
+
+    struct SetValue{
+      RealType value_;
+
+      SetValue(const RealType & value):value_(value){}
+
+      RealType operator()(int i) const {
+	//	LEFT v(value_);
+	return value_;
+      }
+    };
+
+
+    void allFill(RealType value){
+      const size_t chunkSize=4*1000;
+      const size_t nChunks=this->flatSize()/chunkSize;
+
+      const int parallelChunks=std::max((int(nChunks)-1),0);
+
+      my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
+	  const size_t begin=i*chunkSize;
+	  this->getEigenView(begin,chunkSize).fill(value);
+	});
+
+      const size_t begin=parallelChunks*chunkSize;
+      size_t lastChunkSize=this->flatSize()-begin;
+      this->getEigenView(begin,lastChunkSize).fill(value);
+
+
+      //      this->getEigenView().fill(value);
+    }
+
+
+    void fill(RealType value){
+      this->allFill(value);
+      //      this->getEigenView().fill(value);
+    }
+
+
+
+    void fillNoPad(RealType value){
+      //this->getEigenView().fill(value);
+      ART::fillNoPad(*this,value);
+
+      //      ART::initialize(*this,SetValue(value));
+
+
+
+      //            Legolas::for_each(CopyElement(),(*this).getFlatPackedView());
+      //      this->getEigenView().fill(value);
+      //      Array<PackedRealType,1> flat=this->getFlatPackedView();
+      //      PackedRealType pvalue(value);
+      //      for (int i=0 ; i<flat.size() ; i++) flat[i]=pvalue;
+
+
+    }
+
+
+    struct CopyElement{
+      template <class LEFT, class RIGHT>
+      void operator()(int i, LEFT left, const RIGHT & right) const {
+	left[i]=right[i];
+      }
+    };
+
+
+    struct AddElement{
+      template <class LEFT, class RIGHT>
+      void operator()(int i, LEFT left, const RIGHT & right) const {
+	left[i]+=right[i];
+      }
+    };
+
+    struct MinusElement{
+      template <class LEFT, class RIGHT>
+      void operator()(int i, LEFT left, const RIGHT & right) const {
+	//	INFOS("left[i]="<<left[i]<<" right[i]="<<right[i]);
+	left[i]-=right[i];
+	//	INFOS("left[i]="<<left[i]<<" right[i]="<<right[i]);
+      }
+    };
+
+
+    Array & operator= (const Array & right){
+      if (this->dataPtr_!=right.dataPtr_){
+	assert(this->shape_==right.shape_);
+	const size_t chunkSize=4000;
+	const size_t nChunks=this->flatSize()/chunkSize;
+	const int parallelChunks=std::max((int(nChunks)-1),0);
+
+	//	size_t begin=0;
+	my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
+	    const size_t begin=i*chunkSize;
+	    //	    void * dest=static_cast<void *>(this->realDataPtr()+begin);
+	    //	    const void * source=static_cast<const void *>(right.realDataPtr()+begin);
+	    //	    A_memcpy(dest,source,chunkSize*sizeof(RealType));
+	    this->getEigenView(begin,chunkSize)=right.getEigenView(begin,chunkSize);
+	  });
+
+	const size_t begin=parallelChunks*chunkSize;
+	size_t lastChunkSize=this->flatSize()-begin;
+
+	//	INFOS("begin="<<begin);
+	//	INFOS("lastChunkSize="<<lastChunkSize);
+	//	auto titi=this->getEigenView(begin,lastChunkSize);
+	//	INFOS("LA");
+	//	auto tata=right.getEigenView(begin,chunkSize);
+
+	this->getEigenView(begin,lastChunkSize)=right.getEigenView(begin,lastChunkSize);
+
+
+	//	this->getEigenView()=right.getEigenView();
+      }
+
+
+      //	Legolas::for_each(CopyElement(),(*this).getFlatPackedView(),right.getFlatPackedView());
+      //LP: OK with C++14
+      //Legolas::for_each([=](int i, auto l, auto r){l[i]=r[i];},(*this).getFlatPackedView(),right.getFlatPackedView());
+
+      //      }
+      return *this;
+    }
+
+
+    const Shape & shape( void ) const { return shape_;}
+
+
+    template <class DERIVED>
+    Array & operator= (const BaseArray<DERIVED> & right){
+      assert(this->shape()==right.getArrayRef().shape());
+      //this->getEigenView()=right.getEigenView();
+      //      INFOS("ICI");
+      // auto r=right.getArrayRef();
+      // const size_t s=r.size();
+      //      INFOS("s="<<s);
+
+      this->getEigenView()=right.getArrayRef().getEigenView();
+
+
+
+      //      for (size_t i=0 ; i<s ; i++){
+      //      	(*this)[i]=r[i];
+      //      }
+
+      //      Legolas::flat_for_each(CopyElement(),(*this),right.getArrayRef());
+      // #ifdef CXX14
+      //       Legolas::flat_for_each([](int i, auto l, auto r){l[i]+=r[i];},(*this),right.getArrayRef());
+      // #else
+      return *this;
+    }
+
+    template <class DERIVED>
+    Array & operator= (const ParallelArray<DERIVED> & right){
+      assert(this->shape()==right.getArray().shape());
+      //      INFOS("ICI LA");
+
+      //      this->getEigenView(0,this->flatSize())=right.getArrayRef().getEigenView(0,this->flatSize());
+
+      const size_t chunkSize=4*1000;
+      const size_t nChunks=this->flatSize()/chunkSize;
+      //      INFOS("nChunks="<<nChunks);
+      //      INFOS("this->flatSize()-chunkSize*nChunks="<<this->flatSize()-chunkSize*nChunks);
+
+      //      size_t begin=0;
+
+      const int parallelChunks=std::max((int(nChunks)-1),0);
+
+      my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
+	  const size_t begin=i*chunkSize;
+	  this->getEigenView(begin,chunkSize)=right.getArrayRef().getEigenView(begin,chunkSize);
+	});
+
+      // for (size_t i=0 ; i+1<nChunks ; i++){
+      // 	size_t begin=i*chunkSize;
+      // 	//	INFOS("begin="<<begin);
+      // 	this->getEigenView(begin,chunkSize)=right.getArrayRef().getEigenView(begin,chunkSize);
+      // 	//      	begin+=chunkSize;
+      // }
+
+
+
+      //      size_t begin=std::max((int(nChunks)-1),0)*chunkSize;
+      const size_t begin=parallelChunks*chunkSize;
+      //      INFOS("begin="<<begin);
+      size_t lastChunkSize=this->flatSize()-begin;
+      //      INFOS("lastChunkSize="<<lastChunkSize);
+
+      this->getEigenView(begin,lastChunkSize)=right.getArrayRef().getEigenView(begin,lastChunkSize);
+
+
+      //      Legolas::parallel_flat_for_each(CopyElement(),(*this),right.getArray());
+      //      auto l=this->getFlatPackedView();
+      //      auto r=right.getArray().getFlatPackedView();
+
+      //      Legolas::parallel_flat_for_each(CopyElement(),(*this),right.getArray());
+      //      right.getArray().getEigenView();
+      //      this->getEigenView();
+      //      this->getEigenView()=right.getArray().getEigenView();
+      //      auto l=this->getEigenView();
+      //      auto r=right.getArray().getEigenView();
+
+
+
+      //      l=r;
+
+      //      tbb::parallel_for(0,this.eigenView().size(),[=](size_t i){algo(i,rest...);});
+
+      //      Legolas::parallel_flat_for_each(CopyElement(),(*this).getEigenView(),right.getArray().getEigenView());
+      return *this;
+    }
+
+    template <class DERIVED>
+    Array & operator+= (const BaseArray<DERIVED> & right){
+      assert(this->shape()==right.getArrayRef().shape());
+      this->getEigenView()+=right.getArrayRef().getEigenView();
+      //      Legolas::flat_for_each(AddElement(),(*this),right.getArrayRef());
+      return *this;
+    }
+
+    template <class DERIVED>
+    Array & operator+= (const ParallelArray<DERIVED> & right){
+      assert(this->shape()==right.getArray().shape());
+      Legolas::parallel_flat_for_each(AddElement(),(*this),right.getArray());
+      return *this;
+    }
+
+    template <class DERIVED>
+    Array & operator-= (const BaseArray<DERIVED> & right){
+      //      INFOS("****************** IXI *********************");
+      assert(this->shape()==right.getArrayRef().shape());
+      this->getEigenView()-=right.getArrayRef().getEigenView();
+      //      Legolas::flat_for_each(MinusElement(),(*this),right.getArrayRef());
+      return *this;
+    }
+
+    template <class DERIVED>
+    Array & operator-= (const ParallelArray<DERIVED> & right){
+      assert(this->shape()==right.getArray().shape());
+      Legolas::parallel_flat_for_each(MinusElement(),(*this),right.getArray());
+      return *this;
+    }
+
+
+    //LP:FIXME who owns the data when Array b(a.copy()) is called..
+    //Should not be a move Ctor involved ? It looks that the RVO is OK but I am not sure that it is guaranteed...
+    Array copy( void ) const{
+      Array result(this->shape_);
+      result=(*this);
+      return result;
+    }
+
+    // Array && copy( void ) const{
+    //   INFOS("LA");
+    //   Array result(this->shape_);
+    //   INFOS("LA");
+    //   result=(*this);
+    //   INFOS("ICI");
+    //   return std::move(result);
+    // }
+
+
+    template <typename... Args>
+    void initialize(const Args... rest){
+      ART::initialize(*this,rest...);
+    }
+
+
+
+
+
+    GetElement operator[](int i){
+#ifndef NDEBUG
+      if ( (i<0) || (i>=this->size()) ) {
+	INFOS("i="<<i<<"this->size()="<<this->size());
+	assert( (i>0) && (i<this->size() ));
+      }
+#endif
+      return ART::getElement(*this,i);
+    }
+    ConstGetElement operator[](int i) const {
+#ifndef NDEBUG
+      if ( (i<0) || (i>=this->size()) ) {
+	INFOS("i="<<i<<"this->size()="<<this->size());
+	assert( (i>0) && (i<this->size() ));
+      }
+#endif
+      //      assert(i>=0);
+      //      assert(i<this->size());
+      return ART::getElement(*this,i);
+    }
+
+
+    void display(std::ostream& os) const{
+      std::string prefix;
+      ART::display(*this,os,prefix);
+    }
+
+    void display(std::ostream& os, const std::string & prefix) const{
+      ART::display(*this,os,prefix);
+    }
+
+    void copy(const Array & other){
+      if (shape_!=other.shape_){
+	this->reshape(other.shape_);
+      }
+      (*this)=other;
+    }
+
+    void save(std::ostream & os){
+      this->shape_.save(os);
+      os << std::endl;
+      os << this->owner_;
+      const SizeType ss=this->shape_.dataSize_*sizeof(RealType);
+      //      INFOS("ss="<<ss);
+      os.write(reinterpret_cast<char*>(dataPtr_),ss);
+
+
+      os << std::endl;
+    }
+
+    void load(std::istream & is){
+      Shape shape;
+      shape.load(is);
+      this->reshape(shape);
+      Legolas::dump(this->shape_);
+      is >> this->owner_;
+      //      INFOS("owner_="<<owner_);
+      const SizeType ss=this->shape_.dataSize_*sizeof(RealType);
+      //      INFOS("ss="<<ss);
+      is.read(reinterpret_cast<char*>(this->dataPtr_),ss);
+
+    }
+
+
+  };//End of Class Array.hxx
+
+  inline void dump(const float & value){ std::cout << value <<" ";}
+
+  template <class SCALAR_TYPE, int LEVEL, int PACK_SIZE, int PACK_LEVEL>
+  inline void dump(const Legolas::Array<SCALAR_TYPE,LEVEL,PACK_SIZE,PACK_LEVEL> & array){
+    std::cout <<"array.size()="<<array.size()<<std::endl;
+    for (int i=0 ; i<array.size() ; i++){
+      Legolas::dump(array[i]); std::cout << std::endl;
+    }
+  }
+
+
+  template <class SCALAR_TYPE, int LEVEL, int PACK_SIZE, int PACK_LEVEL>
+  std::ostream& operator<< ( std::ostream& os, const Legolas::Array<SCALAR_TYPE,LEVEL,PACK_SIZE,PACK_LEVEL> & a )
+  {
+    a.display(os);
+    return os;
+  }
+
+  inline float exp(const float & value){ return std::exp(value); }
+
+  template <class SCALAR_TYPE, int PACK_SIZE>
+  inline auto  exp(const Eigen::Array<SCALAR_TYPE,PACK_SIZE,1> & pvalue ){ return Eigen::exp(pvalue); }
+  
+  
+
+
+
+}
+#pragma once
+#include <iostream>
+
+//#include "Legolas/Vector/Shape/VirtualVectorShape.hxx"
+
+namespace Legolas{
+
+  template <int PACK_SIZE, int PACK_LEVEL, int LEVEL>
+  struct ComputeNPack{
+    static inline int apply(int size){ 
+      //      std::cout <<"ICI"<<std::endl;
+      return size; 
+    }
+  };
+  
+  template <int PACK_SIZE, int PACK_LEVEL>
+  struct ComputeNPack<PACK_SIZE,PACK_LEVEL,PACK_LEVEL>{
+    static inline int apply(int size){
+      int npack=size/PACK_SIZE;
+      if (size!=npack*PACK_SIZE) npack++;
+      //      std::cout << "PACK_SIZE="<<PACK_SIZE<<" PACK_LEVEL="<<PACK_LEVEL<<" npack="<<npack <<std::endl;
+      return npack;
+    }
+  };
+
+
+  template <int PACK_SIZE, int PACK_LEVEL, int LEVEL>
+  struct ComputeShift{
+    static inline int apply(int index, int elementSize){
+      return index*elementSize;
+    }
+  };
+    
+  template <int PACK_SIZE, int PACK_LEVEL>
+  struct ComputeShift<PACK_SIZE,PACK_LEVEL,PACK_LEVEL>{
+    static inline int apply(int index, int elementSize){
+      const int packIndex=index/PACK_SIZE;
+      const int componentIndex=index-packIndex*PACK_SIZE;
+      return packIndex*elementSize+componentIndex;
+    }
+  };
+
+  //LP: rajout
+  template <int PACK_SIZE, int PACK_LEVEL>
+  struct ComputeShift<PACK_SIZE,PACK_LEVEL,1>{
+    static inline int apply(int index, int elementSize){
+      return index*PACK_SIZE;
+    }
+  };
+
+
+  template <int PACK_SIZE>
+  struct ComputeShift<PACK_SIZE,1,1>{
+    static inline int apply(int index, int elementSize){
+      return index;
+    }
+  };
+
+
+
+  template <int PACK_SIZE, int PACK_LEVEL, int LEVEL>
+  struct Stride{
+    static const size_t stride_=1;
+  };
+
+  // template <int PACK_SIZE,int PACK_LEVEL>
+  // struct Stride<PACK_SIZE,PACK_LEVEL,PACK_LEVEL>{
+  //   static const size_t stride_=PACK_SIZE;
+  // };
+
+  template <int PACK_SIZE, int PACK_LEVEL>
+  struct Stride<PACK_SIZE,PACK_LEVEL,1>{
+    static const size_t stride_=PACK_SIZE;
+  };
+
+  
+  template <int PACK_SIZE>
+  struct Stride<PACK_SIZE,1,1>{
+    static const size_t stride_=1;
+  };
+
+
+
+
+  
+
+
+
+
+
+  //  template <int PACK_SIZE,int PACK_LEVEL,int LEVEL>
+  //  struct ArrayShape: public VirtualVectorShape{
+  template <int PACK_SIZE,int PACK_LEVEL,int LEVEL>
+  struct ArrayShape{//: public VirtualVectorShape{
+
+    static const int level_=LEVEL;
+    
+    int size_;
+    typedef ArrayShape<PACK_SIZE,PACK_LEVEL,LEVEL-1> SubShape;
+    SubShape subShape_;
+    long dataSize_;
+
+
+    
+    ArrayShape( void ):size_(0),
+     		       subShape_(),
+     		       dataSize_(0){
+    }
+
+
+    ArrayShape(const ArrayShape & other):size_(other.size_),
+					 subShape_(other.subShape_),
+					 dataSize_(other.dataSize_){
+    }
+
+    ArrayShape & operator=(const ArrayShape & other){
+      size_=other.size_;
+      subShape_=other.subShape_;
+      dataSize_=other.dataSize_;
+      return *this;
+    }
+
+    
+    template <typename... Args>
+    ArrayShape(int first,Args... rest):size_(first),
+				       subShape_(rest...),
+				       dataSize_(ComputeNPack<PACK_SIZE,PACK_LEVEL,LEVEL>::apply(size_)*subShape_.dataSize_)
+    {
+    } 
+
+    ArrayShape(int size, const SubShape & subShape):size_(size),
+						    subShape_(subShape),
+						    dataSize_(ComputeNPack<PACK_SIZE,PACK_LEVEL,LEVEL>::apply(size_)*subShape_.dataSize_)
+    {
+    }
+
+
+    const SubShape & operator[](int i) const {return subShape_;}
+  
+    inline int computeShift(int index) const{
+      return ComputeShift<PACK_SIZE,PACK_LEVEL,LEVEL>::apply(index,subShape_.dataSize_);
+    }
+
+    bool operator==(const ArrayShape & other) const{
+      return ( (subShape_==other.subShape_) && (size_==other.size_) );
+    }
+
+    bool operator!=(const ArrayShape & other) const{
+      return !((*this)==other);
+    }
+
+
+    ArrayShape<1,1,LEVEL> getPackedShape( void ) const {
+      ArrayShape<1,1,LEVEL> result(ComputeNPack<PACK_SIZE,PACK_LEVEL,LEVEL>::apply(this->size_),
+				   this->subShape_.getPackedShape());
+      return result;
+      //      result.size_=ComputeNPack<PACK_SIZE,PACK_LEVEL,LEVEL>::apply(this->size_);
+      //      result.subShape_=this->subShape_.getPackedShape();
+      //      result.dataSize_=result.size_*result.subShape_.dataSize_;
+      //      return result;
+    }
+
+    // ArrayShape<1,1,LEVEL> getPackedShape( void ){
+    //   ArrayShape result;
+    //   result.size()
+
+    int size( void ) const { return size_;}
+    size_t flatSize( void ) const { return dataSize_;}
+    int level( void ) const { return LEVEL;}
+    size_t subFlatSize( int i) const { return subShape_.dataSize_ ;}
+
+    void dump( void ) const {
+      std::cout<<"ArrayShape<"<<PACK_SIZE<<","<<PACK_LEVEL<<","<<LEVEL<<">:[size_="<<size_<<" dataSize_"<<dataSize_<<"]"<<std::endl;
+      subShape_.dump();
+    }
+
+    void save(std::ostream & os){
+      os << this->size_ ;
+      os << std::endl;
+      os << this-> dataSize_;
+      os << std::endl;
+      subShape_.save(os);
+    }
+
+    void load(std::istream & is){
+      //      std::cout<<"Load ArrayShape<"<<PACK_SIZE<<","<<PACK_LEVEL<<","<<LEVEL<<">"<<std::endl;
+      is >> this->size_ ;
+      //      INFOS("this->size_="<<this->size_);
+      is >> this-> dataSize_;
+      subShape_.load(is);
+      //      INFOS("this->dataSize_="<<this->dataSize_);
+    }
+
+
+  };
+
+
+  //  template <int PACK_SIZE,int PACK_LEVEL>
+  //  struct ArrayShape<PACK_SIZE,PACK_LEVEL,1>: public VirtualVectorShape{
+
+  template <int PACK_SIZE,int PACK_LEVEL>
+  struct ArrayShape<PACK_SIZE,PACK_LEVEL,1>{//: public VirtualVectorShape{
+    static const int level_=1;
+    int size_;
+    typedef int SubShape;
+    long dataSize_;
+
+    static const int stride_=Stride<PACK_SIZE,PACK_LEVEL,1>::stride_;
+
+  
+    static inline long computeDataSize(int size){
+      return ComputeNPack<PACK_SIZE,PACK_LEVEL,1>::apply(size)*PACK_SIZE;
+    }
+
+    
+    
+    ArrayShape( void ):size_(0),
+		       //		       subShape_(0),
+		       dataSize_(0){
+    }
+
+    
+    ArrayShape(const ArrayShape & other):size_(other.size_),
+					 //					 subShape_(other.subShape_),
+					 dataSize_(other.dataSize_){
+    }
+    
+
+
+    ArrayShape & operator=(const ArrayShape & other){
+      size_=other.size_;
+      dataSize_=other.dataSize_;
+      return *this;
+    }
+
+    
+  
+    template <typename... Args>
+    ArrayShape(int size):size_(size),
+			 dataSize_(computeDataSize(size))
+    {
+    } 
+  
+    bool operator==(const ArrayShape & other) const {
+      return ( (size_==other.size_) && (dataSize_==other.dataSize_) );
+    }
+
+    inline int computeShift(int index) const {
+      return ComputeShift<PACK_SIZE,PACK_LEVEL,1>::apply(index,PACK_SIZE);
+      //      return index*PACK_SIZE;
+    }
+
+    ArrayShape<1,1,1> getPackedShape( void ) const {
+      ArrayShape<1,1,1> result;
+      //      INFOS("this->size_="<<this->size_);
+      //      result.size_=this->size_;
+      result.size_=ComputeNPack<PACK_SIZE,PACK_LEVEL,1>::apply(this->size_);
+      result.dataSize_=result.size_;
+      return result;
+    }
+
+    
+    int size( void ) const { return size_;}
+    size_t flatSize( void ) const { return dataSize_;}
+    int level( void ) const { return 1;}
+    size_t subFlatSize( int i) const { return 1 ;}
+
+    void dump( void ) const {
+      std::cout<<"ArrayShape<"<<PACK_SIZE<<","<<PACK_LEVEL<<","<<1<<">:[size_="<<size_<<" dataSize_"<<dataSize_<<"]"<<std::endl;
+    }
+
+    void save(std::ostream & os){
+      os << this->size_ ;
+      os << std::endl;
+      os << this-> dataSize_;
+      os << std::endl;
+    }
+
+    void load(std::istream & is){
+      //      INFOS("Load ArrayShape<"<<PACK_SIZE<<","<<PACK_LEVEL<<","<<this->level()<<">");
+      is >> this->size_ ;
+      //      INFOS("this->size_="<<this->size_);
+      is >> this-> dataSize_;
+      //      INFOS("this->dataSize_="<<this->dataSize_);
+    }
+
+
+  };
+
+
+  // template <int PACK_SIZE>
+  // struct ArrayShape<PACK_SIZE,1,1>{
+  //   int size_;
+  //   long dataSize_;
+  //   int subShape_;
+    
+  
+  //   static inline long computeDataSize(int size){
+  //     return ComputeNPack<PACK_SIZE,1,1>::apply(size)*PACK_SIZE;
+  //   }
+
+  //   ArrayShape( void ):size_(0),
+  // 		       subShape_(0),
+  // 		       dataSize_(0){
+  //   }
+
+
+  
+  //   template <typename... Args>
+  //   ArrayShape(int size):size_(size),
+  // 			 dataSize_(computeDataSize(size))
+  //   {
+  //   } 
+  
+  //   inline int computeShift(int index) const {
+  //     return index;
+  //   }
+
+  //   ArrayShape<1,1,1> getPackedShape( void ) const {
+  //     ArrayShape<1,1,1> result;
+  //     result.size_=ComputeNPack<PACK_SIZE,1,1>::apply(this->size_);
+  //     result.dataSize_=result.size_;
+  //     return result;
+  //   }
+
+  // };
+
+
+  template <int PACK_SIZE,int PACK_LEVEL,int LEVEL>
+  void dump(const ArrayShape<PACK_SIZE,PACK_LEVEL,LEVEL> & as){
+    as.dump();
+  }
+
+
+
+
+
+}//namespace Legolas
+#pragma once
+
+namespace Legolas{
+
+  template <class DERIVED_ARRAY>
+  struct BaseArray {
+    
+    DERIVED_ARRAY & getArrayRef( void ) {
+      return static_cast<DERIVED_ARRAY &>(*this);
+    }
+
+    const DERIVED_ARRAY & getArrayRef( void ) const {
+      return static_cast<const DERIVED_ARRAY &>(*this);
+    }
+
+    const DERIVED_ARRAY & getConstArrayRef( void ) const {
+      return static_cast<const DERIVED_ARRAY &>(*this);
+    }
+    
+
+  };
+
+
+  // template <class DERIVED_MULTI_ARRAY>
+  // struct BaseMultiArray {
+    
+  //   DERIVED_MULTI_ARRAY & getArrayRef( void ) {
+  //     return static_cast<DERIVED_MULTI_ARRAY &>(*this);
+  //   }
+
+  //   const DERIVED_MULTI_ARRAY & getArrayRef( void ) const {
+  //     return static_cast<const DERIVED_MULTI_ARRAY &>(*this);
+  //   }
+
+  //   const DERIVED_MULTI_ARRAY & getConstArrayRef( void ) const {
+  //     return static_cast<const DERIVED_MULTI_ARRAY &>(*this);
+  //   }
+    
+
+  // };
+
+}
+#pragma once
+
+#include "Legolas/Array/BaseArray.hxx"
+
+namespace Legolas{
+
+
+  struct AddArray{
+    template <class LEFT, class RIGHT>
+    static inline
+    const auto apply(const LEFT & left, const RIGHT & right){
+      //auto apply(LEFT left, RIGHT right){
+      return left+right;
+    }
+  };
+
+  struct MinusArray{
+    template <class LEFT, class RIGHT>
+    static inline
+    auto apply(const LEFT & left, const RIGHT & right) -> decltype(left-right){
+      //auto apply(LEFT left, RIGHT right){
+      return left-right;
+    }
+  };
+
+  struct MultArray{
+    template <class LEFT, class RIGHT>
+    static inline
+    auto apply(const LEFT & left, const RIGHT & right)  -> decltype(left*right){
+      //auto apply(LEFT left, RIGHT right){
+      return left*right;
+    }
+  };
+
+
+  template <class LEFT, class BINARY_OPERATOR , class RIGHT>
+  struct ArrayExpression: public BaseArray< ArrayExpression<LEFT,BINARY_OPERATOR,RIGHT> >{
+
+    typedef ArrayExpression StoreType;
+    typedef typename RIGHT::GetElement GetElement;
+    typedef typename RIGHT::ConstGetElement ConstGetElement;
+    typedef typename RIGHT::RealType RealType;
+    typedef typename RIGHT::PackedRealType PackedRealType;
+    typedef typename RIGHT::PackedDoubleType PackedDoubleType;
+
+    static const int level=RIGHT::level;
+    static const int packLevel=RIGHT::packLevel;
+    static const int packSize=RIGHT::packSize;
+
+    size_t flatSize( void ) const { return right_.flatSize();}
+
+
+    ArrayExpression(const BaseArray<LEFT> & left, const BaseArray<RIGHT> & right):left_(left.getArrayRef()),
+										  right_(right.getArrayRef())
+    {
+      //      assert(RIGHT::packLevel==LEFT::packLevel);
+      assert(left_.shape()==right_.shape());
+	     //      assert(left_.size()==right_.size());
+    }
+
+    inline auto operator[]( int i ) const {
+      return BINARY_OPERATOR::apply(left_[i],right_[i]);
+    }
+
+    size_t size( void ) const {
+      return left_.size();
+    }
+
+    const typename LEFT::StoreType left_;
+    const typename RIGHT::StoreType right_;
+
+    typedef typename RIGHT::Shape Shape;
+    //    typedef typename RIGHT::ConstShapeRef ConstShapeRef;
+
+    const Shape & shape( void ) const { return right_.shape();}
+
+    typedef typename LEFT::PackedArrayView LPacked;
+    typedef typename RIGHT::PackedArrayView RPacked;
+    typedef ArrayExpression<LPacked,BINARY_OPERATOR,RPacked> PackedArrayView;
+
+    PackedArrayView getPackedView( void ) const {
+      return PackedArrayView(left_.getPackedView(),right_.getPackedView());
+    }
+
+
+    typedef typename LEFT::ArrayView LArray;
+    typedef typename RIGHT::ArrayView RArray;
+    typedef ArrayExpression<LArray,BINARY_OPERATOR,RArray> ArrayView;
+
+    ArrayView getArrayView( void ) const {
+      return ArrayView(left_.getArrayView(),right_.getArrayView());
+    }
+
+
+
+
+
+    typedef typename LEFT::FlatPackedArrayView LFlat;
+    typedef typename RIGHT::FlatPackedArrayView RFlat;
+    typedef ArrayExpression<LFlat,BINARY_OPERATOR,RFlat> FlatPackedArrayView;
+
+    FlatPackedArrayView getFlatPackedView( void ) const {
+      return FlatPackedArrayView(left_.getFlatPackedView(),right_.getFlatPackedView());
+    }
+
+    typedef typename LEFT::EigenView LEigen;
+    typedef typename RIGHT::EigenView REigen;
+    typedef ArrayExpression<LEigen,BINARY_OPERATOR,REigen> EigenView;
+
+    //    inline auto getEigenView( void ) const ->decltype(BINARY_OPERATOR::apply(left_.getEigenView(),right_.getEigenView())) {
+    inline auto getEigenView( void ) const {
+      return BINARY_OPERATOR::apply(left_.getEigenView(),right_.getEigenView());
+      //      return left_.getEigenView()+right_.getEigenView();
+    }
+
+    inline auto getEigenView(size_t begin, size_t chunkSize) const {
+      return BINARY_OPERATOR::apply(left_.getEigenView(begin,chunkSize),right_.getEigenView(begin,chunkSize));
+      //      return left_.getEigenView(begin,chunkSize)+right_.getEigenView(begin,chunkSize);
+    }
+
+
+
+
+  };
+
+  template <class ARRAY>
+  struct ScaledArray: public BaseArray< ScaledArray<ARRAY> >{
+
+    typedef ScaledArray StoreType;
+    typedef typename ARRAY::GetElement GetElement;
+    typedef typename ARRAY::ConstGetElement ConstGetElement;
+    typedef typename ARRAY::RealType RealType;
+    typedef typename ARRAY::PackedRealType PackedRealType;
+    typedef typename ARRAY::PackedDoubleType PackedDoubleType;
+    static const int level=ARRAY::level;
+    static const int packLevel=ARRAY::packLevel;
+    static const int packSize=ARRAY::packSize;
+
+    const ARRAY array_;
+    const RealType coef_;
+
+
+    ScaledArray(const BaseArray<ARRAY> & array, RealType coef):array_(array.getArrayRef()),
+								     coef_(coef)
+    {
+    }
+
+    inline auto operator[]( int i ) const ->decltype(coef_*array_[i]) {
+      //inline auto operator[]( int i ) const {
+      //      INFOS("i="<<i);
+      return coef_*array_[i];
+    }
+
+    inline int size( void ) const {
+      return array_.size();
+    }
+
+    typedef typename ARRAY::Shape Shape;
+    //    typedef typename ARRAY::ConstShapeRef ConstShapeRef;
+
+    const Shape & shape( void ) const { return array_.shape();}
+
+
+    typedef typename ARRAY::PackedArrayView APacked;
+    typedef ScaledArray<APacked> PackedArrayView;
+
+    PackedArrayView getPackedView( void ) const {
+      typename APacked::RealType fc(coef_);
+      return PackedArrayView(array_.getPackedView(),fc);
+    }
+
+    typedef typename ARRAY::ArrayView AArray;
+    typedef ScaledArray<AArray> ArrayView;
+
+    ArrayView getArrayView( void ) const {
+      return ArrayView(array_.getArrayView(),coef_);
+    }
+
+    typedef typename ARRAY::FlatPackedArrayView AFlat;
+    typedef ScaledArray<AFlat> FlatPackedArrayView;
+
+    FlatPackedArrayView getFlatPackedView( void ) const {
+      typename AFlat::RealType fc(coef_);
+      return FlatPackedArrayView(array_.getFlatPackedView(),fc);
+    }
+
+    typedef typename ARRAY::EigenView AEigen;
+    typedef ScaledArray<AEigen> EigenView;
+
+    inline auto getEigenView( void ) const{
+      return array_.getEigenView()*coef_;
+      //      typename AFlat::RealType fc(coef_);
+      //      return EigenView(array_.getEigenView(),fc);
+    }
+
+    inline auto getEigenView(size_t begin, size_t chunkSize) const {
+      return array_.getEigenView(begin,chunkSize)*coef_;
+    }
+
+  };
+
+
+  template <class LEFT, class RIGHT>
+  ArrayExpression<LEFT,AddArray,RIGHT> operator+ (const BaseArray<LEFT> & left, const BaseArray<RIGHT> & right){
+    return ArrayExpression<LEFT,AddArray,RIGHT>(left,right);
+  }
+  template <class LEFT, class RIGHT>
+  ArrayExpression<LEFT,MinusArray,RIGHT> operator- (const BaseArray<LEFT> & left, const BaseArray<RIGHT> & right){
+    return ArrayExpression<LEFT,MinusArray,RIGHT>(left,right);
+  }
+
+  template <class LEFT, class RIGHT>
+  ArrayExpression<LEFT,MultArray,RIGHT> operator* (const BaseArray<LEFT> & left, const BaseArray<RIGHT> & right){
+    return ArrayExpression<LEFT,MultArray,RIGHT>(left,right);
+  }
+
+  template <class ARRAY>
+  ScaledArray<ARRAY> operator*(double coef, const BaseArray<ARRAY> & right){
+    return ScaledArray<ARRAY>(right,typename ARRAY::RealType(coef));
+  }
+
+  template <class ARRAY>
+  ScaledArray<ARRAY> operator*(const BaseArray<ARRAY> & right, double coef){
+    return ScaledArray<ARRAY>(right,typename ARRAY::RealType(coef));
+  }
+
+  template <class ARRAY>
+  struct ParallelArray{
+    const ARRAY & array_;
+    ParallelArray(const  BaseArray<ARRAY> & a):array_(a.getArrayRef()){
+    }
+    const ARRAY & getArray( void ) const { return array_;}
+    const ARRAY & getArrayRef( void ) const { return array_;}
+  };
+
+  enum EvalMode{par};
+
+  template <class ARRAY>
+  ParallelArray<ARRAY> operator||(const BaseArray<ARRAY> & left, EvalMode mode){
+    return ParallelArray<ARRAY>(left);
+  }
+
+
+
+};
+#pragma once
+
+#include "my_tbb_parallel_for.hxx"
+
+
+namespace Legolas{
+
+  template <class ARRAY>
+  inline int getArraysSize(ARRAY a){
+    //    std::cout << "a.size()="<<a.size() <<std::endl;
+    return a.size();
+  }
+
+  template <class ARRAY, typename... OTHER_ARRAYS>
+  inline int getArraysSize(ARRAY a, OTHER_ARRAYS... other){
+    //    std::cout << "a.size()="<<a.size() <<std::endl;
+    assert(a.size()==getArraysSize(other...));
+    return a.size();
+  }
+
+
+  template <class ARRAY>
+  inline int getPackedArraysSize(ARRAY a){
+    return a.size()/ARRAY::packSize;
+  }
+
+  template <class ARRAY, typename... OTHER_ARRAYS>
+  inline int getPackedArraysSize(ARRAY a, OTHER_ARRAYS... other){
+    assert(a.size()==getArraysSize(other...));
+    return a.size()/ARRAY::packSize;
+  }
+
+  template <class ARRAY>
+  inline int getPackSize(ARRAY a){
+    return ARRAY::packSize;
+  }
+
+  template <class ARRAY, typename... OTHER_ARRAYS>
+  inline int getPackSize(ARRAY a, OTHER_ARRAYS... other){
+    assert(ARRAY::packSize==getPackSize(other...));
+    return ARRAY::packSize;
+  }
+
+
+  template <class ALGO, typename... ARRAYS>
+  void ranged_for_each(int begin, int end, ALGO algo, ARRAYS... rest){
+    //    INFOS("begin="<<begin);
+    //    INFOS("end="<<end);
+    for (int i=begin ; i<end; i++){
+      algo(i,rest...);
+    }
+  }
+
+  // template <class ALGO>
+  // void simple_for_each(int begin, int end, ALGO algo){
+  //   for (int i=begin ; i<end; i++){
+  //     algo(i);
+  //   }
+  // }
+
+
+
+  template <class ALGO, typename... ARRAYS>
+  void parallel_ranged_for_each(int begin, int end, ALGO algo, ARRAYS... rest){
+    my_tbb::parallel_for(size_t(begin),size_t(end),[=](size_t i){algo(i,rest...);});
+   }
+
+
+  template <int PACK_LEVEL, int LEVEL>
+  struct IsVectorisable{
+    static const bool result=false;
+  };
+
+  template <int PACK_LEVEL>
+  struct IsVectorisable<PACK_LEVEL,PACK_LEVEL>{
+    static const bool result=true;
+  };
+
+  template <typename... ARRAYS>
+  struct IsVectorisableArray;
+
+
+  template <class ARRAY,typename... ARRAYS>
+  struct IsVectorisableArray<ARRAY,ARRAYS...>{
+    static const bool result=IsVectorisable<ARRAY::packLevel,ARRAY::level>::result&&IsVectorisableArray<ARRAYS...>::result;
+  };
+
+  template <>
+  struct IsVectorisableArray<>{
+    static const bool result=true;
+  };
+
+
+  template <bool vectorize>
+  struct PackedForEachSwitch{
+    template <class ALGO, typename... ARRAYS>
+    static inline void apply(ALGO algo, ARRAYS... rest){
+      const int thisSize=getArraysSize(rest...);
+      ranged_for_each(0,thisSize,algo,rest...);
+      //      scalar_for_each(algo,rest...);
+    }
+
+    template <class ALGO, typename... ARRAYS>
+    static inline void parallel_apply(ALGO algo, ARRAYS... rest){
+      const int thisSize=getArraysSize(rest...);
+      parallel_ranged_for_each(0,thisSize,algo,rest...);
+    }
+  };
+
+  template <>
+  struct PackedForEachSwitch<true>{
+
+    template <class ALGO, typename... ARRAYS>
+    static inline void apply(ALGO algo, ARRAYS... rest){
+      const int thisSize=getArraysSize(rest...);
+      const int thisPackedSize=getPackedArraysSize(rest...);
+      const int packSize=getPackSize(rest...);
+      //LP : This is ultra hot
+      ranged_for_each(0,thisPackedSize,algo,rest.getPackedView()...);
+      // If rest.. is equal to a1,a2,..,an then
+      // rest.getPackedView()... is equivalent to
+      //  a1.getPackedView(),a2.getPackedView(),...,an.getPackedView()
+      ranged_for_each(thisPackedSize*packSize,thisSize,algo,rest...);
+
+    }
+
+    template <class ALGO, typename... ARRAYS>
+    static inline void parallel_apply(ALGO algo, ARRAYS... rest){
+      const int thisSize=getArraysSize(rest...);
+      const int thisPackedSize=getPackedArraysSize(rest...);
+      const int packSize=getPackSize(rest...);
+
+      parallel_ranged_for_each(0,thisPackedSize,algo,rest.getPackedView()...);
+      ranged_for_each(thisPackedSize*packSize,thisSize,algo,rest...);
+
+    }
+  };
+
+
+  template <class ALGO, typename... ARRAYS>
+  void scalar_for_each(ALGO algo, ARRAYS... rest){
+    const int thisSize=getArraysSize(rest...);
+    ranged_for_each(0,thisSize,algo,rest...);
+  }
+
+  template <class ALGO, typename... ARRAYS>
+  void parallel_scalar_for_each(ALGO algo, ARRAYS... rest){
+    const int thisSize=getArraysSize(rest...);
+    parallel_ranged_for_each(0,thisSize,algo,rest...);
+  }
+
+  template <class ALGO, typename... ARRAYS>
+  void for_each(ALGO algo, ARRAYS... rest){
+    PackedForEachSwitch<IsVectorisableArray<ARRAYS...>::result>::apply(algo,rest.getArrayRef()...);
+  }
+
+  template <class ALGO, typename... ARRAYS>
+  void flat_for_each(ALGO algo, ARRAYS... rest){
+    scalar_for_each(algo,rest.getFlatPackedView()...);
+  }
+
+  template <class ALGO, typename... ARRAYS>
+  void parallel_flat_for_each(ALGO algo, ARRAYS... rest){
+    parallel_scalar_for_each(algo,rest.getFlatPackedView()...);
+  }
+
+  template <class ALGO, typename... ARRAYS>
+  void parallel_for_each(ALGO algo, ARRAYS... rest){
+    PackedForEachSwitch<IsVectorisableArray<ARRAYS...>::result>::parallel_apply(algo,rest.getArrayRef()...);
+  }
+
+
+
+
+}//namespace Legolas
+#pragma once
+
+#include "my_tbb_parallel_for.hxx"
+#include "Legolas/Array/ForEach.hxx"
+
+namespace Legolas{
+
+  template <class ALGO, typename... ARRAYS>
+  void scalar_map(ALGO algo, ARRAYS... rest){
+    const int thisSize=getArraysSize(rest...);
+    algo(0,thisSize,rest...);
+  }
+  template <class ALGO, typename... ARRAYS>
+  void parallel_ranged_map(int begin, int end, ALGO algo, ARRAYS... rest){
+    tbb::parallel_for(tbb::blocked_range<int>(begin,end),
+		      [=](tbb::blocked_range<int> r){
+			algo(r.begin(),r.end(),rest...);}
+		      ,tbb::auto_partitioner());
+			//		      });
+  }
+
+
+  template <bool vectorize>
+  struct PackedMapSwitch{
+    template <class ALGO, typename... ARRAYS>
+    static inline void apply(ALGO algo, ARRAYS... rest){
+      scalar_map(algo,rest...);
+    }
+
+    template <class ALGO, typename... ARRAYS>
+    static inline void parallel_apply(ALGO algo, ARRAYS... rest){
+      const int thisSize=getArraysSize(rest...);
+      parallel_ranged_map(0,thisSize,algo,rest...);
+    }
+  };
+
+  template <>
+  struct PackedMapSwitch<true>{
+    
+    template <class ALGO, typename... ARRAYS>
+    static inline void apply(ALGO algo, ARRAYS... rest){
+      const int thisSize=getArraysSize(rest...);
+      const int thisPackedSize=getPackedArraysSize(rest...);
+      const int packSize=getPackSize(rest...);
+      //LP : This is ultra hot
+      algo(0,thisPackedSize,rest.getPackedView()...);
+      // If rest.. is equal to a1,a2,..,an then
+      // rest.getPackedView()... is equivalent to 
+      //  a1.getPackedView(),a2.getPackedView(),...,an.getPackedView()
+      algo(thisPackedSize*packSize,thisSize,rest...);
+    }
+
+    template <class ALGO, typename... ARRAYS>
+    static inline void parallel_apply(ALGO algo, ARRAYS... rest){
+      const int thisSize=getArraysSize(rest...);
+      const int thisPackedSize=getPackedArraysSize(rest...);
+      const int packSize=getPackSize(rest...);
+      parallel_ranged_map(0,thisPackedSize,algo,rest.getPackedView()...);
+      algo(thisPackedSize*packSize,thisSize,rest...);
+      //      ranged_for_each(thisPackedSize*packSize,thisSize,algo,rest...);
+
+    }
+  };
+
+      
+
+  // template <class ALGO, typename... ARRAYS>
+  // void parallel_scalar_for_each(ALGO algo, ARRAYS... rest){
+  //   const int thisSize=getArraysSize(rest...);
+  //   parallel_ranged_for_each(0,thisSize,algo,rest...);
+  // }
+
+  template <class ALGO, typename... ARRAYS>
+  void map(ALGO algo, ARRAYS... rest){
+    PackedMapSwitch<IsVectorisableArray<ARRAYS...>::result>::apply(algo,rest.getArrayRef()...);
+  }
+
+  template <class ALGO, typename... ARRAYS>
+  void parmap(ALGO algo, ARRAYS... rest){
+    PackedMapSwitch<IsVectorisableArray<ARRAYS...>::result>::parallel_apply(algo,rest.getArrayRef()...);
+  }
+
+  // template <class ALGO, typename... ARRAYS>
+  // void flat_for_each(ALGO algo, ARRAYS... rest){
+  //   scalar_for_each(algo,rest.getFlatPackedView()...);
+  // }
+
+  // template <class ALGO, typename... ARRAYS>
+  // void parallel_flat_for_each(ALGO algo, ARRAYS... rest){
+  //   parallel_scalar_for_each(algo,rest.getFlatPackedView()...);
+  // }
+
+  // template <class ALGO, typename... ARRAYS>
+  // void parallel_for_each(ALGO algo, ARRAYS... rest){
+  //   PackedMapSwitch<IsVectorisableArray<ARRAYS...>::result>::parallel_apply(algo,rest.getArrayRef()...);
+  // }
+
+
+  
+
+}//namespace Legolas
+#pragma once
+
+namespace Legolas{
+
+//*************************************** Begin Accumulate ****************************************//
+template <class ACCUMULATOR,int packLevel,int level>
+struct Accumulate{
+  template <class DERIVED, class SCALAR_TYPE>
+  static inline void apply(const BaseArray<DERIVED> & ba, SCALAR_TYPE & accumulator){
+    const DERIVED & a=ba.getArrayRef();
+
+    for (size_t i=0 ; i<a.size(); i++){
+      SCALAR_TYPE aci;
+      ACCUMULATOR::neutralize(aci);
+      Accumulate<ACCUMULATOR,packLevel,level-1>::apply(a[i],aci);
+      ACCUMULATOR::apply(aci,accumulator);
+    }
+  }
+};
+
+template <class ACCUMULATOR,int packLevel>
+struct Accumulate<ACCUMULATOR,packLevel,packLevel>{
+  template <class DERIVED, class SCALAR_TYPE>
+  static inline void apply(const BaseArray<DERIVED> & ba, SCALAR_TYPE & accumulator){
+    const DERIVED & a=ba.getArrayRef();
+    //Partie Vectorisee
+    auto ap=a.getPackedView();
+    //typename DERIVED::PackedRealType packedAccumulator;
+    typename DERIVED::PackedDoubleType packedAccumulator;
+    ACCUMULATOR::neutralize(packedAccumulator);
+
+    const size_t aps=ap.size()-1;
+
+    for (size_t ip=0 ; ip<aps; ip++){
+      typename DERIVED::PackedDoubleType paci;
+      ACCUMULATOR::neutralize(paci);
+      Accumulate<ACCUMULATOR,1,packLevel-1>::apply(ap[ip],paci);
+      ACCUMULATOR::apply(paci,packedAccumulator);
+    }
+
+    //Accumulation du pack resultant dans un scalaire
+    for (int comp=0 ; comp<DERIVED::packSize ; comp++){
+      ACCUMULATOR::apply(packedAccumulator(comp),accumulator);
+    }
+
+
+    //Accumulation du reste (on ne passe pas dans le padding)
+    for (size_t i=(ap.size()-1)*DERIVED::packSize ; i<a.size() ; i++){
+      SCALAR_TYPE aci;
+      ACCUMULATOR::neutralize(aci);
+      Accumulate<ACCUMULATOR,packLevel,packLevel-1>::apply(a[i],aci);
+      ACCUMULATOR::apply(aci,accumulator);
+    }
+
+  }
+};
+
+
+
+template <class ACCUMULATOR, int packLevel>
+struct Accumulate<ACCUMULATOR,packLevel,1>{
+  template <class DERIVED, class SCALAR_TYPE>
+  static inline void apply(const BaseArray<DERIVED> & ba, SCALAR_TYPE & accumulator){
+    auto a=ba.getArrayRef();
+
+    const int chunkSize=400;
+    const int nbChunks=a.size()/chunkSize;
+
+    for (int j=0 ; j<nbChunks ; j++){
+      SCALAR_TYPE aci;
+      ACCUMULATOR::neutralize(aci);
+
+      const int istart=j*chunkSize;
+      const int iend=istart+chunkSize;
+      for (int i=istart ; i<iend; i++){
+        ACCUMULATOR::apply(a[i],aci);
+      }
+      ACCUMULATOR::apply(aci,accumulator);
+
+    }
+    for (size_t i=nbChunks*chunkSize ; i<a.size() ; i++){
+      ACCUMULATOR::apply(a[i],accumulator);
+    }
+
+  }
+};
+
+template <class ACCUMULATOR>
+struct Accumulate<ACCUMULATOR,1,1>{
+  template <class DERIVED, class SCALAR_TYPE>
+  static inline void apply(const BaseArray<DERIVED> & ba, SCALAR_TYPE & accumulator){
+    auto a=ba.getArrayRef();
+
+    const int chunkSize=400;
+    const int nbChunks=a.size()/chunkSize;
+
+    for (int j=0 ; j<nbChunks ; j++){
+      SCALAR_TYPE aci;
+      ACCUMULATOR::neutralize(aci);
+
+      const int istart=j*chunkSize;
+      const int iend=istart+chunkSize;
+      for (int i=istart ; i<iend; i++){
+        ACCUMULATOR::apply(a[i],aci);
+      }
+      ACCUMULATOR::apply(aci,accumulator);
+
+    }
+    for (size_t i=nbChunks*chunkSize ; i<a.size() ; i++){
+      ACCUMULATOR::apply(a[i],accumulator);
+    }
+
+  }
+};
+
+
+//*************************************** Begin Accumulate Padding ****************************************//
+template <class ACCUMULATOR,int packLevel,int level>
+struct AccumulatePadding{
+  template <class DERIVED, class SCALAR_TYPE>
+  static inline void apply(const BaseArray<DERIVED> & ba, SCALAR_TYPE & accumulator){
+    const DERIVED & a=ba.getArrayRef();
+
+    for (size_t i=0 ; i<a.size(); i++){
+      SCALAR_TYPE aci;
+      ACCUMULATOR::neutralize(aci);
+      AccumulatePadding<ACCUMULATOR,packLevel,level-1>::apply(a[i],aci);
+      ACCUMULATOR::apply(aci,accumulator);
+    }
+  }
+};
+
+template <class ACCUMULATOR,int packLevel>
+struct AccumulatePadding<ACCUMULATOR,packLevel,packLevel>{
+  template <class DERIVED, class SCALAR_TYPE>
+  static inline void apply(const BaseArray<DERIVED> & ba, SCALAR_TYPE & accumulator){
+    const DERIVED & a=ba.getArrayRef();
+    //Partie Vectorisee
+    auto ap=a.getPackedView();
+    //typename DERIVED::PackedRealType packedAccumulator;
+
+    const int aps=ap.size();
+    const int paddingSize=aps*DERIVED::packSize-a.size();
+
+    if ( paddingSize!=0 ){ // There is Padding !!
+
+      const int lsy=a.size()-(aps-1)*DERIVED::packSize;
+
+      typename DERIVED::PackedDoubleType packedAccumulator;
+      ACCUMULATOR::neutralize(packedAccumulator);
+
+      //	INFOS("aps="<<aps);
+
+      AccumulatePadding<ACCUMULATOR,1,packLevel-1>::apply(ap[aps-1],packedAccumulator);
+
+      //	INFOS("a.size()="<<a.size());
+      //	INFOS("lsy="<<lsy);
+
+
+      //Accumulation du pack resultant dans un scalaire
+      for (int comp=lsy ; comp<DERIVED::packSize ; comp++){
+        ACCUMULATOR::apply(packedAccumulator(comp),accumulator);
+      }
+    }
+  }
+};
+
+
+
+template <class ACCUMULATOR, int packLevel>
+struct AccumulatePadding<ACCUMULATOR,packLevel,1>{
+  template <class DERIVED, class SCALAR_TYPE>
+  static inline void apply(const BaseArray<DERIVED> & ba, SCALAR_TYPE & accumulator){
+    auto a=ba.getArrayRef();
+
+    const int chunkSize=400;
+    const int nbChunks=a.size()/chunkSize;
+
+    for (int j=0 ; j<nbChunks ; j++){
+      SCALAR_TYPE aci;
+      ACCUMULATOR::neutralize(aci);
+
+      const int istart=j*chunkSize;
+      const int iend=istart+chunkSize;
+      for (int i=istart ; i<iend; i++){
+        ACCUMULATOR::apply(a[i],aci);
+      }
+      ACCUMULATOR::apply(aci,accumulator);
+
+    }
+    for (size_t i=nbChunks*chunkSize ; i<a.size() ; i++){
+      ACCUMULATOR::apply(a[i],accumulator);
+    }
+
+  }
+};
+
+template <class ACCUMULATOR>
+struct AccumulatePadding<ACCUMULATOR,1,1>{
+  template <class DERIVED, class SCALAR_TYPE>
+  static inline void apply(const BaseArray<DERIVED> & ba, SCALAR_TYPE & accumulator){
+    auto a=ba.getArrayRef();
+
+    const int chunkSize=400;
+    const int nbChunks=a.size()/chunkSize;
+
+    for (int j=0 ; j<nbChunks ; j++){
+      SCALAR_TYPE aci;
+      ACCUMULATOR::neutralize(aci);
+
+      const int istart=j*chunkSize;
+      const int iend=istart+chunkSize;
+      for (int i=istart ; i<iend; i++){
+        ACCUMULATOR::apply(a[i],aci);
+      }
+      ACCUMULATOR::apply(aci,accumulator);
+
+    }
+    for (size_t i=nbChunks*chunkSize ; i<a.size() ; i++){
+      ACCUMULATOR::apply(a[i],accumulator);
+    }
+
+  }
+};
+
+//*************************************** End Accumulate ****************************************//
+
+
+template <class LEFT, int PACK_SIZE, class RIGHT>
+static inline void plusAssign(Eigen::Array<LEFT,PACK_SIZE,1> & a, const RIGHT & b){
+  for (int i=0 ; i< PACK_SIZE ; i++){
+    a(i)+=b(i);
+  }
+}
+
+static inline void plusAssign(double & a, const double & b){
+  a+=b;
+}
+
+
+struct AddFunctor{
+
+  template <class ELEMENT, class ACCUMULATOR_TYPE>
+  static inline void apply(const ELEMENT & element,  ACCUMULATOR_TYPE & accumulator){
+    //accumulator+=element;
+    Legolas::plusAssign(accumulator,element);
+  }
+
+  template <class ELEMENT>
+  static inline void neutralize( ELEMENT & accumulator  ){
+    accumulator=0.0;
+  }
+};
+
+
+
+template <class DERIVED>
+inline double squaredNorm(const BaseArray<DERIVED> & ba){
+
+  const DERIVED & a=ba.getArrayRef();
+
+  double result;
+  AddFunctor::neutralize(result);
+  Accumulate<AddFunctor,DERIVED::packLevel,DERIVED::level>::apply(a*a,result);
+
+
+  return result;
+
+}
+
+
+
+template <class DERIVED>
+inline double dot(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & baRight){
+  const DERIVED & left=baLeft.getArrayRef();
+  const DERIVED & right=baRight.getArrayRef();
+
+  double result;
+  AddFunctor::neutralize(result);
+  Accumulate<AddFunctor,DERIVED::packLevel,DERIVED::level>::apply(left*right,result);
+  return result;
+
+}
+
+template <class DERIVED>
+inline double squaredNormZeroPad(const BaseArray<DERIVED> & ba){
+
+  const DERIVED & a=ba.getArrayRef();
+
+  double result;
+  AddFunctor::neutralize(result);
+  Accumulate<AddFunctor,DERIVED::packLevel,DERIVED::level>::apply(a*a,result);
+
+
+  return result;
+
+}
+
+//LP: Compute the padding only part of the dot product
+// It should be zero for Arrays initially filled with zeros.
+// This method is used to check that dotAssumeZeroPadding is equavalent to dot (but faster)
+template <class DERIVED>
+inline double dotPadding(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & baRight){
+  const DERIVED & left=baLeft.getArrayRef();
+  const DERIVED & right=baRight.getArrayRef();
+
+  double result;
+  AddFunctor::neutralize(result);
+  AccumulatePadding<AddFunctor,DERIVED::packLevel,DERIVED::level>::apply(left*right,result);
+  return result;
+
+}
+
+  
+//LP: Compute the padding only part of the dot product
+// It should be zero for Arrays initially filled with zeros.
+// This method is used to check that dotAssumeZeroPadding is equivalent to dot (but faster)
+template <class DERIVED>
+inline double dotAssumeZeroPadding(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & baRight){
+  assert(Legolas::dotPadding(baLeft,baRight)==0.0);
+
+  const DERIVED & left=baLeft.getArrayRef();
+  const DERIVED & right=baRight.getArrayRef();
+  
+  //  auto lv=left.getEigenView();
+  //  auto rv=right.getEigenView();
+
+  
+  auto lv=left.getFlatPackedView();
+  auto rv=right.getFlatPackedView();
+  
+  const int lvsize=lv.size();
+
+  const double result= tbb::parallel_deterministic_reduce(
+							  tbb::blocked_range<int>(0,lvsize,256),
+							  double(0.0),
+							  [&](const tbb::blocked_range<int> & r, double sum)->double {
+							    //							    INFOS("r.begin()="<<r.begin());
+							    //							    const int bsize=r.end()-r.begin();
+							    //							    INFOS("bsize="<<bsize);
+							    typename DERIVED::PackedRealType psum(0.0);
+							    for (int i=r.begin(); i<r.end() ; i++){
+							      psum+=lv[i]*rv[i];
+							    }
+							    
+							    for (int j=0; j<psum.size() ; j++){
+							      sum+=psum(j);
+							    }
+							    
+							    //							    sum+=left.getEigenView(r.begin(),bsize).matrix().dot(right.getEigenView(r.begin(),bsize).matrix());
+							    //							    INFOS("apres="<<r.begin());
+							    //							    INFOS("apres="<<bsize);
+							    //							    sum+
+							    //							    for(int i=r.begin(); i!=r.end(); ++i )
+							    //							      sum += lv(i)*rv(i);
+							    return sum;
+							  },
+							  [&]( double x, double y )->double {
+							    return x+y;
+							  }
+							  );
+  
+  return result;
+}
+
+
+
+
+
+ 
+template <class DERIVED>
+inline double dotAssumeZeroPaddingOld(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & baRight){
+
+  // if (Legolas::dotPadding(baLeft,baRight)!=0.0){
+  //   INFOS("Legolas::dotPadding(baLeft,baRight)="<<Legolas::dotPadding(baLeft,baRight));
+  //   exit(-1);
+  // }
+
+  //#define SLOW
+#ifdef SLOW
+
+  return dot(baLeft,baRight);
+
+#else
+
+  assert(Legolas::dotPadding(baLeft,baRight)==0.0);
+
+  const DERIVED & left=baLeft.getArrayRef();
+  const DERIVED & right=baRight.getArrayRef();
+
+  double result=0.0;
+
+  auto lv=left.getEigenView();
+  auto rv=right.getEigenView();
+
+  const int lvsize=lv.size();
+  const int chunkSize=4000;
+  //    const int chunkSize=7;
+  const int nChunks=lvsize/chunkSize;
+
+  //    INFOS("nChunks="<<nChunks);
+
+  if ( nChunks > 0) {
+
+    double * partialDot = new double[nChunks];
+
+    my_tbb::parallel_for(0,nChunks,[=](int chunk){
+        //      for (int chunk=0 ; chunk<nChunks ; chunk++){
+
+        double & partialResult=partialDot[chunk];
+        partialResult=0.0;
+
+        const int mini=chunk*chunkSize;
+        const int maxi=mini+chunkSize;
+
+        for (int i=mini ; i<maxi ; i++){
+          partialResult+=lv(i)*rv(i);
+        }
+
+      }
+      );
+
+    for (int chunk=0 ; chunk<nChunks ; chunk++){
+      result+=partialDot[chunk];
+    }
+
+    delete[] partialDot;
+
+  }
+
+  const int mini=nChunks*chunkSize;
+  const int maxi=std::min((nChunks+1)*chunkSize,lvsize);
+
+  //    INFOS("mini="<<mini<<" maxi="<<maxi);
+
+  for (int i=mini ; i<maxi ; i++){
+    result+=lv(i)*rv(i);
+  }
+
+
+
+  return result;
+
+#endif
+}
+
+
+  
+
+  
+
+template <class DERIVED>
+inline double dotAssumeZeroPaddingNew(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & baRight){
+
+  // if (Legolas::dotPadding(baLeft,baRight)!=0.0){
+  //   INFOS("Legolas::dotPadding(baLeft,baRight)="<<Legolas::dotPadding(baLeft,baRight));
+  //   throw std::runtime_error("Legolas::dotPadding(baLeft,baRight)!=0.0");
+  // }
+
+  assert(Legolas::dotPadding(baLeft,baRight)==0.0);
+
+  //#define SLOW
+#ifdef SLOW
+
+  //  return dot(baLeft,baRight);
+
+
+  const DERIVED & left=baLeft.getArrayRef();
+  const DERIVED & right=baRight.getArrayRef();
+
+  return left.getEigenView().matrix().dot(right.getEigenView().matrix());
+  
+#else
+  
+  assert(Legolas::dotPadding(baLeft,baRight)==0.0);
+
+  const DERIVED & left=baLeft.getArrayRef();
+  const DERIVED & right=baRight.getArrayRef();
+
+  double result=0.0;
+
+  auto lv=left.getEigenView();
+  //  auto rv=right.getEigenView();
+
+  const int lvsize=lv.size();
+  const int chunkSize=40;
+  assert(chunkSize%8==0);
+  //    const int chunkSize=7;
+  const int nChunks=lvsize/chunkSize;
+
+  //  INFOS("nChunks="<<nChunks);
+  
+  if ( nChunks > 0) {
+
+    double * partialDot = new double[nChunks];
+
+    my_tbb::parallel_for(0,nChunks,[=](int chunk){
+        //      for (int chunk=0 ; chunk<nChunks ; chunk++){
+	
+        double & partialResult=partialDot[chunk];
+        partialResult=0.0;
+
+        const int mini=chunk*chunkSize;
+	//        const int maxi=mini+chunkSize;
+
+	partialDot[chunk]=left.getEigenView(mini,chunkSize).matrix().dot(right.getEigenView(mini,chunkSize).matrix());
+	
+	//        for (int i=mini ; i<maxi ; i++){
+	//          partialResult+=lv(i)*rv(i);
+	//        }
+
+      }
+      );
+
+    for (int chunk=0 ; chunk<nChunks ; chunk++){
+      result+=partialDot[chunk];
+    }
+
+    delete[] partialDot;
+
+  }
+
+  const int mini=nChunks*chunkSize;
+  //  const int maxi=std::min((nChunks+1)*chunkSize,lvsize);
+
+  //    INFOS("mini="<<mini<<" maxi="<<maxi);
+  const int lastSize=lvsize-mini;
+  
+  if (lastSize>0) result+=left.getEigenView(mini,lastSize).matrix().dot(right.getEigenView(mini,lastSize).matrix());
+
+  //  INFOS("mini="<<mini<<" lvSize="<<lvsize<<" lastSize="<<lastSize<<" this->flatSize()="<<left.flatSize());
+
+  //for (int i=mini ; i<lvsize ; i++){
+  //    result+=double(lv(i))*double(rv(i));
+  //  }
+
+  //  const double eres=left.getEigenView().matrix().dot(right.getEigenView().matrix());
+
+  //  INFOS("result="<<result<<" eres="<<eres<<" diff="<<result-eres);
+  
+  return result;
+
+#endif
+}
+
+template <class DERIVED>
+inline double squaredNormAssumeZeroPadding(const BaseArray<DERIVED> & ba){
+
+  return Legolas::dotAssumeZeroPadding(ba,ba);
+
+}
+
+  template <class DERIVED>
+inline double squaredNormPadding(const BaseArray<DERIVED> & ba){
+
+  return Legolas::dotPadding(ba,ba);
+
+}
+
+
+
+
+// template <class SCALAR_TYPE, int LEVEL, int PACK_SIZE, int PACK_LEVEL>
+// inline double dotAssumeZeroPadding(const Legolas::Array<SCALAR_TYPE,LEVEL,PACK_SIZE,PACK_LEVEL> & left,
+// 				     const Legolas::Array<SCALAR_TYPE,LEVEL,PACK_SIZE,PACK_LEVEL> & right){
+
+//   typedef Legolas::Array<SCALAR_TYPE,LEVEL,PACK_SIZE,PACK_LEVEL> AT;
+//   typedef typename AT::FlatPackedArrayView FlatPackedArrayView;
+//   typedef typename AT::PackedDoubleType PackedDoubleType;
+
+//   const FlatPackedArrayView l=left.getFlatPackedView();
+//   const FlatPackedArrayView r=right.getFlatPackedView();
+
+//   PackedDoubleType accumulator(0.0);
+
+//   for (size_t i=0 ; i<l.size() ; i++){
+//     accumulator+=l[i]*r[i];
+//   }
+
+//   double result=0.0;
+
+//   for (int comp=0 ; comp<DERIVED::packSize ; comp++){
+//     result+=accumulator(comp);
+//   }
+
+//   return result;
+
+// }
+
+
+
+
+
+}//end of namespace Legolas
+#include <cassert>
+
+namespace Legolas {
+
+typedef int size_t;
+
+template <int LEVEL>
+class RectangularShape {
+public:
+  typedef RectangularShape<LEVEL-1> SubShape;
+
+  RectangularShape (const size_t size, const SubShape & subshape)
+    : size_     (size),
+      subshape_ (subshape)
+  {}
+
+  size_t flatsize () const {
+    return size_ * subshape_.flatsize();
+  }
+
+  size_t size () const {
+    return size_;
+  }
+
+  const SubShape & operator[] (size_t index) const {
+    assert (index < size_);
+    return subshape_;
+  }
+
+  size_t offset (size_t index) const {
+    return index * subshape_.flatsize();
+  }
+
+private:
+  size_t   size_;
+  SubShape subshape_;
+};
+
+template <>
+class RectangularShape<1> {
+public:
+  RectangularShape (const size_t size)
+  : size_ (size)
+  {}
+
+  size_t flatsize () const {
+    return size_;
+  }
+
+  size_t size () const {
+    return size_;
+  }
+
+private:
+  size_t size_;
+};
+}
+#include "shape.hxx"
+#include <vector>
+
+namespace Legolas {
+
+
+  /*************************** StoredVector ****************************/
+
+template <typename SHAPE,
+          typename LEAF>
+class StoredVector {
+public:
+  typedef SHAPE  Shape;
+  typedef LEAF   Leaf;
+
+  StoredVector (const Shape & shape, Leaf *const data)
+    : shape_ (shape),
+      data_  (data)
+  {}
+
+  size_t flatsize() const {
+    return shape_.flatsize();
+  }
+
+  Leaf& operator() (size_t index) {
+    return data_[index];
+  }
+
+  const Leaf& operator() (size_t index) const {
+    return data_[index];
+  }
+
+  size_t size () const {
+    return shape_.size();
+  }
+
+protected:
+  Shape const shape_;
+  Leaf *const data_;
+};
+
+  /*************************** Vector ****************************/
+
+template <typename SHAPE,
+          typename LEAF>
+class Vector
+  : public StoredVector<SHAPE, LEAF>
+{
+public:
+  typedef SHAPE                                   Shape;
+  typedef StoredVector<SHAPE, LEAF>               Base;
+  typedef Vector<typename Shape::SubShape, LEAF>  SubVector;
+
+  Vector (const SHAPE & shape, LEAF *const data)
+    : Base (shape, data)
+  {}
+
+  SubVector operator[] (size_t index) {
+    return SubVector (this->shape_[index],
+                      this->data_ + this->shape_.offset(index));
+  }
+
+  const SubVector operator[] (size_t index) const {
+    return SubVector (this->shape_[index],
+                      this->data_ + this->shape_.offset(index));
+  }
+};
+
+template <typename LEAF>
+class Vector<RectangularShape<1>, LEAF>
+  : public StoredVector<RectangularShape<1>, LEAF>
+{
+public:
+  typedef RectangularShape<1>                      Shape;
+  typedef LEAF                                     Leaf;
+  typedef StoredVector<RectangularShape<1>, LEAF>  Base;
+  typedef Vector<RectangularShape<1>, LEAF>        Self;
+
+  Vector (const Shape & shape, LEAF *const data)
+    : Base (shape, data)
+  {}
+
+  LEAF & operator[] (size_t index) {
+    return this->data_[index];
+  }
+
+  const LEAF & operator[] (size_t index) const {
+    return this->data_[index];
+  }
+
+  Self&& self () {
+    return std::move(*this);
+  }
+};
+
+  /*************************** VectorData ****************************/
+
+template <typename SHAPE,
+          typename LEAF>
+class VectorData {
+public:
+  VectorData (const SHAPE & shape)
+  : shape_ (shape),
+    data_  (shape.flatsize())
+  {}
+
+  Vector<SHAPE, LEAF> vector () {
+    return Vector<SHAPE, LEAF> (shape_, &data_[0]);
+  }
+
+private:
+  SHAPE             shape_;
+  std::vector<LEAF> data_;
+};
+}//end of namespace Legolas

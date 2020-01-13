@@ -1,0 +1,16 @@
+dk_push_thisDIR ( ${thisDIR}/tst )
+
+include ( ${thisDIR}/BandedBlockMatrixTest/CMakeLists.txt )
+include ( ${thisDIR}/BandedMatrixTest/CMakeLists.txt )
+include ( ${thisDIR}/DiagonalBlockMatrixTest/CMakeLists.txt )
+include ( ${thisDIR}/DiagonalMatrixTest/CMakeLists.txt )
+include ( ${thisDIR}/LightDiagonalMatrixTest/CMakeLists.txt )
+include ( ${thisDIR}/Poisson2D/CMakeLists.txt )
+include ( ${thisDIR}/ProductCompoundTest/CMakeLists.txt )
+include ( ${thisDIR}/SparseBlockMatrixTest/CMakeLists.txt )
+include ( ${thisDIR}/SparseMatrixTest/CMakeLists.txt )
+include ( ${thisDIR}/SumCompoundTest/CMakeLists.txt )
+include ( ${thisDIR}/TriDiagonalMatrixTest/CMakeLists.txt )
+include ( ${thisDIR}/MultOnly/CMakeLists.txt )
+
+dk_pop_thisDIR ()

@@ -1,0 +1,304 @@
+/*! \page VectorUserMan Manuel utilisateur des vecteurs Legolas++
+	-# \subpage VectorIntro
+	-# \subpage ShapeUsage
+*/
+
+
+
+/*! \page VectorIntro Introduction: Vecteurs multidimensionnels
+La bibliothèque Legolas++ est dédiée au développement de solveur d'algèbre linéaire dans le cas où les matrices sont à la fois creuses et structurées. En particulier Legolas++ permet de décrire des matrices récursivement structurées par bloc. Les matrices définies par bloc interviennent très fréquemment en algèbre linéaire. Dans le langage Legolas++, ces matrices par bloc présentent une interface identique aux matrices \em normales dont les éléments sont des scalaires. Ainsi \f$A_{ij}\f$, l'élément correspondant à la ligne \f$i\f$ et la colonne \f$j\f$ d'une matrice dense \f$A\f$, peut-il être obtenu via l'opérateur parenthèse: 
+\code
+	A(i,j)
+\endcode
+que les éléments de matrices soient des scalaires ou des blocs. Dans ce dernier cas, les blocs ont la même syntaxe que les matrices et l'on peut accéder à un de leurs éléments via les opérateurs correspondants à leurs structures. Par exemple, l'accés aux éléments scalaires d'un bloc dense \f$A_{ij}\f$ peut s'écrire:
+\code
+	A(i,j)(k,l)
+\endcode
+
+
+Une caractérisitque fondamentale de Legolas++ est de permettre la définition de matrice présentant un nombre arbitrairement grand de niveaux de bloc.
+Ainsi, une matrice \f$B\f$ peut-elle comporter 3 niveaux et l'expression suivante permet alors d'accéder aux éléments scalaires.
+\code
+	B(i,j)(k,l)(m,n)
+\endcode
+
+Legolas++ fournit les opérations de produit matrice-vecteur pour toutes les matrices pouvant être définies par la bibliothèque. Dans le cas matrice d'une matrice définie par bloc, ce type d'opération implique que les opérandes vectorielles multidimensionnelles. 
+
+Reprenons l'éxemple précédent où \f$A\f$ est une matrice par bloc à 1 niveau. Dans ce cas, nous alons voir que les opérandes \f$X\f$ et \f$Y\f$ du produit matrice-vecteur suivant
+<CENTER> <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8"><TR><TD> 
+\f[Y\leftarrow Y+A X \f]
+</TD> </TR> </TABLE> </CENTER>
+sont des vecteurs 2D.
+
+
+Legolas++ permet de décrire le produit précédent sous la forme suivantes:
+\code
+	Y+=A*X
+\endcode
+où X et Y sont des vecteurs Legolas++ 2D. Dans ce cas, ce produit peut aussi être développé sous la forme 
+\code
+  for (int i=0 ; i < A.nrows() ; i++){
+    for (int j=0 ; j < A.ncols() ; j++){
+	Y[i]+=A(i,j)*X[j];
+    }
+  }	
+\endcode
+ou encore,
+\code
+  for (int i=0 ; i < A.nrows() ; i++){
+    for (int j=0 ; j < A.ncols() ; j++){
+      for (int k=0 ; k < A(i,j).nrows() ; k++){	
+        for (int l=0 ; l < A(i,j).ncols() ; l++){
+	  Y[i][k]+=A(i,j)(k,l)*X[j][l];
+        }
+      }
+    }
+  }
+\endcode
+
+Cette dernière expression montre que X et Y sont des vecteurs 2D dans le sens où l'on accède aux éléments scalaires par l'intérmédiaire de 2 opérateurs <tt>[]</tt>.
+
+Afin de rendre plus cohérent le vocabulaire, on décrira \f$A\f$, une matrice définie par bloc comme une matrice à <b>2 niveaux<</b> qui intéragit naturellement avec des vecteurs à <b>2 dimensions</b>. Les matrices simples de scalaires sont donc décrites comme des matrices à 1 niveau et plus généralement:
+
+<CENTER> <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">  
+	<TR>
+	<TD>Les matrices de niveau \f$N\f$ opérent sur des vecteurs à \f$N\f$ dimensions.</TD>
+	</TR>
+</TABLE> </CENTER>
+
+*/
+
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="1">  
+<TR>
+ Les matrices de niveaux n opérent sur des vecteurs à  \f$n\f$ dimensions ou \f$nD$.
+</TR>
+</TABLE>
+
+
+
+
+
+
+Les vecteurs Legolas++ sont donc naturellement multidimensionnels et ce module décrit leur principe de fonctionnement et détaille leur implémentation.
+
+
+
+/*! \page ShapeUsage Tailles généralisées des vecteurs Legolas++ : les classes Shape
+-#\subpage ShapeIntroduction
+-#\subpage ShapeVecteur1D
+-#\subpage ShapeRecursive
+-#\subpage ShapeVecteur2D
+-#\subpage ShapeVecteur2DNonRectangulaires
+-#\subpage ShapeVecteur4D
+*/
+
+/*! \page ShapeIntroduction Introduction: sous-classes Shape
+Les tailles des vecteurs multidimensionnels Legolas++ sont préférentiellement définies une seule fois lors de leur construction. 
+
+Alors qu'un entier suffit à décrire la taille d'un vecteur 1D, plusieurs entiers sont nécessaires dans le cas multidimensionnel. Les \em shape des vecteurs Legolas++ sont des objets dédiés à la description de ces tailles généralisées et leur structure (type) varie en fonction de la dimension des vecteurs. Les différentes classes de \em shape correspondant à chaque dimension \f$D\f$ sont définies par des sous-classes des classes de vecteurs Legolas++ à \f$D\f$ dimension. Soit La classe suivante qui permet d'instancier des vecteurs de dimension \f$D\f$ contenant des flottants en double précision:
+\code
+	Legolas::MultiVector<double,D>
+\endcode
+où <tt>D</tt> doit être un entier constant connu à la compilation. À chaque valeur de \f$D\f$ correspond une sous-classe <tt>Shape</tt>:
+\code
+	Legolas::MultiVector<double,D>::Shape
+\endcode
+dont les instances sont les arguments des constructeurs des vecteurs correspondants.
+
+Le fichier ShapeTest.cxx décrit les différents usages de ces classes et nous allons en commenter des extraits dans \ref ShapeVecteur1D "la section suivante".
+*/
+/*! \page ShapeVecteur1D Vecteurs 1D
+L'extrait suivant montre comment construire un vecteur Legolas++ 1D.
+On construit d'abord un objet de type <tt>Shape</tt> et l'on choisit de créer un vecteur de taille 2.
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip int Level=1
+\until shape=2
+Les lignes suivantes montrent que, dans le cas 1D, la sous-classe <tt>Shape</tt> est un alias (<tt>typedef</tt>) du type <tt>int</tt>:
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip anInt
+\until "anInt
+Et l'on obtient:
+\code
+ ShapeTest.cxx [14] : shape=2
+ ShapeTest.cxx [15] : anInt=2
+\endcode
+L'objet shape ainsi créé permet donc de créer un vecteur 1D de <tt>double</tt> par:
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip X(shape)
+\until INFOS
+Et l'on obtient
+\code
+ShapeTest.cxx [22] : X={ 0 0 }
+\endcode
+On note au passage que les éléments scalaires des vecteurs Legolas++ sont initialisés è zéros. On note aussi qu'il est évidemment possible de créer un vecteur Legolas 1D sans construire un objet \em Shape de façon explicite et la formulation suivante est équivalente à la précédente:
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip X(2)
+\until INFOS
+\ref  ShapeRecursive "La section suivante" donne la définition des \shape pour des vecteurs multidimensionnels.
+*/
+
+
+/*! \page ShapeRecursive Définition récursive des shape multidimensionnelles
+<CENTER> <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8">
+<TR><TD> 
+Les \em shape des vecteurs \b 1D sont de type <tt>int</tt>.
+</TD> </TR>
+<TR><TD> 
+Si \f$D>1\f$ les \em shape de dimension \f$D\f$ sont des listes de sous-shape de dimension \f$D-1\f$.
+</TD> </TR> </TABLE> </CENTER>
+Cette définition récursive des shape sera illustrée dans \ref ShapeVecteur2D "la section suivante".
+*/
+
+/*! \page ShapeVecteur2D Vecteurs 2D rectangulaires (méthodes <tt>appendElement</tt> et <tt>appendNElement</tt>)
+On dit qu'un vecteur est rectangulaire si tous ces éléments ont la même \em shape. Dans le cas d'un vecteur 2D, cela se traduit par un vecteur dont tous les éléments sont des vecteurs 1D de même taille. L'exemple suivant (ShapeTest.cxx) montre comment créer <b>un vecteur 2D contenant 3 vecteurs 1D de taille 2</b>. On commence par créer la \em shape 2D correspondante en utilisant la méthode <tt>appendElement</tt> qui permet d'agréger des \em shape de dimension inférieure (1D):
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip MultiVector<double,2>::Shape
+\until INFOS
+Les \em Shape Legolas++ implémentent un opérateur de flot (<tt><<</tt>) qui permet d'obtenir la sortie suivante:
+\code
+ShapeTest.cxx [33] : shape=
+VShape: 6 [L2::0->2][L1::0->1]
+\endcode
+Cette sortie commence par la chaine de caractère <tt>VShape:</tt> qui est suivie par le nombre total d'éléments du vecteur (6). Ensuite, les intervalles (fermés) de définition des indices, correspondants à chaque dimension D, sont exprimés entre crochet. Ainsi les éléments <tt>X|i][j]</tt> du vecteur 2D <tt>X</tt> défini via cette \em Shape existent-ils:
+\f[
+\forall (i,j) \in [0,2]\times[0,1]
+\f]
+
+La méthode <tt>appendNElement</tt> facilite la définition de \em shapes comportant plusieurs fois la même sous-shape. La \em shape précédente peut ainsi être définie plus rapidement par:
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip Level=2 short
+\skip MultiVector<double,2>::Shape
+\until appendNElement
+
+Enfin, il est possible de créer des \em shape à partir de chaine de caractère. Dans le cas 2D, la syntaxe est immédiate:
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip 3x2
+\until 3x2
+
+Les trois méthode précédentes conduisent à la définition de la même \em shape que est utilisée comme argument du constructeur du vecteur <tt>X</tt> 2D:
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip 3x2
+\skip X(shape)
+\until INFOS
+qui donne lieu à la sortie suivante:
+\code
+	ShapeTest.cxx [55] : X=
+
+	[       0       ]={ 0 0 }
+	[       1       ]={ 0 0 }
+	[       2       ]={ 0 0 }
+
+\endcode
+
+*/
+
+/*! \page ShapeVecteur2DNonRectangulaires Vecteurs 2D non rectangulaires
+
+Legolas++ permet de construire des vecteurs non rectangulaires dont les éléments ont des \em shape différentes. Les mèthodes <tt>appendElement</tt> et <tt>appendNElement</tt> précédemment introduites suffisent pour décrire ce type de vecteur. 
+
+L'extrait suivant définit la \em shape <tt>shape</tt> d'un vecteur 2D contenant 3 vecteurs 1D de tailles respectives 2,2 et 3 (ShapeTest.cxx):
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip Build non rectangular shape (short way)
+\skip MultiVector
+\until INFOS
+
+L' opérateur de flot conduit à la sortie suivante:
+\code
+ShapeTest.cxx [67] : shape=
+VShape: 7 [L2::0->1][L1::0->1]
+          [L2::2->2][L1::0->2]
+\endcode
+
+Qui signifie que cette \em shape décrit un vecteur <b>2D</b> qui contient <b>7</b> éléments scalaires et dont les éléments <tt>X|i][j]</tt> sont définis si et seulement si
+\f{eqnarray*}
+(i,j) &\in&    [0,1]\times[0,1] \\
+      &\cup&   [2,2]\times[0,2]
+\f}
+
+Le vecteur <tt>X</tt> créé par la \em shape ainsi définie:
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip Build non rectangular shape (short way)
+\skip X(shape)
+\until INFOS
+
+conduit à la sortie suivante:
+\code
+ShapeTest.cxx [68] : X=
+
+[       0       ]={ 0 0 }
+[       1       ]={ 0 0 }
+[       2       ]={ 0 0 0 }
+\endcode
+
+Il est aussi possible de créer ce type de shape implicitement en utilisant un chaine de caractère. Ceci permet de créer un vecteur <tt>X</tt> équivalent d'une manière plus concise:
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip X("(2x2,1x3)")
+\until INFOS
+
+La \ref ShapeVecteur4D "section suivante" détaille la construction d'un vecteur 4D non rectangulaire.
+
+*/ 
+
+/*! \page ShapeVecteur4D Construction d'un vecteur non réctangulaire à 4 dimensions
+
+Les étapes de construction d'un vecteur 4D se déduisent immédiatement des exemples précédents (1D et 2D). Les \em shape de niveau inférieur sont utilisées pour construire les \em shape de niveau supérieur. Une \em shape non rectangulaire 2D est d'abord définie (ShapeTest.cxx)
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip jxSize=2
+\until spatialShape.appendElement(fluxSize);
+Ce motif de base est alors utilisé pour construire succéssivement les niveaux 3D et 4D qui sont rectangulaires. On introduit ici un nouveau constructeur pour les \em shape rectangulaire qui prend comme premier argument la taille de la \em shape et comme second argument la \em shape de niveau inférieure:
+
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip  Harmonic Level (rectangular)
+\until INFOS("groupShape="<<groupShape);
+Cette définition conduit à la sortie suivante:
+\code
+ShapeTest.cxx [120] : groupShape=
+VShape: 48 [L4::0->1][L3::0->1][L2::0->0][L1::0->1]
+                               [L2::1->2][L1::0->2]
+                               [L2::3->3][L1::0->3]
+\endcode
+Qui signifie que cette \em shape décrit un vecteur <b>4D</b> qui contient <b>48</b> éléments scalaires et dont les éléments <tt>X|i][j][k][l]</tt> sont définis si et seulement si
+\f{eqnarray*}
+(i,j,k,l) &\in&    [0,1]\times[0,1]\times[0,0]\times[0,1] \\
+          &\cup&   [0,1]\times[0,1]\times[1,2]\times[0,2] \\
+          &\cup&   [0,1]\times[0,1]\times[3,3]\times[0,3] 
+\f}
+Le vecteur <tt>X</tt> crée à partir de cette définition
+\dontinclude tst/ShapeTest/ShapeTest.cxx
+\skip  Legolas::RectangularMultiVector<double,4> X(groupShape);
+\until INFOS
+conduit à la sortie suivante:
+\code
+ShapeTest.cxx [127] : X=
+
+
+[       0       ][      0       ][      0       ]={ 1 1 }
+[       0       ][      0       ][      1       ]={ 1 1 1 }
+[       0       ][      0       ][      2       ]={ 1 1 1 }
+[       0       ][      0       ][      3       ]={ 1 1 1 1 }
+
+[       0       ][      1       ][      0       ]={ 1 1 }
+[       0       ][      1       ][      1       ]={ 1 1 1 }
+[       0       ][      1       ][      2       ]={ 1 1 1 }
+[       0       ][      1       ][      3       ]={ 1 1 1 1 }
+
+
+[       1       ][      0       ][      0       ]={ 1 1 }
+[       1       ][      0       ][      1       ]={ 1 1 1 }
+[       1       ][      0       ][      2       ]={ 1 1 1 }
+[       1       ][      0       ][      3       ]={ 1 1 1 1 }
+
+[       1       ][      1       ][      0       ]={ 1 1 }
+[       1       ][      1       ][      1       ]={ 1 1 1 }
+[       1       ][      1       ][      2       ]={ 1 1 1 }
+[       1       ][      1       ][      3       ]={ 1 1 1 1 }
+\endcode
+
+
+*/
+
+
+
+
+
+ 
