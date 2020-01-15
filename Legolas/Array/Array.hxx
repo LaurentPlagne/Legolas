@@ -11,6 +11,7 @@
 #include "Legolas/Array/ForEach.hxx"
 #include "Legolas/Array/Expression.hxx"
 #include "Legolas/Array/Reductions.hxx"
+#include "Legolas/StaticArray/StaticArray.hxx"
 
 //#define ZEROINIT
 

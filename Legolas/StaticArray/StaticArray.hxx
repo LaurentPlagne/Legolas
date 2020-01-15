@@ -33,6 +33,10 @@ namespace Legolas {
 
     public:
 
+        StaticArray(T value){
+          for (size_t i = 0; i < S; i++) (*this)[i]=value;
+        }
+
 
         StaticArray(const StaticArray & other){
           std::array<T,S> result;
@@ -47,17 +51,39 @@ namespace Legolas {
         inline T & operator[](size_t i) { return a_[i]; }
 
         StaticArray & operator = (const StaticArray &other) {
-          if
+          if (this!=&other) {
 //          a_=other.a_;
 //          this->store();
-          for (size_t i = 0; i < S; i++) (*this)[i] = other[i];
-          return *this;
+            for (size_t i = 0; i < S; i++) (*this)[i] = other[i];
+            return *this;
+          }
+          else{
+            return *this;
+          }
         }
 
 
         StaticArray operator + (const StaticArray & other) const {
           StaticArray result(*this);
           result+=other;
+          return result;
+        }
+
+        StaticArray operator - (const StaticArray & other) const {
+          StaticArray result(*this);
+          result-=other;
+          return result;
+        }
+
+        StaticArray operator * (const StaticArray & other) const {
+          StaticArray result(*this);
+          result*=other;
+          return result;
+        }
+
+        StaticArray operator / (const StaticArray & other) const {
+          StaticArray result(*this);
+          result/=other;
           return result;
         }
 
@@ -68,6 +94,7 @@ namespace Legolas {
           for (size_t i = 0; i < S; i++) result[i] = a_[i]+other.a_[i];
           for (size_t i = 0; i < S; i++) this->a_[i] = result[i];
 #else
+          //OK with gcc but not with clang...
           for (size_t i = 0; i < S; i++) this->a_[i] += other.a_[i];
 #endif
              return *this;

@@ -576,7 +576,7 @@ int main( int argc,  char *argv[] )
 
   bench_operation<Axpy1,RealType ,8>(a,b,c);
 
-  bench_operation<Axpy2,RealType ,8>(a,b,c);
+  bench_operation<Axpy2,RealType ,16>(a,b,c);
 
   bench_operation<Triad,RealType ,16>(a,b,c);
 
@@ -600,7 +600,7 @@ int main( int argc,  char *argv[] )
   // goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
   // goBench< ThomasBench<Legolas::Array<RealType,2>, ParMap > >();
   // goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
-  // goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
+   goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
 //  {
 //    typedef Legolas::Array<RealType,2,8,2> A2D;
 //    typedef SeqMap MapType;
