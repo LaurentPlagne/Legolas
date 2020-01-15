@@ -35,7 +35,11 @@ namespace Legolas {
 
 
         StaticArray(const StaticArray & other){
-          for (size_t i = 0; i < S; i++) (*this)[i] = other[i];
+          std::array<T,S> result;
+          for (size_t i = 0; i < S; i++) result[i] = other[i];
+          for (size_t i = 0; i < S; i++) (*this)[i]=result[i];
+
+//          for (size_t i = 0; i < S; i++) (*this)[i] = other[i];
         }
 
         const T & operator[](size_t i) const { return a_[i]; }
@@ -43,14 +47,16 @@ namespace Legolas {
         inline T & operator[](size_t i) { return a_[i]; }
 
         StaticArray & operator = (const StaticArray &other) {
+          if
 //          a_=other.a_;
 //          this->store();
           for (size_t i = 0; i < S; i++) (*this)[i] = other[i];
+          return *this;
         }
 
 
         StaticArray operator + (const StaticArray & other) const {
-          StaticArray result(other);
+          StaticArray result(*this);
           result+=other;
           return result;
         }
@@ -64,22 +70,45 @@ namespace Legolas {
 #else
           for (size_t i = 0; i < S; i++) this->a_[i] += other.a_[i];
 #endif
+             return *this;
+        }
 
+        StaticArray &operator-=(const StaticArray & other) {
+          std::array<T,S> result;
+          for (size_t i = 0; i < S; i++) result[i] = a_[i]-other.a_[i];
+          for (size_t i = 0; i < S; i++) this->a_[i] = result[i];
 
           return *this;
         }
 
-        StaticArray &operator-=(const StaticArray &other) {
-          for (size_t i = 0; i < S; i++) (*this)[i] -= other[i];
+        StaticArray &operator*=(const StaticArray & other) {
+          std::array<T,S> result;
+          for (size_t i = 0; i < S; i++) result[i] = a_[i]*other.a_[i];
+          for (size_t i = 0; i < S; i++) this->a_[i] = result[i];
+
+          return *this;
         }
 
-        StaticArray &operator*=(const StaticArray &other) {
-          for (size_t i = 0; i < S; i++) (*this)[i] *= other[i];
+        StaticArray &operator/=(const StaticArray & other) {
+          std::array<T,S> result;
+          for (size_t i = 0; i < S; i++) result[i] = a_[i]/other.a_[i];
+          for (size_t i = 0; i < S; i++) this->a_[i] = result[i];
+
+          return *this;
         }
 
-        StaticArray &operator/=(const StaticArray &other) {
-          for (size_t i = 0; i < S; i++) (*this)[i] /= other[i];
+        StaticArray operator * (T value) const {
+          StaticArray result(*this);
+          for (size_t i = 0; i < S; i++) result[i] *=value;
+
+          return result;
         }
+
+        StaticArray operator / (T value) const {
+          return (*this)*(1/value);
+        }
+
+
 
         void display(std::ostream &os) const {
           os << "{";
@@ -97,6 +126,15 @@ namespace Legolas {
     std::ostream &operator<<(std::ostream &os, const Legolas::StaticArray<T,S> &a) {
       a.display(os);
       return os;
+    }
+
+    template <class T,int S>
+    Legolas::StaticArray<T,S> operator*(T val,const Legolas::StaticArray<T,S> &a){
+      return a*val;
+    }
+    template <class T,int S>
+    Legolas::StaticArray<T,S> operator/(T val,const Legolas::StaticArray<T,S> &a){
+      return a/val;
     }
 
 }

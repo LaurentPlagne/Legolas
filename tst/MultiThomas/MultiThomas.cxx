@@ -301,76 +301,185 @@ void test_sum(std::vector<T> & a,
 
 template<class T, int S>
 struct MySum {
+    static inline std::string name() { return "a+=b";}
+
+    static inline void reference(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      for (size_t i=0 ; i<n ; i++) {
+        a[i] += b[i];
+      }
+    };
     static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
       using SA=Legolas::StaticArray<T,S>;
       SA * as=reinterpret_cast<SA*>(&a[0]);
       SA * bs=reinterpret_cast<SA*>(&b[0]);
 
-//      StaticArray< * was=reinterpret_cast<StaticWrap*>(&a[0]);
+      size_t npack=n/S;
 
-//      Legolas::StaticArray<T,S> as(&a[0]),bs(&b[0]);
-      for (size_t ip = 0; ip < n/S; ip ++) {
+      for (size_t ip = 0; ip < npack; ip ++) {
         as[ip]+=bs[ip];
-
       }
+
     }
+    static double nops(size_t n){ return double(n);}
 };
-template<class T>
-struct MySum<T,4> {
+
+template<class T, int S>
+struct Sum3 {
+    static inline std::string name() { return "a+=b+c";}
+    static inline void reference(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      for (size_t i=0 ; i<n ; i++ ){
+        a[i] += b[i] + c[i];
+      }
+    };
+
     static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
-      for (size_t i = 0; i < n; i += 4) {
-        const T r0 = b[i + 0]+a[i + 0];
-        const T r1 = b[i + 1]+a[i + 1];
-        const T r2 = b[i + 2]+a[i + 2];
-        const T r3 = b[i + 3]+a[i + 3];
-        a[i + 0] = r0;
-        a[i + 1] = r1;
-        a[i + 2] = r2;
-        a[i + 3] = r3;
-//            const T b0 = b[i + 0];
-//            const T b1 = b[i + 1];
-//            const T b2 = b[i + 2];
-//            const T b3 = b[i + 3];
-//            a[i + 0] += b0;
-//            a[i + 1] += b1;
-//            a[i + 2] += b2;
-//            a[i + 3] += b3;
+      using SA=Legolas::StaticArray<T,S>;
+      SA * as=reinterpret_cast<SA*>(&a[0]);
+      SA * bs=reinterpret_cast<SA*>(&b[0]);
+      SA * cs=reinterpret_cast<SA*>(&c[0]);
+
+      size_t npack=n/S;
+
+      for (size_t ip = 0; ip < npack; ip ++) {
+        as[ip]+=bs[ip]+cs[ip];
       }
+
     }
+    static double nops(size_t n){ return 2.*double(n);}
 };
 
-//template<class T>
-//struct MySum<T,8> {
-//    static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
-//      for (size_t i = 0; i < n; i += 8) {
-//        const T b0 = b[i + 0]+a[i + 0];
-//        const T b1 = b[i + 1]+a[i + 1];
-//        const T b2 = b[i + 2]+a[i + 2];
-//        const T b3 = b[i + 3]+a[i + 3];
-//        const T b4 = b[i + 4]+a[i + 4];
-//        const T b5 = b[i + 5]+a[i + 5];
-//        const T b6 = b[i + 6]+a[i + 6];
-//        const T b7 = b[i + 7]+a[i + 7];
-//        a[i + 0] = b0;
-//        a[i + 1] = b1;
-//        a[i + 2] = b2;
-//        a[i + 3] = b3;
-//        a[i + 4] = b4;
-//        a[i + 5] = b5;
-//        a[i + 6] = b6;
-//        a[i + 7] = b7;
-//      }
-//    }
-//};
+template<class T, int S>
+struct Axpy1 {
+    static inline std::string name() { return "Y+=X*a";}
+    static inline void reference(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      const T val=3.0;
+      for (size_t i=0 ; i<n ; i++ ){
+        a[i] += b[i]*val ;
+      }
+    };
 
+    static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      using SA=Legolas::StaticArray<T,S>;
+      SA * as=reinterpret_cast<SA*>(&a[0]);
+      SA * bs=reinterpret_cast<SA*>(&b[0]);
+
+      size_t npack=n/S;
+      const T val=3.0;
+      for (size_t ip = 0; ip < npack; ip ++) {
+        as[ip]+=bs[ip]*val;
+      }
+
+    }
+    static double nops(size_t n){ return 2.*double(n);}
+};
+
+template<class T, int S>
+struct Axpy2 {
+    static inline std::string name() { return "Y+=a*X";}
+    static inline void reference(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      const T val=3.0;
+      for (size_t i=0 ; i<n ; i++ ){
+        a[i] += val*b[i] ;
+      }
+    };
+
+    static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      using SA=Legolas::StaticArray<T,S>;
+      SA * as=reinterpret_cast<SA*>(&a[0]);
+      SA * bs=reinterpret_cast<SA*>(&b[0]);
+
+      size_t npack=n/S;
+      const T val=3.0;
+      for (size_t ip = 0; ip < npack; ip ++) {
+        as[ip]+=val*bs[ip];
+      }
+
+    }
+    static double nops(size_t n){ return 2.*double(n);}
+};
 
 
 template<class T, int S>
-void bench_sum(std::vector<T> &a,
+struct Triad {
+    static inline std::string name() { return "Y=a*X+b*Y+c*Z";}
+    static inline void reference(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      const T v1=3.0;
+      const T v2=4.0;
+      const T v3=5.0;
+      for (size_t i=0 ; i<n ; i++ ){
+//        std::cout << a[i]<<" "<<b[i]<<" "<<c[i]<<" "<<std::endl;
+        a[i] = v1*b[i]+v2*a[i]+v3*c[i] ;
+//        std::cout << a[i]<<" "<<b[i]<<" "<<c[i]<<" "<<std::endl;
+
+      }
+    };
+
+    static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      using SA=Legolas::StaticArray<T,S>;
+      SA * as=reinterpret_cast<SA*>(&a[0]);
+      SA * bs=reinterpret_cast<SA*>(&b[0]);
+      SA * cs=reinterpret_cast<SA*>(&c[0]);
+
+      size_t npack=n/S;
+      const T v1=3.0;
+      const T v2=4.0;
+      const T v3=5.0;
+      for (size_t ip = 0; ip < npack; ip ++) {
+//        std::cout << as[ip]<<" "<<bs[ip]<<" "<<cs[ip]<<" "<<std::endl;
+//
+//        std::cout << "v1*bs[ip]="<<v1*bs[ip]<<std::endl;
+//        std::cout << "v2*as[ip]="<<v2*as[ip]<<std::endl;
+//        std::cout << "v1*bs[ip]+v2*as[ip]="<<v1*bs[ip]+v2*as[ip]<<std::endl;
+
+        as[ip] = v1*bs[ip]+v2*as[ip]+v3*cs[ip] ;
+
+
+
+//        std::cout << as[ip]<<" "<<bs[ip]<<" "<<cs[ip]<<" "<<std::endl;
+
+      }
+
+//      std::cout << "ici" << std::endl; exit(0);
+    }
+    static double nops(size_t n){ return 5.*double(n);}
+};
+
+
+
+template<template<class,int> class OP, class T, int S>
+void bench_operation_single(std::vector<T> &a,
                std::vector<T> &b,
                std::vector<T> &c) {
   const size_t n = a.size();
-  const size_t ntrials = 200;
+
+
+
+  std::vector<T> aref(a);
+  std::vector<T> bref(b);
+  std::vector<T> cref(c);
+
+  OP<T, S>::apply(a, b, c, n);
+  OP<T, S>::reference(aref, bref, cref, n);
+
+  double squarednorm=0.0;
+  for (size_t i=0 ; i< n ; i++){
+    const double res=(aref[i]-a[i]);
+    squarednorm+=res*res;
+  }
+  const double residual=sqrt(squarednorm);
+  if (residual/double(n)>1.e-6){
+    std::cout << "residual="<<residual<<std::endl;
+    for (size_t i = 0; i < 16; i++)
+      std::cout << a[i] << " ";
+    std::cout << std::endl;
+    for (size_t i = 0; i < 16; i++)
+      std::cout << aref[i] << " ";
+    std::cout << std::endl;
+    exit(1);
+  }
+
+
+  const size_t ntrials = 1000;
 
   using clock=std::chrono::high_resolution_clock;
 
@@ -380,8 +489,12 @@ void bench_sum(std::vector<T> &a,
 
   for (size_t trial = 0; trial < ntrials; trial++) {
 
+    for (size_t i=0 ; i<a.size() ; i++) a[i]=T(i);
+    for (size_t i=0 ; i<a.size() ; i++) b[i]=T(i);
+    for (size_t i=0 ; i<a.size() ; i++) b[i]=T(i);
+
     start_time = clock::now();
-    MySum<T, S>::apply(a, b, c, n);
+    OP<T, S>::apply(a, b, c, n);
     end_time = clock::now();
 
     const double nanosec=std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
@@ -390,41 +503,30 @@ void bench_sum(std::vector<T> &a,
       min_time_ns = nanosec;
     }
   }
-  const double gflops = double(n ) / (min_time_ns);
-  for (size_t i = 0; i < 16; i++)
-    std::cout << a[i] << " ";
+  const double gflops = OP<T, S>::nops(n) / (min_time_ns);
+//  for (size_t i = 0; i < 16; i++)
+//    std::cout << a[i] << " ";
 //  std::cout << "a[" <<i<<"]="<<a[i]<<",";
-  std::cout << std::endl;
-  std::cout << "GFlops=" << gflops << std::endl;
+//  std::cout << std::endl;
+  std::cout << OP<T, S>::name()<<" S="<<S<<" : GFlops=" << gflops << " (residual="<<residual<<")"<<std::endl;
   return;
 
 }
 
-//template <class T>
-//void test_sum2<T,4>(std::vector<T> & a,std::vector<T> & b,std::vector<T> & c,size_t n){
-//    for (size_t i = 0; i < n; i += 4) {
-//      const T b0 = b[i + 0];
-//      const T b1 = b[i + 1];
-//      const T b2 = b[i + 2];
-//      const T b3 = b[i + 3];
-//      a[i + 0] += b0;
-//      a[i + 1] += b1;
-//      a[i + 2] += b2;
-//      a[i + 3] += b3;
-//    }
-//  }
-//}
-//  end = std::chrono::system_clock::now();
-//  std::chrono::duration<double> elapsed_seconds = end - start;
-//  const double gflops=double(n*ntrials)/(elapsed_seconds.count()*1.e9);
-//  for (size_t i=0 ; i< 16 ; i++)
-//    std::cout <<a[i]<<" ";
-////  std::cout << "a[" <<i<<"]="<<a[i]<<",";
-//  std::cout<<std::endl;
-//  std::cout << "GFlops=" << gflops << std::endl;
-//  return ;
-//
-//}
+template<template<class,int> class OP, class T, int S>
+void bench_operation(std::vector<T> &a,
+               std::vector<T> &b,
+               std::vector<T> &c) {
+
+  bench_operation_single<OP,T,S>(a,b,c);
+  bench_operation_single<OP,T,S>(a,b,c);
+  bench_operation_single<OP,T,S>(a,b,c);
+
+  for (size_t i = 0; i < 16; i++)
+    std::cout << a[i] << " ";
+  std::cout << std::endl;
+}
+
 
 
 
@@ -433,7 +535,7 @@ int main( int argc,  char *argv[] )
   INFOS("MultiThomasTest");
 
   using RealType=double;
-  const size_t n = 2 << 10;
+  const size_t n = 2 << 8;
   std::cout << "n=" << n <<std::endl;
 
   struct StaticWrap{
@@ -468,8 +570,15 @@ int main( int argc,  char *argv[] )
 //  test_sum<RealType,4>(a,b,c);
 
 
-  bench_sum<RealType,8>(a,b,c);
+  bench_operation<MySum,RealType ,16>(a,b,c);
 
+  bench_operation<Sum3,RealType ,8>(a,b,c);
+
+  bench_operation<Axpy1,RealType ,8>(a,b,c);
+
+  bench_operation<Axpy2,RealType ,8>(a,b,c);
+
+  bench_operation<Triad,RealType ,16>(a,b,c);
 
 
   // goBench< ThomasLDLBench<Legolas::Array<RealType,2>, SeqMap > >();
