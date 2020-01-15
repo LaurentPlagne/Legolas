@@ -9,7 +9,17 @@ set ( CMAKE_MODULE_PATH
 
 
 set ( LEGOLAS_CXX_Debug_FLAGS   "-g3 -mtune=native -march=native")
-set ( LEGOLAS_CXX_Release_FLAGS "-g -O3  -std=c++14 -mtune=native -march=native") 
+set ( LEGOLAS_CXX_Release_FLAGS "-g -O3  -std=c++14 -mtune=native -march=native ")
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  set ( CMAKE_CXX_FLAGS "-Wall -Rpass-analysis=loop-vectorize -Rpass=loop-vectorize ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # using GCC
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+  # using Intel C++
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  # using Visual Studio C++
+endif()
 
 set ( CMAKE_CXX_FLAGS "-Wall -Wno-deprecated-declarations -std=c++14 ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
 

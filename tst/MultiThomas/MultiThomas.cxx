@@ -6,6 +6,7 @@
 #include "Legolas/Array/Array.hxx"
 #include "Legolas/Array/Map.hxx"
 #include "helper.hxx"
+#include "Legolas/StaticArray/StaticArray.hxx"
 
 
 struct ThomasSolver{
@@ -271,6 +272,159 @@ void goBench(void){
 }
 
 
+template <class T, int S>
+void test_sum(std::vector<T> & a,
+              std::vector<T> & b,
+              std::vector<T> & c){
+
+  Legolas::StaticArray<T,S> ab1(&a[0]);
+  Legolas::StaticArray<T,S> ab2(&b[0]);
+  Legolas::StaticArray<T,S> ab3(&c[0]);
+
+  std::cout << ab1 << std::endl;
+  std::cout << ab2 << std::endl;
+  std::cout << ab3 << std::endl;
+  const int N=1000000000;
+  auto start_time = std::chrono::high_resolution_clock::now();
+  for (size_t i=0 ; i<N ; i++) ab3+=ab1;
+  auto end_time = std::chrono::high_resolution_clock::now();
+  const double microsec=std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+  const double sec=microsec/1.e6;
+  const double gflops=4.*double(N)/(sec*1.e9);
+  std::cout << ab3 << std::endl;
+  std::cout << "GFlops=" << gflops << std::endl;
+  return ;
+
+}
+
+
+
+template<class T, int S>
+struct MySum {
+    static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      using SA=Legolas::StaticArray<T,S>;
+      SA * as=reinterpret_cast<SA*>(&a[0]);
+      SA * bs=reinterpret_cast<SA*>(&b[0]);
+
+//      StaticArray< * was=reinterpret_cast<StaticWrap*>(&a[0]);
+
+//      Legolas::StaticArray<T,S> as(&a[0]),bs(&b[0]);
+      for (size_t ip = 0; ip < n/S; ip ++) {
+        as[ip]+=bs[ip];
+
+      }
+    }
+};
+template<class T>
+struct MySum<T,4> {
+    static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+      for (size_t i = 0; i < n; i += 4) {
+        const T r0 = b[i + 0]+a[i + 0];
+        const T r1 = b[i + 1]+a[i + 1];
+        const T r2 = b[i + 2]+a[i + 2];
+        const T r3 = b[i + 3]+a[i + 3];
+        a[i + 0] = r0;
+        a[i + 1] = r1;
+        a[i + 2] = r2;
+        a[i + 3] = r3;
+//            const T b0 = b[i + 0];
+//            const T b1 = b[i + 1];
+//            const T b2 = b[i + 2];
+//            const T b3 = b[i + 3];
+//            a[i + 0] += b0;
+//            a[i + 1] += b1;
+//            a[i + 2] += b2;
+//            a[i + 3] += b3;
+      }
+    }
+};
+
+//template<class T>
+//struct MySum<T,8> {
+//    static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
+//      for (size_t i = 0; i < n; i += 8) {
+//        const T b0 = b[i + 0]+a[i + 0];
+//        const T b1 = b[i + 1]+a[i + 1];
+//        const T b2 = b[i + 2]+a[i + 2];
+//        const T b3 = b[i + 3]+a[i + 3];
+//        const T b4 = b[i + 4]+a[i + 4];
+//        const T b5 = b[i + 5]+a[i + 5];
+//        const T b6 = b[i + 6]+a[i + 6];
+//        const T b7 = b[i + 7]+a[i + 7];
+//        a[i + 0] = b0;
+//        a[i + 1] = b1;
+//        a[i + 2] = b2;
+//        a[i + 3] = b3;
+//        a[i + 4] = b4;
+//        a[i + 5] = b5;
+//        a[i + 6] = b6;
+//        a[i + 7] = b7;
+//      }
+//    }
+//};
+
+
+
+template<class T, int S>
+void bench_sum(std::vector<T> &a,
+               std::vector<T> &b,
+               std::vector<T> &c) {
+  const size_t n = a.size();
+  const size_t ntrials = 200;
+
+  using clock=std::chrono::high_resolution_clock;
+
+  std::chrono::time_point<clock> start_time, end_time;
+
+  double min_time_ns=std::numeric_limits<double>::max();
+
+  for (size_t trial = 0; trial < ntrials; trial++) {
+
+    start_time = clock::now();
+    MySum<T, S>::apply(a, b, c, n);
+    end_time = clock::now();
+
+    const double nanosec=std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
+    if (min_time_ns>nanosec)
+    {
+      min_time_ns = nanosec;
+    }
+  }
+  const double gflops = double(n ) / (min_time_ns);
+  for (size_t i = 0; i < 16; i++)
+    std::cout << a[i] << " ";
+//  std::cout << "a[" <<i<<"]="<<a[i]<<",";
+  std::cout << std::endl;
+  std::cout << "GFlops=" << gflops << std::endl;
+  return;
+
+}
+
+//template <class T>
+//void test_sum2<T,4>(std::vector<T> & a,std::vector<T> & b,std::vector<T> & c,size_t n){
+//    for (size_t i = 0; i < n; i += 4) {
+//      const T b0 = b[i + 0];
+//      const T b1 = b[i + 1];
+//      const T b2 = b[i + 2];
+//      const T b3 = b[i + 3];
+//      a[i + 0] += b0;
+//      a[i + 1] += b1;
+//      a[i + 2] += b2;
+//      a[i + 3] += b3;
+//    }
+//  }
+//}
+//  end = std::chrono::system_clock::now();
+//  std::chrono::duration<double> elapsed_seconds = end - start;
+//  const double gflops=double(n*ntrials)/(elapsed_seconds.count()*1.e9);
+//  for (size_t i=0 ; i< 16 ; i++)
+//    std::cout <<a[i]<<" ";
+////  std::cout << "a[" <<i<<"]="<<a[i]<<",";
+//  std::cout<<std::endl;
+//  std::cout << "GFlops=" << gflops << std::endl;
+//  return ;
+//
+//}
 
 
 
@@ -278,7 +432,45 @@ int main( int argc,  char *argv[] )
 {
   INFOS("MultiThomasTest");
 
-  typedef float RealType;
+  using RealType=double;
+  const size_t n = 2 << 10;
+  std::cout << "n=" << n <<std::endl;
+
+  struct StaticWrap{
+      double s_[4];
+  };
+
+  StaticWrap wa;
+  std::cout << sizeof(wa) <<std::endl;
+
+
+
+  std::vector<RealType > a(n);
+
+
+
+  for (size_t i=0 ; i<a.size() ; i++) a[i]=RealType (i);
+  std::vector<RealType > b(a);
+  std::vector<RealType > c(a);
+
+  StaticWrap * was=reinterpret_cast<StaticWrap*>(&a[0]);
+
+  std::cout << was[0].s_[0] << std::endl;
+  std::cout << was[1].s_[0] << std::endl;
+
+
+//  Legolas::StaticArray<RealType,4> sa(&a[0]);
+
+//  std::cout << sa << std::endl;
+
+
+
+//  test_sum<RealType,4>(a,b,c);
+
+
+  bench_sum<RealType,8>(a,b,c);
+
+
 
   // goBench< ThomasLDLBench<Legolas::Array<RealType,2>, SeqMap > >();
   // goBench< ThomasLDLBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();
@@ -299,7 +491,7 @@ int main( int argc,  char *argv[] )
   // goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
   // goBench< ThomasBench<Legolas::Array<RealType,2>, ParMap > >();
   // goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
-  goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
+  // goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
 //  {
 //    typedef Legolas::Array<RealType,2,8,2> A2D;
 //    typedef SeqMap MapType;

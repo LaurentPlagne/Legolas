@@ -9,7 +9,7 @@
 #include <algorithm>
 //#include <stdio.h>
 //#include <stdlib.h>
-#include "dkconfig.hxx"	/* pour récupérer la valeur de la macro USING_TBB utilisée plus bas */
+#include "dkconfig.hxx"	/* pour rï¿½cupï¿½rer la valeur de la macro USING_TBB utilisï¿½e plus bas */
 #include "UTILITES.hxx"
 #include <chrono>
 
@@ -17,11 +17,11 @@
 
 inline int spn_thread_number( void ){
   /*
-   * la fonction spn_thread_number récupère dans l'environnement la valeur
-   * positionnant le paramètre shell SPN_THREAD_NUMBER (s'il a été positionné)
+   * la fonction spn_thread_number rï¿½cupï¿½re dans l'environnement la valeur
+   * positionnant le paramï¿½tre shell SPN_THREAD_NUMBER (s'il a ï¿½tï¿½ positionnï¿½)
    * pour configurer l'utilisation des TBB.
    */
-  int result=-1; /* valeur par défuat si SPN_THREAD_NUMBER n'est positionné */
+  int result=-1; /* valeur par dï¿½fuat si SPN_THREAD_NUMBER n'est positionnï¿½ */
   char * pSTN=0;
   pSTN = getenv ("SPN_THREAD_NUMBER");
   if (pSTN!=NULL){
@@ -30,7 +30,7 @@ inline int spn_thread_number( void ){
     MESSAGE("SPN_THREAD_NUMBER="<<result);
   }
   else{
-    MESSAGE("SPN_THREAD_NUMBER est non positionné (-> nthreads==nprocs).");
+    MESSAGE("SPN_THREAD_NUMBER est non positionnï¿½ (-> nthreads==nprocs).");
   }
 
   return result;
@@ -236,16 +236,16 @@ class tick_count : public BaseTimer{
 
 
 
-#if ! defined (USING_TBB)	/* macro définie dans dkconfig.hxx */
+#if ! defined (USING_TBB)	/* macro dï¿½finie dans dkconfig.hxx */
 #error C macro USING_TBB is not defined
 #endif	/* #if ! defined (USING_TBB) */
 
 
-#if USING_TBB == 1		/* macro définie dans dkconfig.hxx */
+#if USING_TBB == 1		/* macro dï¿½finie dans dkconfig.hxx */
 
 #define TBB_PREVIEW_STATIC_PARTITIONER 1
 #include "tbb/tbb.h"
-#include "tbb/task_scheduler_init.h"
+//#include "tbb/task_scheduler_init.h"
 #include "tbb/parallel_for.h"
 #include "tbb/parallel_reduce.h"
 #include "tbb/blocked_range.h"
