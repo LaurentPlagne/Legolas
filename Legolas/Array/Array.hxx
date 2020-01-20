@@ -290,10 +290,14 @@ namespace Legolas{
       }
     }
 
-
+//#define USE_EIGEN
+#ifdef USE_EIGEN
     typedef Eigen::Array<double,PACK_SIZE,1> PackedDoubleType;
     typedef Eigen::Array<SCALAR_TYPE,PACK_SIZE,1> PackedRealType;
-
+#else
+    typedef StaticArray<double,PACK_SIZE> PackedDoubleType;
+    typedef StaticArray<SCALAR_TYPE,PACK_SIZE> PackedRealType;
+#endif
 
     typedef Legolas::Array<PackedRealType,LEVEL,1,1> PackedArrayView;
     typedef Legolas::Array<PackedRealType,1> FlatPackedArrayView;

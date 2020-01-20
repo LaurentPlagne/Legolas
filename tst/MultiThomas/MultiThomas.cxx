@@ -417,8 +417,8 @@ struct Triad {
     static inline void apply(std::vector<T> &a, std::vector<T> &b, std::vector<T> &c, size_t n) {
       using SA=Legolas::StaticArray<T,S>;
       SA * as=reinterpret_cast<SA*>(&a[0]);
-      SA * bs=reinterpret_cast<SA*>(&b[0]);
-      SA * cs=reinterpret_cast<SA*>(&c[0]);
+      const SA * bs=reinterpret_cast<const SA*>(&b[0]);
+      const SA * cs=reinterpret_cast<const SA*>(&c[0]);
 
       size_t npack=n/S;
       const T v1=3.0;
@@ -534,7 +534,7 @@ int main( int argc,  char *argv[] )
 {
   INFOS("MultiThomasTest");
 
-  using RealType=double;
+  using RealType=float;
   const size_t n = 2 << 8;
   std::cout << "n=" << n <<std::endl;
 
@@ -560,7 +560,12 @@ int main( int argc,  char *argv[] )
   std::cout << was[0].s_[0] << std::endl;
   std::cout << was[1].s_[0] << std::endl;
 
+ /* using ThisBench=ThomasBench<Legolas::Array<RealType,2,8,2>,SeqMap>;
 
+  const double gflops=ThisBench ::evalGflops(64);
+
+  std::cout << ThisBench::name() << " gflops="<<gflops << std::endl;
+*/
 //  Legolas::StaticArray<RealType,4> sa(&a[0]);
 
 //  std::cout << sa << std::endl;
@@ -570,15 +575,13 @@ int main( int argc,  char *argv[] )
 //  test_sum<RealType,4>(a,b,c);
 
 
-  bench_operation<MySum,RealType ,16>(a,b,c);
+//  bench_operation<MySum,RealType ,16>(a,b,c);
+//
+//  bench_operation<Sum3,RealType ,8>(a,b,c);
 
-  bench_operation<Sum3,RealType ,8>(a,b,c);
-
-  bench_operation<Axpy1,RealType ,8>(a,b,c);
-
+  bench_operation<Axpy1,RealType ,16>(a,b,c);
   bench_operation<Axpy2,RealType ,16>(a,b,c);
-
-  bench_operation<Triad,RealType ,16>(a,b,c);
+//  bench_operation<Triad,RealType ,16>(a,b,c);
 
 
   // goBench< ThomasLDLBench<Legolas::Array<RealType,2>, SeqMap > >();
@@ -595,12 +598,12 @@ int main( int argc,  char *argv[] )
   // goBench< LaplacianBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
   // goBench< LaplacianBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
 
-  // goBench< ThomasBench<Legolas::Array<RealType,2>, SeqMap > >();
+//   goBench< ThomasBench<Legolas::Array<RealType,2>, SeqMap > >();
   // goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();
   // goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
   // goBench< ThomasBench<Legolas::Array<RealType,2>, ParMap > >();
   // goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
-   goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
+//   goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
 //  {
 //    typedef Legolas::Array<RealType,2,8,2> A2D;
 //    typedef SeqMap MapType;
