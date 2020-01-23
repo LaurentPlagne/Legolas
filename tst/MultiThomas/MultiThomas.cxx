@@ -340,6 +340,7 @@ struct Sum3 {
 
       size_t npack=n/S;
 
+#pragma unroll
       for (size_t ip = 0; ip < npack; ip ++) {
         as[ip]+=bs[ip]+cs[ip];
       }
@@ -365,6 +366,9 @@ struct Axpy1 {
 
       size_t npack=n/S;
       const T val=3.0;
+
+#pragma clang loop vectorize(disable)
+#pragma unroll
       for (size_t ip = 0; ip < npack; ip ++) {
         as[ip]+=bs[ip]*val;
       }
@@ -390,6 +394,8 @@ struct Axpy2 {
 
       size_t npack=n/S;
       const T val=3.0;
+
+#pragma clang loop vectorize(disable)
       for (size_t ip = 0; ip < npack; ip ++) {
         as[ip]+=val*bs[ip];
       }
@@ -560,12 +566,11 @@ int main( int argc,  char *argv[] )
   std::cout << was[0].s_[0] << std::endl;
   std::cout << was[1].s_[0] << std::endl;
 
- /* using ThisBench=ThomasBench<Legolas::Array<RealType,2,8,2>,SeqMap>;
+  using ThisBench=ThomasBench<Legolas::Array<RealType,2,8,2>,SeqMap>;
 
   const double gflops=ThisBench ::evalGflops(64);
 
   std::cout << ThisBench::name() << " gflops="<<gflops << std::endl;
-*/
 //  Legolas::StaticArray<RealType,4> sa(&a[0]);
 
 //  std::cout << sa << std::endl;
@@ -577,7 +582,7 @@ int main( int argc,  char *argv[] )
 
 //  bench_operation<MySum,RealType ,16>(a,b,c);
 //
-//  bench_operation<Sum3,RealType ,8>(a,b,c);
+  bench_operation<Sum3,RealType ,16>(a,b,c);
 
   bench_operation<Axpy1,RealType ,16>(a,b,c);
   bench_operation<Axpy2,RealType ,16>(a,b,c);
