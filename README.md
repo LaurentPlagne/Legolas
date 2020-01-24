@@ -72,19 +72,20 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
     ```
    - Launch the StaticArray benchmarks
     ```bash
+  
     $ ./tst/StaticArrays/StaticArrays 
     $   a+=b+c S=16 : GFlops=20.48 (residual=0)
-        a+=b+c S=16 : GFlops=20.48 (residual=0)
-        a+=b+c S=16 : GFlops=20.48 (residual=0)
-        0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 
-        Y+=X*a S=16 : GFlops=25.6 (residual=0)
-        Y+=X*a S=16 : GFlops=25.6 (residual=0)
-        Y+=X*a S=16 : GFlops=25.6 (residual=0)
-        0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 
-        Y+=a*X S=16 : GFlops=25.6 (residual=0)
-        Y+=a*X S=16 : GFlops=25.6 (residual=0)
-        Y+=a*X S=16 : GFlops=25.6 (residual=0)
-        0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60
+    $    a+=b+c S=16 : GFlops=20.48 (residual=0)
+    $    a+=b+c S=16 : GFlops=20.48 (residual=0)
+    $    0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 
+    $    Y+=X*a S=16 : GFlops=25.6 (residual=0)
+    $    Y+=X*a S=16 : GFlops=25.6 (residual=0)
+    $    Y+=X*a S=16 : GFlops=25.6 (residual=0)
+    $    0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 
+    $    Y+=a*X S=16 : GFlops=25.6 (residual=0)
+    $    Y+=a*X S=16 : GFlops=25.6 (residual=0)
+    $    Y+=a*X S=16 : GFlops=25.6 (residual=0)
+    $    0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60
     ```
   
     
@@ -104,8 +105,7 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
     #endif
     ```
   
-   In this case, one could remove the Eigen3 Legolas's dependency but, up to now, the performances are not satisfactory.
-    Analysing the produced native codes, the vectorization is not done correctly while it is OK with the StaticArray tests...
+   In this case, one could remove the Eigen3 Legolas's dependency but, up to now, the performances are not satisfactory. Analysing the produced native codes, the vectorization is not done correctly while it is OK with the StaticArray tests...
     
 
  
