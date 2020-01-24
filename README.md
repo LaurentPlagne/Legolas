@@ -37,12 +37,12 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
     $ cd my_build
     ```
   
-     - <MY_EIGEN_DIR>: Eigen3 instal dir containing "Eigen/Core" file
-     - <MY_TBB_DIR>: TBB install dir containing "include/tbb/tbb.h"
+     - MY_EIGEN_DIR: Eigen3 instal dir containing "Eigen/Core" file
+     - MY_TBB_DIR: TBB install dir containing "include/tbb/tbb.h"
      - Note: you may change the CMAKE_BUILD_TYPE=Release to CMAKE_BUILD_TYPE=Debug
      
     ```bash
-    $ cmake .. -DEIGEN3_INCLUDE_DIR=<MY_EIGEN_DIR>  -DCMAKE_PREFIX_PATH=<MY_TBB_DIR> -DCMAKE_BUILD_TYPE=Release
+    $ cmake .. -DEIGEN3_INCLUDE_DIR=MY_EIGEN_DIR  -DCMAKE_PREFIX_PATH=MY_TBB_DIR -DCMAKE_BUILD_TYPE=Release
     ```
   
   - Compile the MultiThomas benchmark example
