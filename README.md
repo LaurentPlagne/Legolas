@@ -61,7 +61,7 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
     ```bash
     $ python  ../../../tst/MultiThomas/plotPerf.py    
     ```
-    ![](Thomas6.svg)
+    ![](Thomas6.png)
     
     # Test of Legolas++ Static Arrays
     
