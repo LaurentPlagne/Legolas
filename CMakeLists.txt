@@ -13,12 +13,12 @@ set ( LEGOLAS_CXX_Debug_FLAGS   "-g3")
 set ( LEGOLAS_CXX_Release_FLAGS "-g")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  set ( CMAKE_CXX_FLAGS "-Wall -O3 -mtune=native -march=native -Rpass-analysis=loop-vectorize -fno-slp-vectorize -Rpass=loop-vectorize ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
+  set ( CMAKE_CXX_FLAGS " -O3 -mtune=native -march=native -Rpass-analysis=loop-vectorize -fno-slp-vectorize -Rpass=loop-vectorize ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set ( CMAKE_CXX_FLAGS "-Wall -O3 -mtune=native -march=native -ftree-vectorizer-verbose=2 ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
+  set ( CMAKE_CXX_FLAGS " -O3 -mtune=native -march=native  -fopt-info-vec-all -funroll-loops -ftree-vectorize -ftree-vectorizer-verbose=3 ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
   # using GCC
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
- set ( CMAKE_CXX_FLAGS "-Wall -O2 -xHost -qopt-report=1 -qopt-report-phase=vec ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
+ set ( CMAKE_CXX_FLAGS " -O3  -fno-alias -mavx2 -xHost -qopt-report=5  ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
   # using Intel C++
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # using Visual Studio C++

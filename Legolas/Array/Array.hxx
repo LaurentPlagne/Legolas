@@ -290,7 +290,7 @@ namespace Legolas{
       }
     }
 
-//#define USE_EIGEN
+#define USE_EIGEN
 #ifdef USE_EIGEN
     typedef Eigen::Array<double,PACK_SIZE,1> PackedDoubleType;
     typedef Eigen::Array<SCALAR_TYPE,PACK_SIZE,1> PackedRealType;

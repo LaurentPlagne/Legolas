@@ -1,4 +1,5 @@
 add_subdirectory(MultiThomas)
+add_subdirectory(StaticArrays)
 add_subdirectory(ImageFilter)
 add_subdirectory(TensorTranspose)
 add_subdirectory(MultiPrec)
