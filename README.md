@@ -29,12 +29,14 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
 - Considering that a C++ compiler is installed on you system :
     
     - LEGOLAS_ROOT is the directory containing this README.md file
+    
     ```bash
 
     $ cd LEGOLAS_ROOT
     $ mkdir my_build
     $ cd my_build
     ```
+  
      - <MY_EIGEN_DIR>: Eigen3 instal dir containing "Eigen/Core" file
      - <MY_TBB_DIR>: TBB install dir containing "include/tbb/tbb.h"
      - Note: you may change the CMAKE_BUILD_TYPE=Release to CMAKE_BUILD_TYPE=Debug
@@ -42,37 +44,47 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
     ```bash
     $ cmake .. -DEIGEN3_INCLUDE_DIR=<MY_EIGEN_DIR>  -DCMAKE_PREFIX_PATH=<MY_TBB_DIR> -DCMAKE_BUILD_TYPE=Release
     ```
+  
   - Compile the MultiThomas benchmark example
+  
     ```bash
     $ make MultiThomas
     ```
    - Launch the MultiThomas benchmarks (it takes a few minutes)
+   
     ```bash
     $ ./tst/MultiThomas/MultiThomas 
     ```
+    
   - This should produce the corresponding performance measurements files :
+  
     ```bash
     $ cd ./tst/MultiThomas ; ls
     $ Thomas_1_parallel.dat    Thomas_4_parallel.dat    Thomas_8_parallel.dat
     $ Thomas_1_sequential.dat  Thomas_4_sequential.dat  Thomas_8_sequential.dat
 
     ```
+    
     From which you can obtain this kind of curves (here on a 4cores/4GHz Intel 6700 K) :
+    
     ```bash
     $ python  ../../../tst/MultiThomas/plotPerf.py    
     ```
+    
     ![](Thomas6.png)
     
     # Test of Legolas++ Static Arrays
     
     - Compile the StaticArrays benchmark example
+    
     ```bash
     $ cd LEGOLAS_ROOT
     $ make StaticArrays
     ```
+    
    - Launch the StaticArray benchmarks
+   
     ```bash
-  
     $ ./tst/StaticArrays/StaticArrays 
     $   a+=b+c S=16 : GFlops=20.48 (residual=0)
     $    a+=b+c S=16 : GFlops=20.48 (residual=0)
