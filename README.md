@@ -103,10 +103,9 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
     
   
   
-   Note that you can use the Legolas++ StaticArray in place of Eigen3 for the standart Legolas++ arrays used
-    in the MultiThomas benchmark (see previous section) by commenting the line 293 in Legolas/Array/Array.hxx
+   Note that you can use the Legolas++ StaticArray in place of Eigen3 for the standard Legolas++ arrays used in the MultiThomas benchmark (see previous section) by commenting the line 293 in Legolas/Array/Array.hxx
     
-    ```cpp
+   ```cpp
     #define USE_EIGEN //Line 293
     #ifdef USE_EIGEN
         typedef Eigen::Array<double,PACK_SIZE,1> PackedDoubleType;
@@ -115,7 +114,7 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
         typedef StaticArray<double,PACK_SIZE> PackedDoubleType;
         typedef StaticArray<SCALAR_TYPE,PACK_SIZE> PackedRealType;
     #endif
-    ```
+   ```
   
    In this case, one could remove the Eigen3 Legolas's dependency but, up to now, the performances are not satisfactory. Analysing the produced native codes, the vectorization is not done correctly while it is OK with the StaticArray tests...
     

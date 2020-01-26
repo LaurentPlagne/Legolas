@@ -277,6 +277,7 @@ int main( int argc,  char *argv[] )
 {
   INFOS("MultiThomasTest");
 
+  tbb::task_scheduler_init init(8);
   using RealType=float;
   const size_t n = 2 << 8;
   std::cout << "n=" << n <<std::endl;

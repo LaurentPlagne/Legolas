@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated />
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f  -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Debug" />
+      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="RelWithDebInfo" CONFIG_NAME="RelWithDebInfo" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f  -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=RelWithDebinfo" />
+      <configuration PROFILE_NAME="clang-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="clang" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f  -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="clang9-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="clang9" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f  -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="Intel_Release" CONFIG_NAME="Release" TOOLCHAIN_NAME="intel2020" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="g++8" CONFIG_NAME="Release" TOOLCHAIN_NAME="g++8" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="79e3681f-8e43-4075-89e2-e4310da5ca36" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="$PROJECT_DIR$/.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectId" id="1WLKHvkLjPzhX3zKcRNcFYdBL55" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="settings.editor.selected.configurable" value="CPPToolchains" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/../Legolas" />
+    </key>
+  </component>
+  <component name="RunManager" selected="CMake Application.MultiThomas">
+    <configuration name="ImageFilter" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="ImageFilter" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="ImageFilter">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Legolas" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="Legolas" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MultiPrec" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="MultiPrec" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="MultiPrec">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MultiThomas" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="MultiThomas" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="MultiThomas">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="StaticArrays" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="StaticArrays" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="StaticArrays">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TensorTranspose" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="TensorTranspose" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="TensorTranspose">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.Legolas" />
+      <item itemvalue="CMake Application.ImageFilter" />
+      <item itemvalue="CMake Application.MultiPrec" />
+      <item itemvalue="CMake Application.MultiThomas" />
+      <item itemvalue="CMake Application.StaticArrays" />
+      <item itemvalue="CMake Application.TensorTranspose" />
+    </list>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="79e3681f-8e43-4075-89e2-e4310da5ca36" name="Default Changelist" comment="" />
+      <created>1578923350887</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1578923350887</updated>
+      <workItem from="1578923353799" duration="37000" />
+      <workItem from="1578923522819" duration="23000" />
+      <workItem from="1578924010741" duration="1313000" />
+      <workItem from="1578930507284" duration="10007000" />
+      <workItem from="1578995084618" duration="18075000" />
+      <workItem from="1579072926691" duration="15674000" />
+      <workItem from="1579161580725" duration="9508000" />
+      <workItem from="1579516558894" duration="10551000" />
+      <workItem from="1579536307926" duration="2267000" />
+      <workItem from="1579538621982" duration="8807000" />
+      <workItem from="1579612640430" duration="10249000" />
+      <workItem from="1579768786956" duration="3037000" />
+      <workItem from="1579855724340" duration="4505000" />
+      <workItem from="1579861119319" duration="1574000" />
+      <workItem from="1579865604525" duration="80000" />
+      <workItem from="1579869362729" duration="3580000" />
+      <workItem from="1579878266374" duration="875000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="771" y="390" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1579535550613">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="771" y="390" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.2493.1413@67.27.2493.1413" timestamp="1579535550613" />
+    <state x="1049" y="570" width="518" height="325" key="#com.intellij.ide.actions.ChooseComponentsToExportDialog" timestamp="1579078357879">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="1049" y="570" width="518" height="325" key="#com.intellij.ide.actions.ChooseComponentsToExportDialog/67.27.2493.1413@67.27.2493.1413" timestamp="1579078357879" />
+    <state x="1046" y="481" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1579861368207">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="1046" y="481" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/67.27.2493.1413@67.27.2493.1413" timestamp="1579861368207" />
+    <state x="1058" y="476" width="501" height="513" key="FileChooserDialogImpl" timestamp="1579537979048">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="1058" y="476" width="501" height="513" key="FileChooserDialogImpl/67.27.2493.1413@67.27.2493.1413" timestamp="1579537979048" />
+    <state width="1201" height="426" key="GridCell.Tab.0.bottom" timestamp="1579877594872">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="1201" height="426" key="GridCell.Tab.0.bottom/67.27.2493.1413@67.27.2493.1413" timestamp="1579877594872" />
+    <state width="1201" height="426" key="GridCell.Tab.0.center" timestamp="1579877594872">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="1201" height="426" key="GridCell.Tab.0.center/67.27.2493.1413@67.27.2493.1413" timestamp="1579877594872" />
+    <state width="1201" height="426" key="GridCell.Tab.0.left" timestamp="1579877594872">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="1201" height="426" key="GridCell.Tab.0.left/67.27.2493.1413@67.27.2493.1413" timestamp="1579877594872" />
+    <state width="1201" height="426" key="GridCell.Tab.0.right" timestamp="1579877594872">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="1201" height="426" key="GridCell.Tab.0.right/67.27.2493.1413@67.27.2493.1413" timestamp="1579877594872" />
+    <state width="2447" height="488" key="GridCell.Tab.1.bottom" timestamp="1579123177412">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="2447" height="488" key="GridCell.Tab.1.bottom/67.27.2493.1413@67.27.2493.1413" timestamp="1579123177412" />
+    <state width="2447" height="488" key="GridCell.Tab.1.center" timestamp="1579123177412">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="2447" height="488" key="GridCell.Tab.1.center/67.27.2493.1413@67.27.2493.1413" timestamp="1579123177412" />
+    <state width="2447" height="488" key="GridCell.Tab.1.left" timestamp="1579123177412">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="2447" height="488" key="GridCell.Tab.1.left/67.27.2493.1413@67.27.2493.1413" timestamp="1579123177412" />
+    <state width="2447" height="488" key="GridCell.Tab.1.right" timestamp="1579123177412">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="2447" height="488" key="GridCell.Tab.1.right/67.27.2493.1413@67.27.2493.1413" timestamp="1579123177412" />
+    <state x="853" y="431" width="1583" height="730" key="SettingsEditor" timestamp="1579861561999">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="853" y="431" width="1583" height="730" key="SettingsEditor/67.27.2493.1413@67.27.2493.1413" timestamp="1579861561999" />
+    <state width="523" height="446" key="SwitcherDM" timestamp="1578930452191">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state width="523" height="446" key="SwitcherDM/67.27.2493.1413@67.27.2493.1413" timestamp="1578930452191" />
+    <state x="969" y="560" key="com.intellij.ide.util.TipDialog" timestamp="1580031202299">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="969" y="560" key="com.intellij.ide.util.TipDialog/67.27.2493.1413@67.27.2493.1413" timestamp="1580031202299" />
+    <state x="960" y="329" width="707" height="807" key="find.popup" timestamp="1579516725646">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="960" y="329" width="707" height="807" key="find.popup/67.27.2493.1413@67.27.2493.1413" timestamp="1579516725646" />
+    <state x="977" y="343" key="run.anything.popup" timestamp="1579168317931">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="977" y="343" key="run.anything.popup/67.27.2493.1413@67.27.2493.1413" timestamp="1579168317931" />
+    <state x="976" y="347" width="672" height="678" key="search.everywhere.popup" timestamp="1578930458456">
+      <screen x="67" y="27" width="2493" height="1413" />
+    </state>
+    <state x="976" y="347" width="672" height="678" key="search.everywhere.popup/67.27.2493.1413@67.27.2493.1413" timestamp="1578930458456" />
+  </component>
+</project>
