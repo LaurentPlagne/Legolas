@@ -65,7 +65,8 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
 
     ```
     
-    From which you can obtain this kind of curves (here on a 4cores/4GHz Intel 6700 K) :
+    Provided you have python, python-numpy, python-matplotlib and texlive-full packages installed on your
+    system you can obtain this kind of curves (here on a 4cores/4GHz Intel 6700 K) :
     
     ```bash
     $ python  ../../../tst/MultiThomas/plotPerf.py    
