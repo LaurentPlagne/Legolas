@@ -108,6 +108,7 @@ def plotBench(benchs,basename,number=-1):
     name=basename+extent
     fig.savefig(name+".pdf", format='pdf', dpi=1200)
     fig.savefig(name+".svg", format='svg', dpi=1200)
+    fig.savefig(name+".png", format='png', dpi=1200)
 
 
 

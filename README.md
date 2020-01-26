@@ -74,6 +74,14 @@ position of the Eigen3 and Intel TBB libraries) from the CLion interface.
     
     ![](Thomas6.png)
     
+    Note that you can also obtain, curves for different thread numbers with :
+    
+    ```bash
+    $ python  ../../../tst/MultiThomas/plotSpeddUp.py    
+    ```
+    
+    ![](Thomas_SpUp8.png)
+    
     # Test of Legolas++ Static Arrays
     
     - Compile the StaticArrays benchmark example
