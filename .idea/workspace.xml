@@ -5,7 +5,7 @@
       <config projectName="LEGOLAS" targetName="MultiThomas" />
       <config projectName="LEGOLAS" targetName="ImageFilter" />
       <config projectName="LEGOLAS" targetName="MultiPrec" />
-      <config projectName="LEGOLAS" targetName="TensorTranspose" />
+      <config projectName="LEGOLAS" targetName="MultiThomasExample" />
       <config projectName="LEGOLAS" targetName="StaticArrays" />
       <config projectName="LEGOLAS" targetName="Legolas" />
     </generated>
@@ -25,6 +25,7 @@
     <list default="true" id="79e3681f-8e43-4075-89e2-e4310da5ca36" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tst/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../tst/CMakeLists.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +65,7 @@
       <recent name="$PROJECT_DIR$/../Legolas" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.MultiThomas">
+  <component name="RunManager" selected="CMake Application.MultiThomasExample">
     <configuration name="ImageFilter" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="ImageFilter" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="ImageFilter">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -85,12 +86,12 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="StaticArrays" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="StaticArrays" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="StaticArrays">
+    <configuration name="MultiThomasExample" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="MultiThomasExample" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="MultiThomasExample">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TensorTranspose" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="TensorTranspose" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="TensorTranspose">
+    <configuration name="StaticArrays" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LEGOLAS" TARGET_NAME="StaticArrays" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="LEGOLAS" RUN_TARGET_NAME="StaticArrays">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -100,8 +101,8 @@
       <item itemvalue="CMake Application.ImageFilter" />
       <item itemvalue="CMake Application.MultiPrec" />
       <item itemvalue="CMake Application.MultiThomas" />
+      <item itemvalue="CMake Application.MultiThomasExample" />
       <item itemvalue="CMake Application.StaticArrays" />
-      <item itemvalue="CMake Application.TensorTranspose" />
     </list>
   </component>
   <component name="ServiceViewManager">
@@ -143,7 +144,7 @@
       <workItem from="1579865604525" duration="80000" />
       <workItem from="1579869362729" duration="3580000" />
       <workItem from="1579878266374" duration="875000" />
-      <workItem from="1580031196047" duration="4957000" />
+      <workItem from="1580031196047" duration="7203000" />
     </task>
     <servers />
   </component>
@@ -167,22 +168,22 @@
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
     <state x="1058" y="476" width="501" height="513" key="FileChooserDialogImpl/67.27.2493.1413@67.27.2493.1413" timestamp="1579537979048" />
-    <state width="2141" height="425" key="GridCell.Tab.0.bottom" timestamp="1580034102060">
+    <state width="2141" height="425" key="GridCell.Tab.0.bottom" timestamp="1580046142643">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
-    <state width="2141" height="425" key="GridCell.Tab.0.bottom/67.27.2493.1413@67.27.2493.1413" timestamp="1580034102060" />
-    <state width="2141" height="425" key="GridCell.Tab.0.center" timestamp="1580034102060">
+    <state width="2141" height="425" key="GridCell.Tab.0.bottom/67.27.2493.1413@67.27.2493.1413" timestamp="1580046142643" />
+    <state width="2141" height="425" key="GridCell.Tab.0.center" timestamp="1580046142643">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
-    <state width="2141" height="425" key="GridCell.Tab.0.center/67.27.2493.1413@67.27.2493.1413" timestamp="1580034102060" />
-    <state width="2141" height="425" key="GridCell.Tab.0.left" timestamp="1580034102060">
+    <state width="2141" height="425" key="GridCell.Tab.0.center/67.27.2493.1413@67.27.2493.1413" timestamp="1580046142643" />
+    <state width="2141" height="425" key="GridCell.Tab.0.left" timestamp="1580046142643">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
-    <state width="2141" height="425" key="GridCell.Tab.0.left/67.27.2493.1413@67.27.2493.1413" timestamp="1580034102060" />
-    <state width="2141" height="425" key="GridCell.Tab.0.right" timestamp="1580034102060">
+    <state width="2141" height="425" key="GridCell.Tab.0.left/67.27.2493.1413@67.27.2493.1413" timestamp="1580046142643" />
+    <state width="2141" height="425" key="GridCell.Tab.0.right" timestamp="1580046142643">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
-    <state width="2141" height="425" key="GridCell.Tab.0.right/67.27.2493.1413@67.27.2493.1413" timestamp="1580034102060" />
+    <state width="2141" height="425" key="GridCell.Tab.0.right/67.27.2493.1413@67.27.2493.1413" timestamp="1580046142643" />
     <state width="2447" height="488" key="GridCell.Tab.1.bottom" timestamp="1579123177412">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>

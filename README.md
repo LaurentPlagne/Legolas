@@ -15,7 +15,7 @@ The array part of Legolas++ is an header only library.
 The following instructions should allow for the execution of the examples of the publication : 
 
 <a id="1">[1]</a> 
-PLAGNE, Laurent et BOJNOURDI, Kavoos. Portable vectorization and parallelization of c++ multi-dimensional array computations. In : Proceedings of the 4th ACM SIGPLAN International Workshop on Libraries, Languages, and Compilers for Array Programming. 2017. p. 33-39.
+PLAGNE, Laurent et BOJNOURDI, Kavoos. *Portable vectorization and parallelization of c++ multi-dimensional array computations.* In : Proceedings of the 4th ACM SIGPLAN International Workshop on Libraries, Languages, and Compilers for Array Programming. 2017. p. 33-39.
 
 
 For more details, the corresponding slides are located in this directory: [presentation.pdf](presentation.pdf).
