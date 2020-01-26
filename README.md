@@ -18,7 +18,7 @@ The following instructions should allow for the execution of the examples of the
 PLAGNE, Laurent et BOJNOURDI, Kavoos. Portable vectorization and parallelization of c++ multi-dimensional array computations. In : Proceedings of the 4th ACM SIGPLAN International Workshop on Libraries, Languages, and Compilers for Array Programming. 2017. p. 33-39.
 
 
-For more details, the corresponding slides are located in this directory: Legolas/presentation.pdf.
+For more details, the corresponding slides are located in this directory: [presentation.pdf](presentation.pdf).
 
 ### Using CLion
 Th CLion configuration is added to this directory. You can edit and adapt the CLion settings (compilers toolkits and 
