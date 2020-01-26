@@ -12,19 +12,22 @@ basename="Thomas"
 findname=basename+"_"
 files=os.listdir('.')
 plotFiles=[f for f in files if f.find(".dat")!=-1]
-plotFiles=[f for f in plotFiles if f.find(findname)!=-1]           
+plotFiles=[f for f in plotFiles if f.find(findname)!=-1]
 
 benchs=[]
 for f in plotFiles:
     print("f=",f)
     val=f.split("_")
-    if len(val)==3:
+    if len(val)==4:
         name=""
-        if val[2].replace(".dat","")=="parallel":
+        if val[2]=="parallel":
             name+="parmap"
         else:
             name+="map"
         name+=", $\mbox{P= "+str(val[1])
+        name+="}$"
+        nthread=val[3].replace(".dat","")
+        name+=", $\mbox{thread= "+str(nthread)
         name+="}$"
         item=pb.Bench(name)
         print(item.name)
@@ -42,7 +45,8 @@ for f in plotFiles:
         benchs.append(item)
 
     print("len(benchs)=",len(benchs))
+basename+="_SpUp"
 for i in range(1,len(benchs)+1):
     pb.plotBench(benchs,basename,i)
 
-    
+

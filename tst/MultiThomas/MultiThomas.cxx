@@ -270,45 +270,40 @@ void goBench(void){
   savePerf(sizes,perfs,filename);
 }
 
+template <class AlgoBench>
+void goSpeedUpBench(void){
+  std::vector<int> nthreads({1,2,3,4,5,6,7,8});
+
+  for (auto nthread : nthreads) {
+    tbb::task_scheduler_init init(nthread);
+    std::vector<int> sizes = makeSizes();
+    const int nbPoints = sizes.size();
+    std::vector<double> perfs(nbPoints);
+    for (int i = nbPoints - 1; i >= 0; i--) perfs[i] = AlgoBench::evalGflops(sizes[i]);
+    std::string filename(AlgoBench::name());
+    filename +="_";
+    filename +=stringConvert(nthread);
+    filename += ".dat";
+    savePerf(sizes, perfs, filename);
+
+  }
+}
+
 
 
 
 int main( int argc,  char *argv[] )
 {
   INFOS("MultiThomasTest");
-
-  tbb::task_scheduler_init init(8);
   using RealType=float;
-  const size_t n = 2 << 8;
-  std::cout << "n=" << n <<std::endl;
-
-  struct StaticWrap{
-      double s_[4];
-  };
-
-  StaticWrap wa;
-  std::cout << sizeof(wa) <<std::endl;
+  goSpeedUpBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
 
 
-
-  std::vector<RealType > a(n);
-
-
-
-  for (size_t i=0 ; i<a.size() ; i++) a[i]=RealType (i);
-  std::vector<RealType > b(a);
-  std::vector<RealType > c(a);
-
-  StaticWrap * was=reinterpret_cast<StaticWrap*>(&a[0]);
-
-  std::cout << was[0].s_[0] << std::endl;
-  std::cout << was[1].s_[0] << std::endl;
-
-  using ThisBench=ThomasBench<Legolas::Array<RealType,2,8,2>,SeqMap>;
-
-  const double gflops=ThisBench ::evalGflops(64);
-
-  std::cout << ThisBench::name() << " gflops="<<gflops << std::endl;
+//  using ThisBench=ThomasBench<Legolas::Array<RealType,2,8,2>,SeqMap>;
+//
+//  const double gflops=ThisBench ::evalGflops(64);
+//
+//  std::cout << ThisBench::name() << " gflops="<<gflops << std::endl;
 
 
   // goBench< ThomasLDLBench<Legolas::Array<RealType,2>, SeqMap > >();
@@ -325,12 +320,18 @@ int main( int argc,  char *argv[] )
   // goBench< LaplacianBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
   // goBench< LaplacianBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
 
-   goBench< ThomasBench<Legolas::Array<RealType,2>, SeqMap > >();
-   goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();
-   goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
-   goBench< ThomasBench<Legolas::Array<RealType,2>, ParMap > >();
-   goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
-   goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
+//  goBench< ThomasBench<Legolas::Array<RealType,2>, SeqMap > >();
+//  goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();
+//  goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
+//  goBench< ThomasBench<Legolas::Array<RealType,2>, ParMap > >();
+//  goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
+//  goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
+
+  goBench< ThomasBench<Legolas::Array<RealType,2>, SeqMap > >();
+  goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();
+  goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
+  goBench< ThomasBench<Legolas::Array<RealType,2>, ParMap > >();
+  goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
 
 
   return 0;

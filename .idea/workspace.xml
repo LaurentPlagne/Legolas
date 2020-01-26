@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
-    <generated />
+    <generated>
+      <config projectName="LEGOLAS" targetName="MultiThomas" />
+      <config projectName="LEGOLAS" targetName="ImageFilter" />
+      <config projectName="LEGOLAS" targetName="MultiPrec" />
+      <config projectName="LEGOLAS" targetName="TensorTranspose" />
+      <config projectName="LEGOLAS" targetName="StaticArrays" />
+      <config projectName="LEGOLAS" targetName="Legolas" />
+    </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
@@ -15,7 +22,12 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79e3681f-8e43-4075-89e2-e4310da5ca36" name="Default Changelist" comment="" />
+    <list default="true" id="79e3681f-8e43-4075-89e2-e4310da5ca36" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../tst/MultiThomas/plotSpeedUp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tst/MultiThomas/MultiThomas.cxx" beforeDir="false" afterPath="$PROJECT_DIR$/../tst/MultiThomas/MultiThomas.cxx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tst/MultiThomas/plotPerf.py" beforeDir="false" afterPath="$PROJECT_DIR$/../tst/MultiThomas/plotPerf.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,6 +36,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
@@ -132,6 +145,7 @@
       <workItem from="1579865604525" duration="80000" />
       <workItem from="1579869362729" duration="3580000" />
       <workItem from="1579878266374" duration="875000" />
+      <workItem from="1580031196047" duration="2741000" />
     </task>
     <servers />
   </component>
@@ -155,22 +169,22 @@
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
     <state x="1058" y="476" width="501" height="513" key="FileChooserDialogImpl/67.27.2493.1413@67.27.2493.1413" timestamp="1579537979048" />
-    <state width="1201" height="426" key="GridCell.Tab.0.bottom" timestamp="1579877594872">
+    <state width="2141" height="425" key="GridCell.Tab.0.bottom" timestamp="1580034102060">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
-    <state width="1201" height="426" key="GridCell.Tab.0.bottom/67.27.2493.1413@67.27.2493.1413" timestamp="1579877594872" />
-    <state width="1201" height="426" key="GridCell.Tab.0.center" timestamp="1579877594872">
+    <state width="2141" height="425" key="GridCell.Tab.0.bottom/67.27.2493.1413@67.27.2493.1413" timestamp="1580034102060" />
+    <state width="2141" height="425" key="GridCell.Tab.0.center" timestamp="1580034102060">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
-    <state width="1201" height="426" key="GridCell.Tab.0.center/67.27.2493.1413@67.27.2493.1413" timestamp="1579877594872" />
-    <state width="1201" height="426" key="GridCell.Tab.0.left" timestamp="1579877594872">
+    <state width="2141" height="425" key="GridCell.Tab.0.center/67.27.2493.1413@67.27.2493.1413" timestamp="1580034102060" />
+    <state width="2141" height="425" key="GridCell.Tab.0.left" timestamp="1580034102060">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
-    <state width="1201" height="426" key="GridCell.Tab.0.left/67.27.2493.1413@67.27.2493.1413" timestamp="1579877594872" />
-    <state width="1201" height="426" key="GridCell.Tab.0.right" timestamp="1579877594872">
+    <state width="2141" height="425" key="GridCell.Tab.0.left/67.27.2493.1413@67.27.2493.1413" timestamp="1580034102060" />
+    <state width="2141" height="425" key="GridCell.Tab.0.right" timestamp="1580034102060">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
-    <state width="1201" height="426" key="GridCell.Tab.0.right/67.27.2493.1413@67.27.2493.1413" timestamp="1579877594872" />
+    <state width="2141" height="425" key="GridCell.Tab.0.right/67.27.2493.1413@67.27.2493.1413" timestamp="1580034102060" />
     <state width="2447" height="488" key="GridCell.Tab.1.bottom" timestamp="1579123177412">
       <screen x="67" y="27" width="2493" height="1413" />
     </state>
