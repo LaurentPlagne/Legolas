@@ -18,7 +18,6 @@
 #include "thomassolver.hxx"
 #include <iostream>
 #include <fstream>
-#include "Legolas/Array/Block/Block.hxx"
 
 template <class V1D>
 void dumpVector(const V1D & v, std::string s){
@@ -234,78 +233,6 @@ int main(int argc, char** argv) {
   convert(Xf,result);
   result+=Xinf;
   INFOS("result"<<result);
-
-
-
-  INFOS("Legolas::BlockShape<3>::size="<<(Legolas::BlockShape<3>::size_));
-  INFOS("Legolas::BlockShape<3>::flatSize="<<(Legolas::BlockShape<3>::flatSize_));
-  INFOS("Legolas::BlockShape<3,2>::size="<<(Legolas::BlockShape<3,2>::size_));
-  INFOS("Legolas::BlockShape<3,2>::flatSize="<<(Legolas::BlockShape<3,2>::flatSize_));
-
-  std::vector<double> data;
-  std::vector<double> a,b,c;
-  constexpr int s3=4;
-  constexpr int s2=3;
-  constexpr int s1=2;
-
-  using MyShape=Legolas::BlockShape<s3,s2,s1>;
-  using MyBlockView=Legolas::BlockView<double,MyShape>;
-  //using MyBlock=Legolas::BlockView<double,s3,s2,s1>;
-
-  double v=1;
-  for (int k=0 ; k<s3;k++){
-    for (int j=0 ; j<s2;j++){
-      for (int i=0 ; i<s1;i++){
-        data.push_back(v);
-        a.push_back(0);
-        b.push_back(0);
-        c.push_back(0);
-        v+=1.0;
-      }
-    }
-  }
-
-  //Legolas::BlockView<double,3,4,5> b(&data[0);
-  MyBlockView db(&data[0]);
-
-  std::cout << "db="<<db<<std::endl;
-
-  MyBlockView ab(&a[0]);
-  MyBlockView bb(&b[0]);
-  MyBlockView cb(&c[0]);
-
-  ab=db;
-
-  std::cout << "ab="<<ab<<std::endl;
-
-  cb=1;
-  std::cout << "cb="<<cb<<std::endl;
-
-  ab+=3*db-cb*2;
-
-  std::cout << "ab="<<ab<<std::endl;
-
-
- using MyBlock=Legolas::Block<double,MyShape>;
-
- MyBlock b1,b2,b3;
-
- b1=1;
- b2=ab;
- b3=3*b1+cb;
- std::cout << "b1="<<b1<<std::endl;
- std::cout << "b2="<<b2<<std::endl;
- std::cout << "b3="<<b3<<std::endl;
-
-
-  //  Legolas::Toto<Legolas::BlockShape,s3,s2,s1>::Titi a;
-  //  std::cout << Legolas::Tata<s3,s2,s1>::isNoPack << std::endl;
-  //std::cout << Legolas::Tata<s1>::isNoPack << std::endl;
-
-  //  //  X1D.display();
-  //  display1D(X1D);
-
-
 
   return 0;
 }

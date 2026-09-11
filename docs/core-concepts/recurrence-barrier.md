@@ -26,20 +26,8 @@ for (int i = 1; i < N; ++i) {
 
 Notice that computing $X[i]$ requires the value $X[i-1]$ calculated in the immediately preceding iteration.
 
-```mermaid
-graph LR
-    X0[X[0]] --> X1[X[1]]
-    X1 --> X2[X[2]]
-    X2 --> X3[X[3]]
-    X3 --> X4[X[4]]
-    X4 --> XN[X[N-1]]
-    style X0 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style X1 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style X2 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style X3 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style X4 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style XN fill:#3b82f6,stroke:#1d4ed8,color:#fff
-```
+![Sequential Recurrence Chain](../assets/images/recurrence_chain.svg)
+*Figure 2: Sequential recurrence chain — iteration $i$ is strictly dependent on the result of iteration $i-1$.*
 
 Because iteration $i$ cannot start before iteration $i-1$ has finished, the instructions must execute sequentially. The CPU cannot pack multiple iterations of $i$ into a SIMD vector register.
 

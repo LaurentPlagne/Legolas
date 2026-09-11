@@ -9,11 +9,7 @@
 #include <fstream>
 #include <cassert>
 
-#ifdef LEGOLAS_USE_EIGEN
-#define MIN_VEC_SIZE 4
-#else
 #define MIN_VEC_SIZE 1
-#endif
 
 namespace Legolas{
   

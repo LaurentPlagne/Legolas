@@ -103,23 +103,6 @@ namespace Legolas{
       return FlatPackedArrayView(left_.getFlatPackedView(),right_.getFlatPackedView());
     }
 
-#ifdef USE_EIGEN
-    typedef typename LEFT::EigenView LEigen;
-    typedef typename RIGHT::EigenView REigen;
-    typedef ArrayExpression<LEigen,BINARY_OPERATOR,REigen> EigenView;
-
-    inline auto getEigenView( void ) const {
-      return BINARY_OPERATOR::apply(left_.getEigenView(),right_.getEigenView());
-    }
-
-    inline auto getEigenView(size_t begin, size_t chunkSize) const {
-      return BINARY_OPERATOR::apply(left_.getEigenView(begin,chunkSize),right_.getEigenView(begin,chunkSize));
-    }
-#endif
-
-
-
-
   };
 
   template <class ARRAY>
@@ -182,19 +165,6 @@ namespace Legolas{
       typename AFlat::RealType fc(coef_);
       return FlatPackedArrayView(array_.getFlatPackedView(),fc);
     }
-
-#ifdef USE_EIGEN
-    typedef typename ARRAY::EigenView AEigen;
-    typedef ScaledArray<AEigen> EigenView;
-
-    inline auto getEigenView( void ) const{
-      return array_.getEigenView()*coef_;
-    }
-
-    inline auto getEigenView(size_t begin, size_t chunkSize) const {
-      return array_.getEigenView(begin,chunkSize)*coef_;
-    }
-#endif
 
   };
 

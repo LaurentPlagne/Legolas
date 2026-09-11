@@ -26,14 +26,10 @@ namespace Legolas{
     BinaryRangeFunctor(L & left, const R & right):left_(left),right_(right){}
     
     inline void operator()(size_t begin, size_t length) const {
-#ifdef LEGOLAS_USE_EIGEN
-      ASSIGN_MODE::applyOnViews(left_.eigenVectorView(begin,length),right_.eigenVectorView(begin,length));
-#else
       const size_t end=begin+length;
       for (size_t i=begin ; i<end ; i++){
 	ASSIGN_MODE::apply(left_(i),right_(i));
       }
-#endif
     }
   };
 
@@ -46,18 +42,13 @@ namespace Legolas{
     BinaryRangeFunctor(L & left, const L & right):left_(left),right_(right){}
     
     inline void operator()(size_t begin, size_t length) const {
-#ifdef LEGOLAS_USE_EIGEN
-      EqualAssign::applyOnViews(left_.eigenVectorView(begin,length),right_.eigenVectorView(begin,length));
-#else
       left_.sequential_copy(right_,begin,length);
-#endif
     }
   };
 
 
 
 
-  
   template <class ASSIGN_MODE>
   class BinaryRangeFunctorFactory{
   public:
@@ -92,9 +83,6 @@ namespace Legolas{
     SCALAR scalar_;
   public:
     ScalarAdapter( const SCALAR & scalar ):scalar_(scalar){}
-#ifdef LEGOLAS_USE_EIGEN
-    inline const SCALAR & eigenVectorView(size_t begin, size_t end) const { return scalar_;}
-#endif
     inline const SCALAR & operator()(size_t i) const { return scalar_ ;}
     
   };

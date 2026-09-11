@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 100" width="100%" height="100%" style="background: transparent; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="lastNodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#1e40af" />
+    </linearGradient>
+    <!-- Arrowhead Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+    </marker>
+    <!-- Subtle Drop Shadow -->
+    <filter id="shadow" x="-5%" y="-10%" width="115%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <g transform="translate(10, 15)">
+    <!-- Connecting Arrows -->
+    <!-- X[0] -> X[1] -->
+    <line x1="88" y1="35" x2="132" y2="35" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)" />
+    <!-- X[1] -> X[2] -->
+    <line x1="228" y1="35" x2="272" y2="35" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)" />
+    <!-- X[2] -> X[3] -->
+    <line x1="368" y1="35" x2="412" y2="35" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)" />
+    <!-- X[3] -> ... -->
+    <line x1="508" y1="35" x2="546" y2="35" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)" />
+    <!-- ... -> X[N-1] -->
+    <line x1="594" y1="35" x2="632" y2="35" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)" />
+
+    <!-- Node X[0] -->
+    <rect x="0" y="8" width="88" height="54" rx="10" fill="url(#nodeGradient)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="44" y="41" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', monospace">X[0]</text>
+
+    <!-- Node X[1] -->
+    <rect x="140" y="8" width="88" height="54" rx="10" fill="url(#nodeGradient)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="184" y="41" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', monospace">X[1]</text>
+
+    <!-- Node X[2] -->
+    <rect x="280" y="8" width="88" height="54" rx="10" fill="url(#nodeGradient)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="324" y="41" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', monospace">X[2]</text>
+
+    <!-- Node X[3] -->
+    <rect x="420" y="8" width="88" height="54" rx="10" fill="url(#nodeGradient)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="464" y="41" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', monospace">X[3]</text>
+
+    <!-- Ellipsis Node -->
+    <text x="570" y="42" fill="#64748b" font-size="24" font-weight="800" text-anchor="middle" letter-spacing="3">&#8226;&#8226;&#8226;</text>
+
+    <!-- Node X[N-1] -->
+    <rect x="640" y="8" width="98" height="54" rx="10" fill="url(#lastNodeGradient)" stroke="#1e40af" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="689" y="41" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', monospace">X[N-1]</text>
+  </g>
+</svg>

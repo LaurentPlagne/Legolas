@@ -1,11 +1,5 @@
-include_directories(../../)
-include_directories(../../Legolas/include)
 add_executable(ImageFilter ImageFilter.cxx)
 configure_file(lena.bmp lena.bmp COPYONLY)
-if (TBB_FOUND AND USE_TBB)
-  target_link_libraries(ImageFilter Threads::Threads ${TBB_LIBRARIES})
-else()
-  target_link_libraries(ImageFilter Threads::Threads)
-endif()
+target_link_libraries(ImageFilter Legolas)
 configure_file(lena.bmp lena.bmp COPYONLY)
 

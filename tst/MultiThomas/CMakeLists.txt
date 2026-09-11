@@ -1,10 +1,5 @@
-include_directories(../../)
-include_directories(../../Legolas/include)
 add_executable(MultiThomas MultiThomas.cxx)
-target_link_libraries(MultiThomas Threads::Threads)
-if (TBB_FOUND AND USE_TBB)
-  target_link_libraries(MultiThomas ${TBB_LIBRARIES})
-endif()
+target_link_libraries(MultiThomas Legolas)
 
 configure_file(plotPerf.py plotPerf.py COPYONLY)
 configure_file(plotSpeedUp.py plotSpeedUp.py COPYONLY)

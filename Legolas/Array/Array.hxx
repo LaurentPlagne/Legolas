@@ -4,9 +4,6 @@
 #include <iostream>
 #include <cstring>
 #include <algorithm>
-#ifdef USE_EIGEN
-#include <Eigen/Core>
-#endif
 #include <stdexcept>
 #include "Legolas/Allocator.hxx"
 #include "Legolas/Array/ArrayShape.hxx"
@@ -301,33 +298,22 @@ namespace Legolas{
       }
     }
 
-#ifdef USE_EIGEN
-    typedef Eigen::Array<double,PACK_SIZE,1> PackedDoubleType;
-    typedef Eigen::Array<SCALAR_TYPE,PACK_SIZE,1> PackedRealType;
-#else
     typedef Legolas::NativeSimd<double,PACK_SIZE> PackedDoubleType;
     typedef Legolas::NativeSimd<SCALAR_TYPE,PACK_SIZE> PackedRealType;
-#endif
 
     typedef Legolas::Array<PackedRealType,LEVEL,1,1> PackedArrayView;
     typedef Legolas::Array<PackedRealType,1> FlatPackedArrayView;
 
     const PackedArrayView getPackedView( void ) const {
-      // INFOS("ICI");
-      // INFOS("this->shape_.size_="<<this->shape_.size_);
       ArrayShape<1,1,LEVEL> packedShape=this->shape_.getPackedShape();
-      //      INFOS("ICI");
       PackedRealType * vectorPtr=reinterpret_cast<PackedRealType*>(this->dataPtr_);
-      //      INFOS("ICI");
       return PackedArrayView(packedShape,vectorPtr);
     }
 
     const Array<PackedRealType,1> getFlatPackedView( void ) const {
-      //LP:Rq a.shape_.dataSize_/PACK_SIZE is equal to npack that could be stored in the Shape
       typename Array<PackedRealType,1>::Shape shape(this->shape_.dataSize_/PACK_SIZE);
       return Array<PackedRealType,1>(shape,reinterpret_cast<PackedRealType*>(this->dataPtr_));
     }
-
 
     PackedArrayView getPackedView( void ) {
       ArrayShape<1,1,LEVEL> packedShape=this->shape_.getPackedShape();
@@ -336,50 +322,9 @@ namespace Legolas{
     }
 
     Array<PackedRealType,1> getFlatPackedView( void ) {
-      //LP:Rq a.shape_.dataSize_/PACK_SIZE is equal to npack that could be stored in the Shape
       typename Array<PackedRealType,1>::Shape shape(this->shape_.dataSize_/PACK_SIZE);
       return Array<PackedRealType,1>(shape,reinterpret_cast<PackedRealType*>(this->dataPtr_));
     }
-
-    // typedef EigenInterface<SCALAR_TYPE,PACK_SIZE> EI;
-    // typedef typename EI::EigenArray EigenArray;
-    // typedef typename EI::EigenArrayView EigenView;
-    // typedef typename EI::ConstEigenArrayView ConstEigenView;
-
-
-
-    //typedef Eigen::Map<EigenArray,Eigen::Aligned> EigenView;
-    //typedef Eigen::Map<const EigenArray,Eigen::Aligned> ConstEigenView;
-
-#ifdef USE_EIGEN
-    typedef Eigen::Array<RealType,Eigen::Dynamic,1> EigenArray;
-#if defined(__AVX512F__)
-    typedef Eigen::Map<EigenArray,Eigen::Aligned64> EigenView;
-    typedef Eigen::Map<const EigenArray,Eigen::Aligned64> ConstEigenView;
-#elif defined(__AVX__) || defined(__AVX2__)
-    typedef Eigen::Map<EigenArray,Eigen::Aligned32> EigenView;
-    typedef Eigen::Map<const EigenArray,Eigen::Aligned32> ConstEigenView;
-#else
-    typedef Eigen::Map<EigenArray,Eigen::Unaligned> EigenView;
-    typedef Eigen::Map<const EigenArray,Eigen::Unaligned> ConstEigenView;
-#endif
-
-    const EigenView getEigenView( void ) const {
-      return EigenView(this->dataPtr_,this->flatSize());
-    }
-
-    inline EigenView getEigenView( void ) {
-      return EigenView(this->dataPtr_,this->flatSize());
-    }
-
-    inline ConstEigenView getEigenView(size_t begin, size_t chunkSize) const {
-      return ConstEigenView(this->dataPtr_+begin,chunkSize);
-    }
-
-    inline EigenView getEigenView(size_t begin, size_t chunkSize) {
-      return EigenView(this->dataPtr_+begin,chunkSize);
-    }
-#endif
 
     typedef int ArrayView;
 
@@ -404,45 +349,23 @@ namespace Legolas{
 
       my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
         const size_t begin=i*chunkSize;
-#ifdef USE_EIGEN
-        this->getEigenView(begin,chunkSize).fill(value);
-#else
         std::fill(this->dataPtr_ + begin, this->dataPtr_ + begin + chunkSize, value);
-#endif
       });
 
       const size_t begin=parallelChunks*chunkSize;
       size_t lastChunkSize=this->flatSize()-begin;
-#ifdef USE_EIGEN
-      this->getEigenView(begin,lastChunkSize).fill(value);
-#else
       std::fill(this->dataPtr_ + begin, this->dataPtr_ + begin + lastChunkSize, value);
-#endif
     }
 
 
     void fill(RealType value){
       this->allFill(value);
-      //      this->getEigenView().fill(value);
     }
 
 
 
     void fillNoPad(RealType value){
-      //this->getEigenView().fill(value);
       ART::fillNoPad(*this,value);
-
-      //      ART::initialize(*this,SetValue(value));
-
-
-
-      //            Legolas::for_each(CopyElement(),(*this).getFlatPackedView());
-      //      this->getEigenView().fill(value);
-      //      Array<PackedRealType,1> flat=this->getFlatPackedView();
-      //      PackedRealType pvalue(value);
-      //      for (int i=0 ; i<flat.size() ; i++) flat[i]=pvalue;
-
-
     }
 
 
@@ -464,9 +387,7 @@ namespace Legolas{
     struct MinusElement{
       template <class LEFT, class RIGHT>
       void operator()(int i, LEFT left, const RIGHT & right) const {
-        //	INFOS("left[i]="<<left[i]<<" right[i]="<<right[i]);
         left[i]-=right[i];
-        //	INFOS("left[i]="<<left[i]<<" right[i]="<<right[i]);
       }
     };
 
@@ -480,21 +401,12 @@ namespace Legolas{
 
         my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
           const size_t begin=i*chunkSize;
-#ifdef USE_EIGEN
-          this->getEigenView(begin,chunkSize)=right.getEigenView(begin,chunkSize);
-#else
           std::memcpy(this->dataPtr_ + begin, right.dataPtr_ + begin, chunkSize * sizeof(RealType));
-#endif
         });
 
         const size_t begin=parallelChunks*chunkSize;
         size_t lastChunkSize=this->flatSize()-begin;
-
-#ifdef USE_EIGEN
-        this->getEigenView(begin,lastChunkSize)=right.getEigenView(begin,lastChunkSize);
-#else
         std::memcpy(this->dataPtr_ + begin, right.dataPtr_ + begin, lastChunkSize * sizeof(RealType));
-#endif
       }
       return *this;
     }
@@ -506,11 +418,7 @@ namespace Legolas{
     template <class DERIVED>
     Array & operator= (const BaseArray<DERIVED> & right){
       assert(this->shape()==right.getArrayRef().shape());
-#ifdef USE_EIGEN
-      this->getEigenView()=right.getArrayRef().getEigenView();
-#else
       Legolas::flat_for_each(CopyElement(),(*this),right.getArrayRef());
-#endif
       return *this;
     }
 
@@ -525,21 +433,12 @@ namespace Legolas{
 
       my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
         const size_t begin=i*chunkSize;
-#ifdef USE_EIGEN
-        this->getEigenView(begin,chunkSize)=right.getArrayRef().getEigenView(begin,chunkSize);
-#else
         std::memcpy(this->dataPtr_ + begin, right.getArray().dataPtr_ + begin, chunkSize * sizeof(RealType));
-#endif
       });
 
       const size_t begin=parallelChunks*chunkSize;
       size_t lastChunkSize=this->flatSize()-begin;
-
-#ifdef USE_EIGEN
-      this->getEigenView(begin,lastChunkSize)=right.getArrayRef().getEigenView(begin,lastChunkSize);
-#else
       std::memcpy(this->dataPtr_ + begin, right.getArray().dataPtr_ + begin, lastChunkSize * sizeof(RealType));
-#endif
 
       return *this;
     }
@@ -547,11 +446,7 @@ namespace Legolas{
     template <class DERIVED>
     Array & operator+= (const BaseArray<DERIVED> & right){
       assert(this->shape()==right.getArrayRef().shape());
-#ifdef USE_EIGEN
-      this->getEigenView()+=right.getArrayRef().getEigenView();
-#else
       Legolas::flat_for_each(AddElement(),(*this),right.getArrayRef());
-#endif
       return *this;
     }
 
@@ -565,11 +460,7 @@ namespace Legolas{
     template <class DERIVED>
     Array & operator-= (const BaseArray<DERIVED> & right){
       assert(this->shape()==right.getArrayRef().shape());
-#ifdef USE_EIGEN
-      this->getEigenView()-=right.getArrayRef().getEigenView();
-#else
       Legolas::flat_for_each(MinusElement(),(*this),right.getArrayRef());
-#endif
       return *this;
     }
 
@@ -693,11 +584,6 @@ namespace Legolas{
   }
 
   inline float exp(const float & value){ return std::exp(value); }
-
-#ifdef USE_EIGEN
-  template <class SCALAR_TYPE, int PACK_SIZE>
-  inline auto  exp(const Eigen::Array<SCALAR_TYPE,PACK_SIZE,1> & pvalue ){ return Eigen::exp(pvalue); }
-#endif
 
   template <class SCALAR_TYPE, int PACK_SIZE>
   inline auto  exp(const Legolas::NativeSimd<SCALAR_TYPE,PACK_SIZE> & pvalue ){

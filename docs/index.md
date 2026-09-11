@@ -1,7 +1,7 @@
-# Legolas++
+# Legolas++: Building Blocks for Linear Algebra Solvers
 
 <p align="center">
-  <em>High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization & Multi-Core Work-Stealing via Data Layout Interleaving (DLI).</em>
+  <em>High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization of Recurrences via Data Layout Interleaving (DLI).</em>
 </p>
 
 ---
@@ -19,16 +19,23 @@ The exact same generic algorithm code written using natural scalar math executes
 
 ---
 
+## Why SIMD is the Core Innovation
+
+While multi-threading (thread scheduling across CPU cores) is widely available and commoditized in modern C++, **hardware SIMD vectorization across recurrence loops has historically been an impenetrable barrier**.
+
+Standard compilers systematically fall back to scalar execution on recurrences, leaving up to 90% of the CPU's SIMD arithmetic units idle. Legolas++ solves this at the hardware register level through Data Layout Interleaving.
+
+---
+
 ## Key Highlights
 
 - :rocket: **Break the Recurrence Barrier**: Vectorize tridiagonal solvers (Thomas algorithm), IIR digital filters, and depthwise convolutions with 100% hardware SIMD register utilization.
-- :package: **100% Header-Only & Zero Dependencies**: Drop into any project with `#include <Legolas/Array/Array.hxx>`. No precompiled libraries (`.a`, `.dylib`, `.so`), no linker flags, and zero mandatory external dependencies. Native vector extensions (`Legolas::NativeSimd`) and native work-stealing (`Legolas::WorkStealingThreadPool`) run out of the box.
-- :zap: **Write Once, Vectorize Everywhere**: A single template implementation works for both scalar types and hardware SIMD vectors (`Legolas::NativeSimd<T, P>` or `Eigen::Array<T, P, 1>`).
-- :twisted_right_wards_arrows: **Two-Level Hybrid Parallelism**: 
+- :package: **100% Header-Only & Zero Dependencies**: Drop into any project with `#include <Legolas/Array/Array.hxx>`. No precompiled libraries (`.a`, `.dylib`, `.so`, `.dll`), no linker flags, and zero external dependencies. Pure standard C++14.
+- :zap: **Write Once, Vectorize Everywhere**: A single template implementation works for both scalar types and hardware SIMD vectors (`Legolas::NativeSimd<T, P>`).
+- :twisted_right_wards_arrows: **Two-Level Decoupled Parallelism**: 
     1. **Data-Level (SIMD)**: Automatic via Data Layout Interleaving.
-    2. **Thread-Level (Multi-Core)**: Built-in, header-only lock-minimized **Work-Stealing** loop scheduler (or optional Intel oneTBB).
-- :apple: **First-Class Apple Silicon & x86 Support**: Tuned for ARM64 NEON (Apple M1/M2/M3/M4) and x86 AVX2 / AVX-512.
-- :gear: **Dual-Engine Flexibility**: Optional drop-in support for Eigen and Intel oneTBB when interfacing with existing codebases.
+    2. **Thread-Level (Multi-Core)**: Built-in, header-only lock-minimized **Work-Stealing** loop scheduler.
+- :apple: **Cross-Platform**: Tuned for Apple Silicon ARM64 (NEON), Linux x86_64 (AVX2 / AVX-512), and Windows MSVC.
 
 <p align="center">
   <img src="assets/images/dli_interleaving_mapping.png" alt="Data Layout Interleaving Memory Mapping" width="700">

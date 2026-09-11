@@ -1,59 +1,70 @@
-# Legolas++
+# Legolas++: Building Blocks for Linear Algebra Solvers
 
 [![Header-Only](https://img.shields.io/badge/Architecture-100%25%20Header--Only-brightgreen.svg)]()
-[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Native%20SIMD%20%2B%20Work--Stealing)-orange.svg)]()
+[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Pure%20Standard%20C%2B%2B14)-orange.svg)]()
 [![C++ Standard](https://img.shields.io/badge/C%2B%2B-14%2F20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B14)
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-informational.svg)](https://laurentplagne.github.io/Legolas/)
-[![Platforms](https://img.shields.io/badge/Platform-macOS%20ARM64%20(Apple%20Silicon)%20%7C%20Linux%20x86%20(AVX2%2FAVX512)-success.svg)]()
+[![Platforms](https://img.shields.io/badge/Platforms-macOS%20ARM64%20%7C%20Linux%20x86_64%20%7C%20Windows%20MSVC-success.svg)]()
 [![Build & Test](https://img.shields.io/badge/CTest-100%25%20Passing%20(5%2F5)-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-GPL%20v2-lightgrey.svg)](License.md)
 
-*High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization & Multi-Core Work-Stealing via Data Layout Interleaving (DLI).*
+*High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization of Recurrences via Data Layout Interleaving (DLI).*
 
-> 🚀 **100% Header-Only & Zero-Dependency Engine**
-> Legolas++ requires **no compilation of binary libraries**, **no linker flags**, and **zero mandatory dependencies**.
-> Simply `#include <Legolas/Array/Array.hxx>`. Both SIMD vectorization (`Legolas::NativeSimd`) and multi-core thread scheduling (`Legolas::WorkStealingThreadPool`) are implemented natively in standard C++14/20.
-> *(Intel oneTBB and Eigen remain fully supported as optional drop-in backends via CMake options `USE_TBB` and `USE_EIGEN`).*
+> 💡 **Why SIMD is the Core Innovation of Legolas++**  
+> While multi-threading (multi-core thread scheduling) is a widely available and commoditized feature in modern computing, **hardware SIMD vectorization across linear recurrences has historically remained an intractable barrier**.
+> 
+> Standard optimizing compilers (Clang, GCC, MSVC, Intel oneAPI) **systematically fail** to auto-vectorize loops with loop-carried dependencies (e.g. tridiagonal solvers, recursive IIR filters, ADI sweeps). 
+> 
+> **Legolas++ breaks this recurrence barrier at the CPU register level**. Using **Data Layout Interleaving (DLI)**, Legolas++ reorganizes memory across problem instances so that the exact same generic scalar loop maps directly to full-width hardware vector registers (**ARM NEON**, **x86 AVX2 / AVX-512**) without writing a single line of intrinsics or inline assembly.
+
+> 📦 **100% Header-Only & Zero-Dependency Architecture**  
+> Legolas++ is a pure C++14 template library:
+> * **No compiled binary libraries**: No `.a`, `.so`, `.dylib`, or `.dll` files are built or required.
+> * **Zero external dependencies**: Requires only a standard C++14 compiler and standard threads. No Eigen, no Intel TBB, no Boost.
+> * **Modern CMake Integration**: Simply add `target_link_libraries(your_target Legolas)` or `#include <Legolas/Array/Array.hxx>`.
 
 ---
 
-## 1. The Fundamental Barrier: Why Compilers Fail on Recurrences
+## 1. The Recurrence Barrier: Why Compilers Give Up
 
-Many essential algorithms in science, digital signal processing, finance, and AI feature **strict loop-carried data dependencies** where iteration $i$ inherently depends on the result of iteration $i-1$:
+Many essential algorithms in scientific simulation, digital signal processing, quantitative finance, and deep learning feature **strict loop-carried data dependencies** where iteration $i$ requires the output of iteration $i-1$:
 
 ```cpp
-// Tridiagonal elimination (Thomas algorithm), IIR filters, Gauss-Seidel, Mamba SSMs:
+// Tridiagonal elimination (Thomas forward sweep), recursive IIR filters, Gauss-Seidel:
 for (int i = 1; i < N; ++i) {
-    X[i] = (B[i] - L[i] * X[i-1]) * invD[i]; // Strict recurrence: X[i] requires X[i-1]!
+    X[i] = (B[i] - L[i] * X[i-1]) * invD[i]; // Strict recurrence: RAW hazard!
 }
 ```
 
-Because of this recurrence, **no compiler (Clang, GCC, MSVC, Intel) can auto-vectorize this loop sequentially**, no matter what `#pragma omp simd` or `-O3` flags are used. 
+Because of this sequential dependency chain:
+$$X[0] \longrightarrow X[1] \longrightarrow X[2] \longrightarrow X[3] \longrightarrow \dots \longrightarrow X[N-1]$$
+
+Every optimizing compiler falls back to **scalar execution**, leaving up to **90% of the CPU's vector compute capacity completely idle**.
 
 ---
 
-## 2. The Legolas++ Solution: Data Layout Interleaving (DLI)
+## 2. The Breakthrough: SIMD via Data Layout Interleaving (DLI)
 
-In practice, production systems rarely solve just one isolated recurrence. Instead, they process **ensembles of independent problem instances**:
-* **Scientific Computing**: Solving thousands of 1D tridiagonal systems across 2D/3D ADI meshes or diffusion equations.
-* **Audio Engineering & DAWs**: Filtering 32, 64, or 128 audio tracks simultaneously with recursive IIR/Biquad filters.
-* **Edge AI & Computer Vision**: Computing Depthwise Separable Convolutions across $C$ feature channels (MobileNet, ConvNeXt).
-* **Quantitative Finance**: Calibrating option prices across thousands of strikes and maturities via Crank-Nicolson PDE grids.
+In real-world applications, engineers rarely solve a single isolated recurrence. Instead, they process **ensembles of independent problem instances**:
+* **Scientific Computing & PDEs**: Thousands of 1D tridiagonal systems across 2D/3D ADI grids, heat diffusion, or fluid flow.
+* **Real-Time Audio DSP**: Filtering 32, 64, or 128 audio channels concurrently with recursive IIR/Biquad filters.
+* **Edge AI & Computer Vision**: Depthwise Separable Convolutions across channels (MobileNet, ConvNeXt).
+* **Quantitative Finance**: Calibrating PDE option pricing models across thousands of strikes and maturities.
 
 ### Transposing Data at the Memory Level
 
-Rather than trying to vectorize sequentially along $i$, **Legolas++ interleaves $P$ problem instances directly in memory**:
+Instead of struggling to vectorize sequentially along $i$, **Legolas++ interleaves $P$ independent problem instances directly in memory**:
 
 <p align="center">
   <img src="docs/assets/images/dli_interleaving_mapping.png" alt="Data Layout Interleaving Memory Mapping" width="700">
 </p>
 
-*Figure: Canonical Data Layout Interleaving (DLI) memory mapping from ARRAY presentation. Elements at step $i$ across $P=4$ independent problem instances are mapped contiguously into physical memory, transforming strided access into single-instruction aligned SIMD streaming.*
+*Figure: Data Layout Interleaving (DLI). Elements at step $i$ across $P=4$ independent problem instances are mapped contiguously into physical memory, transforming strided access into single-instruction aligned SIMD streaming.*
 
 ### Zero-Overhead Abstraction: Write Once, Vectorize Everywhere
-1. **Define the tensor**: `Legolas::Array<T, D, P, DP>` defines a tensor of dimension `D` with packing factor `P` along dimension `DP`.
-2. **Zero-cost view**: `.getPackedView()` reinterprets interleaved data as native SIMD vector registers (`Eigen::Array<T, P, 1>`).
-3. **Write natural scalar code**: The numerical solver is written **once** using standard scalar syntax. The same generic function compiles into high-throughput SIMD instructions (ARM NEON or x86 AVX) without writing assembly or intrinsics:
+1. **Declare the tensor**: `Legolas::Array<T, D, P, DP>` defines a tensor of dimension `D` with packing factor `P` along dimension `DP`.
+2. **Zero-cost vector view**: `.getPackedView()` exposes interleaved data directly as native SIMD vector registers (`Legolas::NativeSimd<T, P>`).
+3. **Write natural scalar code**: The numerical solver is written **once** using standard scalar syntax. The same generic function compiles into hardware SIMD instructions (ARM NEON or x86 AVX2/512):
 
 ```cpp
 struct ThomasSolver {
@@ -95,7 +106,7 @@ The benchmark evaluates the Thomas tridiagonal algorithm across $N_y = N_x^2$ sy
 | **Legolas NEON Multi-Thread** | $P=4$ | Parallel (8 Cores) | **52.40 GFlops** | **24.95x** |
 | **Legolas Hybrid SIMD + Work-Stealing** | $P=8$ | Parallel (8 Cores) | **69.40 GFlops** | **33.05x** |
 
-> **Key takeaway**: Legolas++ delivers an overall **33x speedup** on Apple Silicon M1 Max compared to standard scalar execution, sustaining **65 to 69.4 GFlops** on a tridiagonal recurrence solver.
+> **Key takeaway**: SIMD vectorization alone yields a **4.75x speedup** on a single core for an algorithm traditionally considered unvectorizable. When combined with native work-stealing, Legolas++ achieves an overall **33x speedup** on Apple Silicon M1 Max (**69.4 GFlops** sustained).
 
 ### Performance Curves
 
@@ -119,14 +130,13 @@ Multi-Core Speedup (Apple M1 Max Firestorm P-Cores, P=8 NEON):
 
 ---
 
-## 4. Real-World Showcases & Examples
+## 4. Real-World Showcases & Applications
 
 ### 4.1 AI & Edge Computer Vision: Depthwise Separable 2D Convolution
 *Location: [`examples/DepthwiseConv/DepthwiseConv.cxx`](examples/DepthwiseConv/DepthwiseConv.cxx)*
 
 Depthwise convolutions in MobileNet (V1/V2/V3), ConvNeXt, and EfficientNet filter each channel independently with a $3 \times 3$ kernel.
-In standard `NCHW` layout, vectorizing across channels is hindered by memory strides. Industry runtimes (Intel oneDNN, Apache TVM) convert tensors into **blocked channel formats** like `nChw4c` (NEON) or `nChw8c` (AVX).
-* In Legolas++, this layout is native: `Legolas::Array<float, 2, 4, 2>` packs 4 channels contiguously.
+* Legolas++ packs channels contiguously: `Legolas::Array<float, 2, 4, 2>` packs 4 channels into NEON registers.
 * Every spatial multiply-accumulate computes across 4 channels simultaneously with NEON `fmla.4s` instructions.
 * **Result**: **212.3 GFlops**, **5.83x speedup** over scalar on Apple M1 Max (0.00 mathematical error).
 
@@ -140,9 +150,7 @@ A 2nd-order Direct Form I/II IIR Biquad filter ($y[n] = b_0 x[n] + b_1 x[n-1] + 
 
 ---
 
-## 5. Two-Level Hybrid Parallelism Engine
-
-Legolas++ implements two decoupled layers of parallelism:
+## 5. Two-Level Decoupled Parallel Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -153,43 +161,51 @@ Legolas++ implements two decoupled layers of parallelism:
 └──────────────────────────────┬──────────────────────────────┘
                                │ (blocked ranges)
 ┌──────────────────────────────▼──────────────────────────────┐
-│                  Level 2: SIMD Vectorization                │
+│           Level 2: Hardware SIMD Vectorization (Core)       │
 │   Legolas::Array<T, D, P, DP> (Data Layout Interleaving)    │
 │   Packed views mapped directly to ARM NEON / x86 AVX2/512   │
 │   Zero memory permute overhead during computation           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Zero-Dependency Native Work-Stealing
-Legolas++ includes a standalone, header-only work-stealing scheduler (`Legolas/include/WorkStealing.hxx`):
-* No external runtime libraries required (no link against TBB or OpenMP necessary).
-* Automatically sizes thread pool to hardware concurrency (supports `SPN_THREAD_NUMBER`).
-* Can be toggled with Intel TBB using `-DUSE_TBB=ON/OFF`.
-
 ---
 
 ## 6. Quickstart & Build Instructions
 
 ### Prerequisites
-* C++14 compliant compiler (AppleClang $\ge 12$, GCC $\ge 7$, Clang $\ge 8$)
+* Standard C++14 compliant compiler:
+  - Apple Clang $\ge 12$
+  - GCC $\ge 7$
+  - LLVM Clang $\ge 8$
+  - Microsoft Visual C++ (MSVC) $\ge 2017$
 * CMake $\ge 3.5$
-* Eigen 3.3 or 3.4 (`brew install eigen`)
+* **Zero external dependencies required**
 
-### 1. Build with Zero External Dependencies (Native Work-Stealing)
+### Build and Test
 ```bash
-cmake -B build -DUSE_TBB=OFF
-cmake --build build -j8
+# Configure
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+# Build all targets
+cmake --build build -j
+
+# Run the test suite
 ctest --test-dir build --output-on-failure
 ```
 
-### 2. Build with Intel oneTBB (Optional)
+### Integrate into Your Project (CMake Interface Target)
+Because Legolas++ is 100% header-only:
+```cmake
+# In your CMakeLists.txt:
+add_subdirectory(path/to/Legolas)
+target_link_libraries(my_solver PRIVATE Legolas)
+```
+Or simply add the include directory to your compiler include path:
 ```bash
-cmake -B build -DUSE_TBB=ON
-cmake --build build -j8
-ctest --test-dir build --output-on-failure
+c++ -O3 -std=c++14 -I/path/to/Legolas/Legolas/.. -I/path/to/Legolas/Legolas/include my_solver.cpp -o my_solver
 ```
 
-### 3. Run Showcases
+### Run Showcases
 ```bash
 # AI Depthwise 2D Convolution showcase:
 ./build/examples/DepthwiseConv
@@ -197,16 +213,15 @@ ctest --test-dir build --output-on-failure
 # Multi-channel Audio IIR Biquad showcase:
 ./build/examples/AudioBiquad
 
-# MultiThomas Tridiagonal benchmark suite:
-./build/tst/MultiThomas/MultiThomas
-python3 tst/MultiThomas/plotPerfModern.py build/tst/MultiThomas
+# MultiThomas Tridiagonal benchmark:
+./build/tst/MultiThomasExample/MultiThomasExample
 ```
 
 ---
 
 ## 7. Documentation Website
 
-Comprehensive tutorials, mathematical explanations, architecture guides, and API reference are available on the official documentation website:
+Comprehensive tutorials, mathematical proofs, architecture guides, and API reference are available on the official documentation website:
 
 :link: **[https://laurentplagne.github.io/Legolas/](https://laurentplagne.github.io/Legolas/)**
 
@@ -219,9 +234,9 @@ mkdocs serve
 
 ---
 
-## 8. Citation & Academic Background
+## 8. Academic Background
 
-Legolas++ is based on the research presented at ACM SIGPLAN ARRAY 2017:
+Legolas++ is based on research presented at ACM SIGPLAN ARRAY:
 
 > **Portable vectorization and parallelization of C++ multi-dimensional array computations**  
 > Laurent Plagne & Kaveh Bojnourdi  

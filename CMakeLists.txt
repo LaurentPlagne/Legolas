@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.5)
-project (LEGOLAS CXX)
+project (LEGOLAS
+  VERSION 1.0.0
+  DESCRIPTION "Building blocks for Linear Algebra Solvers"
+  LANGUAGES CXX
+)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MACOSX_RPATH ON)
@@ -38,38 +42,7 @@ endif()
 
 find_package(Threads REQUIRED)
 
-option(USE_TBB "Use Intel TBB library (otherwise uses native WorkStealing)" ON)
-option(USE_EIGEN "Use Eigen library for SIMD arrays (otherwise uses native NativeSimd)" ON)
-
-if (USE_TBB)
-  find_package(TBB QUIET)
-endif()
-
-if (TBB_FOUND AND USE_TBB)
-  message(STATUS "Found Intel TBB: ${TBB_LIBRARIES}")
-  add_definitions(-DUSING_TBB=1)
-  include_directories(${TBB_INCLUDE_DIRS})
-else()
-  message(STATUS "Using native WorkStealing loop parallelizer (TBB disabled or not found)")
-  add_definitions(-DUSING_TBB=0)
-endif()
-
-find_package(Eigen3 QUIET)
-if (EIGEN3_FOUND)
-  include_directories(${EIGEN3_INCLUDE_DIR})
-endif()
-
-if (USE_EIGEN)
-  if (EIGEN3_FOUND)
-    message(STATUS "Using Eigen backend for SIMD arrays: ${EIGEN3_INCLUDE_DIR}")
-    add_definitions(-DUSE_EIGEN=1)
-  else()
-    message(WARNING "Eigen3 requested but not found, falling back to NativeSimd")
-    set(USE_EIGEN OFF)
-  endif()
-else()
-  message(STATUS "Using native NativeSimd vector packs (Eigen disabled)")
-endif()
+add_definitions(-DUSING_TBB=0)
 
 enable_testing()
 

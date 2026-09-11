@@ -31,17 +31,19 @@ fi
 
 # 2. Install Packages (Debian / Ubuntu)
 if command -v apt-get &> /dev/null; then
-    echo "[INFO] Installing dependencies via apt..."
+    echo "[INFO] Installing build tools via apt..."
     sudo apt-get update -qq
-    sudo apt-get install -y -qq build-essential cmake ninja-build python3 python3-pip libtbb-dev libeigen3-dev
+    sudo apt-get install -y -qq build-essential cmake ninja-build python3 python3-pip
 fi
 
 # 3. Create Clean Output Directory
 BENCH_DIR="cloud_bench_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "${BENCH_DIR}"
 
-echo "[INFO] Running 4-quadrant benchmark matrix..."
-python3 scripts/compare_backends.py
+echo "[INFO] Building and verifying native zero-dependency Legolas++..."
+cmake -B build_bench -DCMAKE_BUILD_TYPE=Release
+cmake --build build_bench -j
+ctest --test-dir build_bench --output-on-failure
 
 echo "[INFO] Running full Thomas resolution curve..."
 python3 tst/MultiThomas/plotPerfModern.py

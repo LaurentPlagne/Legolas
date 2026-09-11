@@ -73,5 +73,5 @@ The table below reports measured performance across all 4 quadrants on an idle A
    * Reaches up to **9.14 billion audio samples per second** in Q3 (and 7.65 GSamples/s in Q4) with zero errors.
 4. **Zero-Regression Mathematical Equivalence**:
    * Validation error is strictly `0.00e+00` across all four quadrants.
-5. **Architectural Flexibility**:
-   * Developers can either keep external dependencies (TBB + Eigen) or compile Legolas++ as a 100% standalone header-only library with no compromise on performance.
+5. **Definitive Decision to Transition to Zero-Dependency**:
+   * Having proven identical numerical output (`0.00e+00`) and equal or superior throughput across all benchmarks on ARM64, Linux, and Windows, Legolas++ has officially retired both external dependencies (Eigen3 and Intel oneTBB). Legolas++ is now **100% Header-Only and Zero-Dependency** by design.

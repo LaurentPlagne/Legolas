@@ -1,4 +1,4 @@
-name: CI Matrix (Multi-OS & Backends)
+name: CI (Linux, macOS, Windows)
 
 on:
   push:
@@ -26,47 +26,35 @@ concurrency:
 
 jobs:
   build-and-test:
-    name: ${{ matrix.os }} | TBB=${{ matrix.use_tbb }} | Eigen=${{ matrix.use_eigen }}
+    name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-14]
-        use_tbb: [ON, OFF]
-        use_eigen: [ON, OFF]
+        include:
+          - name: "Ubuntu GCC 14 | Linux x86_64 (Zero-Dep)"
+            os: ubuntu-latest
+          - name: "macOS Apple Silicon Clang | ARM64 NEON (Zero-Dep)"
+            os: macos-14
+          - name: "Windows MSVC | Win64 AVX2 (Zero-Dep)"
+            os: windows-latest
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake ninja-build libtbb-dev libeigen3-dev
-
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install ninja tbb eigen
-
       - name: Configure CMake
         run: |
-          if [ "${{ runner.os }}" = "macOS" ]; then
-            PREFIX_PATH="/opt/homebrew"
-          else
-            PREFIX_PATH="/usr"
-          fi
-          cmake -B build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" \
-            -DUSE_TBB=${{ matrix.use_tbb }} \
-            -DUSE_EIGEN=${{ matrix.use_eigen }}
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build all targets
         run: |
-          cmake --build build --parallel 2>&1 | tee build.log || {
-            echo "### ❌ Build Failure Log (${{ matrix.os }} | TBB=${{ matrix.use_tbb }} | Eigen=${{ matrix.use_eigen }})" >> $GITHUB_STEP_SUMMARY
+          cmake --build build --config Release --parallel 2>&1 | tee build.log || {
+            echo "### ❌ Build Failure Log (${{ matrix.name }})" >> $GITHUB_STEP_SUMMARY
             echo '```text' >> $GITHUB_STEP_SUMMARY
             tail -n 120 build.log >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
@@ -75,13 +63,8 @@ jobs:
 
       - name: Run CTest test suite
         run: |
-          if [ "${{ runner.os }}" = "macOS" ]; then
-            export DYLD_LIBRARY_PATH="${PWD}/build/Legolas:${DYLD_LIBRARY_PATH}"
-          else
-            export LD_LIBRARY_PATH="${PWD}/build/Legolas:${LD_LIBRARY_PATH}"
-          fi
-          ctest --test-dir build --output-on-failure 2>&1 | tee ctest.log || {
-            echo "### ❌ CTest Failure Log (${{ matrix.os }} | TBB=${{ matrix.use_tbb }} | Eigen=${{ matrix.use_eigen }})" >> $GITHUB_STEP_SUMMARY
+          ctest --test-dir build --build-config Release --output-on-failure 2>&1 | tee ctest.log || {
+            echo "### ❌ CTest Failure Log (${{ matrix.name }})" >> $GITHUB_STEP_SUMMARY
             echo '```text' >> $GITHUB_STEP_SUMMARY
             cat ctest.log >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
@@ -90,57 +73,14 @@ jobs:
 
       - name: Run Verification Benchmarks
         run: |
-          if [ "${{ runner.os }}" = "macOS" ]; then
-            export DYLD_LIBRARY_PATH="${PWD}/build/Legolas:${DYLD_LIBRARY_PATH}"
-          else
-            export LD_LIBRARY_PATH="${PWD}/build/Legolas:${LD_LIBRARY_PATH}"
-          fi
-          chmod +x ./build/examples/* ./build/tst/*/* || true
           echo "=== 1. AI MobileNet Depthwise 2D Convolution ==="
-          ./build/examples/DepthwiseConv || true
+          find build -name "DepthwiseConv*" -type f -exec {} \; || true
           echo "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
-          ./build/examples/AudioBiquad || true
+          find build -name "AudioBiquad*" -type f -exec {} \; || true
           echo "=== 3. Tridiagonal Thomas Example ==="
-          ./build/tst/MultiThomasExample/MultiThomasExample || true
-          if [ -f "./build/tst/MultiThomas/MultiThomas" ]; then
-            echo "=== 4. Fast Thomas (Nx=64) ==="
-            ./build/tst/MultiThomas/MultiThomas 64 || true
-          fi
-
-  build-windows:
-    name: Windows MSVC | WorkStealing + NativeSIMD (Zero-Dep)
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Configure CMake (MSVC)
-        run: |
-          cmake -B build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DUSE_TBB=OFF \
-            -DUSE_EIGEN=OFF
-
-      - name: Build all targets
-        run: |
-          cmake --build build --config Release --parallel
-
-      - name: Run CTest test suite
-        run: |
-          ctest --test-dir build --build-config Release --output-on-failure
-
-      - name: Run Verification Benchmarks
-        run: |
-          echo "=== 1. AI MobileNet Depthwise 2D Convolution ==="
-          find build -name "DepthwiseConv.exe" -exec {} \; || true
-          echo "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
-          find build -name "AudioBiquad.exe" -exec {} \; || true
-          echo "=== 3. Tridiagonal Thomas Example ==="
-          find build -name "MultiThomasExample.exe" -exec {} \; || true
+          find build -name "MultiThomasExample*" -type f -exec {} \; || true
           echo "=== 4. Fast Thomas (Nx=64) ==="
-          find build -name "MultiThomas.exe" -exec {} 64 \; || true
+          find build -name "MultiThomas*" -type f -not -name "*Example*" -exec {} 64 \; || true
+
 
 

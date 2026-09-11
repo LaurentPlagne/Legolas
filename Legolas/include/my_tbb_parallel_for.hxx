@@ -202,30 +202,6 @@ class tick_count : public BaseTimer{
 
 
 
-#if ! defined (USING_TBB)	/* macro dï¿½finie dans dkconfig.hxx */
-#error C macro USING_TBB is not defined
-#endif	/* #if ! defined (USING_TBB) */
+namespace my_tbb = no_tbb;
 
-
-#if USING_TBB == 1		/* macro dï¿½finie dans dkconfig.hxx */
-
-#define TBB_PREVIEW_STATIC_PARTITIONER 1
-#include "tbb/tbb.h"
-//#include "tbb/task_scheduler_init.h"
-#include "tbb/parallel_for.h"
-#include "tbb/parallel_reduce.h"
-#include "tbb/blocked_range.h"
-#include "tbb/partitioner.h"
-
-namespace my_tbb=tbb;
-
-#elif USING_TBB == 0
-
-namespace my_tbb=no_tbb;
-
-#else	/* #if USING_TBB == 1 */
-
-#error invalid C macro USING_TBB value
-
-#endif	/* #if USING_TBB == 1 */
 #endif

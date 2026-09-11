@@ -30,14 +30,6 @@ namespace Legolas{
       T result=left+right;
       return result;
     }
-   
-#ifdef LEGOLAS_USE_EIGEN
-    template <class T1, class T2>
-    static auto autoApply(T1 left,T2 right) -> decltype(left+right)
-    {
-      return left+right;
-    }
-#endif
     
   };
   
@@ -60,14 +52,6 @@ namespace Legolas{
       T result=left-right;
       return result;
     }
-
-#ifdef LEGOLAS_USE_EIGEN
-    template <class T1, class T2>
-    static inline auto autoApply(const T1 & left,const T2 & right) -> decltype(left-right)
-    {
-      return left-right;
-    }
-#endif
 
   };
 
@@ -92,13 +76,6 @@ namespace Legolas{
       return result;
     }
 
-#ifdef LEGOLAS_USE_EIGEN
-    template <class T1, class T2>
-    static inline auto autoApply(const T1 & left,const T2 & right) -> decltype(left*right)
-    {
-      return left*right;
-    }
-#endif
   };
   
   template <class L, class R >

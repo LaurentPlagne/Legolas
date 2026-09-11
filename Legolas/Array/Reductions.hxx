@@ -228,14 +228,6 @@ struct AccumulatePadding<ACCUMULATOR,1,1>{
 //*************************************** End Accumulate ****************************************//
 
 
-#ifdef USE_EIGEN
-template <class LEFT, int PACK_SIZE, class RIGHT>
-static inline void plusAssign(Eigen::Array<LEFT,PACK_SIZE,1> & a, const RIGHT & b){
-  for (int i=0 ; i< PACK_SIZE ; i++){
-    a(i)+=b(i);
-  }
-}
-#endif
 
 template <class LEFT, int PACK_SIZE, class RIGHT>
 static inline void plusAssign(Legolas::NativeSimd<LEFT,PACK_SIZE> & a, const RIGHT & b){
@@ -340,25 +332,6 @@ inline double dotAssumeZeroPadding(const BaseArray<DERIVED> & baLeft, const Base
   
   const int lvsize=lv.size();
 
-#if USING_TBB == 1
-  const double result= tbb::parallel_deterministic_reduce(
-							  tbb::blocked_range<int>(0,lvsize,256),
-							  double(0.0),
-							  [&](const tbb::blocked_range<int> & r, double sum)->double {
-							    typename DERIVED::PackedRealType psum(0.0);
-							    for (int i=r.begin(); i<r.end() ; i++){
-							      psum+=lv[i]*rv[i];
-							    }
-							    for (int j=0; j<psum.size() ; j++){
-							      sum+=psum(j);
-							    }
-							    return sum;
-							  },
-							  [&]( double x, double y )->double {
-							    return x+y;
-							  }
-							  );
-#else
   double result = 0.0;
   for (int i=0; i<lvsize ; i++){
     typename DERIVED::PackedRealType psum(0.0);
@@ -367,7 +340,6 @@ inline double dotAssumeZeroPadding(const BaseArray<DERIVED> & baLeft, const Base
       result += psum(j);
     }
   }
-#endif
   
   return result;
 }

@@ -17,14 +17,7 @@
 
 #include "UTILITES.hxx"
 
-//#define USE_EIGEN
 
-#ifdef USE_EIGEN
-
-#include "Legolas/Algorithm/EigenDenseMatrixMatrixProduct.hxx"
-#define ATLASDenseMatrixMatrixProduct EigenDenseMatrixMatrixProduct
-
-#else
 
 
 extern "C"
@@ -88,7 +81,5 @@ namespace Legolas{
   };
 
 }
-
-#endif
 
 #endif

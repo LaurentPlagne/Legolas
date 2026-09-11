@@ -1,5 +1,5 @@
-site_name: Legolas++
-site_description: High-Performance C++ Tensor Engine for Automatic SIMD Vectorization & Multi-Core Work-Stealing via Data Layout Interleaving (DLI).
+site_name: Legolas++ — Building Blocks for Linear Algebra Solvers
+site_description: 100% Header-Only Modern C++ Engine for SIMD Vectorization of Recurrences via Data Layout Interleaving (DLI).
 site_author: Laurent Plagne
 repo_name: laurentplagne/Legolas
 repo_url: https://github.com/laurentplagne/Legolas
@@ -36,11 +36,8 @@ plugins:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.superfences
+
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span

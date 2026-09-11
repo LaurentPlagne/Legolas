@@ -3,7 +3,6 @@
 
 #include <assert.h>
 #include "UTILITES.hxx"
-#include "Legolas/EigenInterface.hxx"
 #include "Legolas/Vector/BaseVector.hxx"
 #include "Legolas/Common/BasicTypes.hxx"
 #include "Legolas/Vector/Expression/ScalarTraits.hxx"
@@ -73,20 +72,6 @@ namespace Legolas{
     inline  typename LEFT::StoreType left( void ) const { return left_ ; }
     inline  typename RIGHT::StoreType right( void ) const { return right_ ; }
 
-#ifdef LEGOLAS_USE_EIGEN
-
-    inline auto eigenVectorView( void ) const -> decltype(BINARY_OP::autoApply(this->left().eigenVectorView(),
-									       this->right().eigenVectorView())){
-      return BINARY_OP::autoApply(left_.eigenVectorView(),right_.eigenVectorView());
-    }
-
-
-    inline auto eigenVectorView(size_t begin, size_t length) const -> decltype(BINARY_OP::autoApply(this->left().eigenVectorView(begin,length),
-												    this->right().eigenVectorView(begin,length))){
-      return BINARY_OP::autoApply(left_.eigenVectorView(begin,length),right_.eigenVectorView(begin,length));
-    }
-
-#endif
 
 
 
@@ -170,16 +155,6 @@ namespace Legolas{
     inline ScalarStoreType scalarValue( void ) const { return a_;}
     inline typename VECTOR::StoreType vectorExpression( void ) const { return v_;}
 
-#ifdef LEGOLAS_USE_EIGEN
-
-    inline auto eigenVectorView( void ) const -> decltype(this->scalarValue()*this->vectorExpression().eigenVectorView()) {
-      return this->scalarValue()*this->vectorExpression().eigenVectorView();
-    }
-
-    inline auto eigenVectorView(size_t begin, size_t length) const -> decltype(this->scalarValue()*this->vectorExpression().eigenVectorView(begin,length)) {
-      return this->scalarValue()*this->vectorExpression().eigenVectorView(begin,length);
-    }
-#endif
 
   private:
 

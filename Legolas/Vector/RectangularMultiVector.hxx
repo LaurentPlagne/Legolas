@@ -3,8 +3,6 @@
 
 #include "UTILITES.hxx"
 #include "Legolas/Allocator.hxx"
-#include "Legolas/EigenInterface.hxx"
-#include "Legolas/Vector/TinyEigenInterface.hxx"
 #include "Legolas/Vector/BaseVector.hxx"
 #include "Legolas/Common/BasicTypes.hxx"
 #include "Legolas/Vector/Assign/AssignMode.hxx"
@@ -112,16 +110,12 @@ namespace Legolas{
     const DERIVED_LEFT  & l=left.getCVR();
     const DERIVED_RIGHT & r=right.getCVR();
 
-#ifdef LEGOLAS_USE_EIGEN
-    return l.eigenVectorView(begin,length).matrix().dot(r.eigenVectorView(begin,length).matrix());
-#else
     double result=0.0;
     const size_t end=begin+length;
     for (size_t i=begin ; i<end ; i++){
       result+=Legolas::dot(l(i),r(i));
     }
     return result;
-#endif
   }
 
 
@@ -276,17 +270,7 @@ namespace Legolas{
 
 
 
-#ifdef LEGOLAS_USE_EIGEN
 
-    typedef typename EigenInterface<RealType>::EigenVectorView EigenVectorView;
-
-    inline EigenVectorView eigenVectorView( void ){ return EigenVectorView(realDataPtr_,flatSize_) ; }
-    inline const EigenVectorView eigenVectorView( void ) const { return EigenVectorView(realDataPtr_,flatSize_) ; }
-
-    inline EigenVectorView eigenVectorView(size_t begin, size_t length){ return EigenVectorView(realDataPtr_+begin,length) ; }
-    inline const EigenVectorView eigenVectorView(size_t begin, size_t length) const { return EigenVectorView(realDataPtr_+begin,length) ; }
-
-#endif
 
 
     //typedef Legolas::SequentialForAll ForAllElements;

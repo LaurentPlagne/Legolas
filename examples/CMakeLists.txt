@@ -1,19 +1,8 @@
-include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/Legolas/include)
-
 add_executable(DepthwiseConv DepthwiseConv/DepthwiseConv.cxx)
-target_include_directories(DepthwiseConv PRIVATE ${CMAKE_SOURCE_DIR})
-target_link_libraries(DepthwiseConv Threads::Threads)
-if (TBB_FOUND AND USE_TBB)
-  target_link_libraries(DepthwiseConv ${TBB_LIBRARIES})
-endif()
+target_link_libraries(DepthwiseConv Legolas)
 
 add_executable(AudioBiquad AudioBiquad/AudioBiquad.cxx)
-target_include_directories(AudioBiquad PRIVATE ${CMAKE_SOURCE_DIR})
-target_link_libraries(AudioBiquad Threads::Threads)
-if (TBB_FOUND AND USE_TBB)
-  target_link_libraries(AudioBiquad ${TBB_LIBRARIES})
-endif()
+target_link_libraries(AudioBiquad Legolas)
 
 add_test(NAME DepthwiseConv COMMAND DepthwiseConv)
 add_test(NAME AudioBiquad COMMAND AudioBiquad)
