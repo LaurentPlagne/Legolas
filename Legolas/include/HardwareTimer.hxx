@@ -8,6 +8,10 @@
 #  include <mach/mach_time.h>
 #endif
 
+#if defined(_MSC_VER)
+#  include <intrin.h>
+#endif
+
 #if defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
 #  if __has_include(<asm/msr.h>)
 #    include <asm/msr.h>
@@ -19,11 +23,13 @@ namespace Legolas {
 struct HardwareTimer {
   // Read hardware cycle counter / timestamp counter
   static inline uint64_t readCycles() {
-#if defined(__aarch64__) || defined(_M_ARM64)
+#if defined(_MSC_VER)
+    return __rdtsc();
+#elif (defined(__aarch64__) || defined(_M_ARM64)) && (defined(__GNUC__) || defined(__clang__))
     uint64_t val;
     asm volatile("mrs %0, cntvct_el0" : "=r"(val));
     return val;
-#elif defined(__x86_64__) || defined(__i386__)
+#elif (defined(__x86_64__) || defined(__i386__)) && (defined(__GNUC__) || defined(__clang__))
     uint32_t lo, hi;
     asm volatile("rdtsc" : "=a"(lo), "=d"(hi));
     return (static_cast<uint64_t>(hi) << 32) | lo;

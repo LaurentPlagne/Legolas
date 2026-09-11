@@ -20,10 +20,12 @@
 #ifndef _TBBTL_TIMER_HH
 #define _TBBTL_TIMER_HH
 
+#if !defined(_WIN32) && !defined(_MSC_VER)
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
 #include <sys/times.h>
+#endif
 #include "HardwareTimer.hxx"
 #include "UTILITES.hxx"
 #include <vector>

@@ -90,6 +90,8 @@ jobs:
 
       - name: Run Verification Benchmarks
         run: |
+          set -e
+          set -x
           if [ "${{ runner.os }}" = "macOS" ]; then
             export DYLD_LIBRARY_PATH="${PWD}/build/Legolas:${DYLD_LIBRARY_PATH}"
           else
@@ -99,5 +101,45 @@ jobs:
           ./build/examples/DepthwiseConv
           echo "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
           ./build/examples/AudioBiquad
-          echo "=== 3. Tridiagonal Thomas Benchmark (Nx=64) ==="
-          ./build/tst/MultiThomas/MultiThomas 64 1
+          echo "=== 3. Tridiagonal Thomas Example ==="
+          ./build/tst/MultiThomasExample/MultiThomasExample
+          if [ -f "./build/tst/MultiThomas/MultiThomas" ]; then
+            echo "=== 4. Fast Thomas (Nx=64) ==="
+            ./build/tst/MultiThomas/MultiThomas 64
+          fi
+
+  build-windows:
+    name: Windows MSVC | WorkStealing + NativeSIMD (Zero-Dep)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake (MSVC)
+        run: |
+          cmake -B build `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DUSE_TBB=OFF `
+            -DUSE_EIGEN=OFF
+
+      - name: Build all targets
+        run: |
+          cmake --build build --config Release
+
+      - name: Run CTest test suite
+        run: |
+          ctest --test-dir build --build-config Release --output-on-failure
+
+      - name: Run Verification Benchmarks
+        run: |
+          Write-Host "=== 1. AI MobileNet Depthwise 2D Convolution ==="
+          .\build\examples\Release\DepthwiseConv.exe
+          Write-Host "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
+          .\build\examples\Release\AudioBiquad.exe
+          Write-Host "=== 3. Tridiagonal Thomas Example ==="
+          .\build\tst\MultiThomasExample\Release\MultiThomasExample.exe
+          if (Test-Path ".\build\tst\MultiThomas\Release\MultiThomas.exe") {
+            Write-Host "=== 4. Fast Thomas (Nx=64) ==="
+            .\build\tst\MultiThomas\Release\MultiThomas.exe 64
+          }
+

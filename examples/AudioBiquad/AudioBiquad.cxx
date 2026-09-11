@@ -23,6 +23,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <iomanip>
 #include "Legolas/Array/Array.hxx"
