@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+  (function() {
+    var pathname = window.location.pathname;
+    if (pathname.endsWith('.md') || pathname.endsWith('.md/')) {
+      var clean = pathname.replace(/\.md\/?$/, '/');
+      window.location.replace(clean + window.location.search + window.location.hash);
+    }
+  })();
+</script>
+
+<article class="md-content__inner md-typeset" style="text-align: center; padding: 4rem 1rem;">
+  <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">404 — Page Not Found</h1>
+  <p style="font-size: 1.1rem; color: var(--md-default-fg-color--light); margin-bottom: 2rem;">
+    The requested resource could not be found or has moved.
+  </p>
+  <a class="md-button md-button--primary" href="{{ config.site_url }}">
+    Return to Legolas++ Home
+  </a>
+</article>
+{% endblock %}

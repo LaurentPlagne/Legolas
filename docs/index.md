@@ -11,7 +11,7 @@
 
 <p align="center">
   <a class="md-button md-button--primary" href="#industrial-showcases-energy-efficiency">⚡ Explore Industry Showcases</a>
-  <a class="md-button" href="getting-started/quickstart.md">🚀 30-Second Quickstart</a>
+  <a class="md-button" href="getting-started/quickstart/">🚀 30-Second Quickstart</a>
   <a class="md-button" href="https://github.com/LaurentPlagne/Legolas" target="_blank">💻 GitHub Repository</a>
 </p>
 
