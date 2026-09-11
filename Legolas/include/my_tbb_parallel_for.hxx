@@ -221,14 +221,6 @@ namespace my_tbb=tbb;
 
 #elif USING_TBB == 0
 
-#warning  USING_TBB est positionnÃ©e a 0
-#warning  USING_TBB est positionnÃ©e a 0
-#warning  USING_TBB est positionnÃ©e a 0
-#warning  USING_TBB est positionnÃ©e a 0
-#warning  USING_TBB est positionnÃ©e a 0
-#warning  USING_TBB est positionnÃ©e a 0
-#warning  USING_TBB est positionnÃ©e a 0
-#warning  USING_TBB est positionnÃ©e a 0
 namespace my_tbb=no_tbb;
 
 #else	/* #if USING_TBB == 1 */
