@@ -38,8 +38,11 @@ To pack elements $X[0][i], X[1][i], X[2][i], X[3][i]$ into a 128-bit or 256-bit 
 
 Legolas++ eliminates this overhead by **interleaving data across systems directly at allocation time**:
 
-![Canonical Data Layout Interleaving memory mapping from presentation](../assets/images/dli_interleaving_mapping.png)
-*Figure 3: Canonical DLI memory mapping for `Legolas::Array<float, 2, 4, 2> X(nj, ni)`. Corresponding elements from 4 adjacent systems are placed contiguously in physical memory.*
+<p align="center">
+  <img src="../assets/images/dli_animation.svg" alt="Animated Data Layout Interleaving Mechanism" width="100%" />
+</p>
+
+*Figure 3: Animated DLI Mechanism. Elements at identical step $i$ across $P=4$ independent systems are interleaved contiguously in physical memory, allowing a single aligned 128-bit / 256-bit SIMD vector instruction (`ldr q` / `vmovaps`) to load all 4 elements in a single clock cycle.*
 
 With a packing factor of $P = 4$ along dimension $D = 2$:
 

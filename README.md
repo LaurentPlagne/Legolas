@@ -115,10 +115,10 @@ In real-world applications, engineers rarely solve a single isolated recurrence.
 Instead of struggling to vectorize sequentially along $i$, **Legolas++ interleaves $P$ independent problem instances directly in memory**:
 
 <p align="center">
-  <img src="docs/assets/images/dli_interleaving_mapping.png" alt="Data Layout Interleaving Memory Mapping" width="700">
+  <img src="docs/assets/images/dli_animation.svg" alt="Animated Data Layout Interleaving (DLI) Mechanism" width="100%">
 </p>
 
-*Figure: Data Layout Interleaving (DLI). Elements at step $i$ across $P=4$ independent problem instances are mapped contiguously into physical memory, transforming strided access into single-instruction aligned SIMD streaming.*
+*Figure: Data Layout Interleaving (DLI) in Action. Elements at step $i$ across $P=4$ independent problem instances are mapped contiguously into physical memory, transforming strided access into single-instruction aligned SIMD streaming.*
 
 ### Zero-Overhead Abstraction: Write Once, Vectorize Everywhere
 1. **Declare the tensor**: `Legolas::Array<T, D, P, DP>` defines a tensor of dimension `D` with packing factor `P` along dimension `DP`.
