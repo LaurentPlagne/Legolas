@@ -14,6 +14,9 @@
  * use std::cerr
  * static_cast
 */
+#if defined(_WIN32) || defined(_MSC_VER)
+#define BACKTRACE do {} while (0)
+#else
 #include <cstring>
 #include <iostream>
 #include <execinfo.h>
@@ -71,5 +74,6 @@
    free(function);\
  }\
 }
+#endif
 
 #endif
