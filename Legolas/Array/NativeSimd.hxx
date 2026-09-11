@@ -7,14 +7,19 @@
 
 namespace Legolas {
 
-#if defined(__GNUC__) || defined(__clang__)
+// GCC has known bugs when applying __attribute__((vector_size)) to dependent template types.
+// Clang supports vector extensions cleanly on template parameters; GCC & MSVC use the unrolled array representation.
+#if defined(__clang__)
 #define LEGOLAS_HAS_VECTOR_EXTENSIONS 1
 #else
 #define LEGOLAS_HAS_VECTOR_EXTENSIONS 0
 #endif
 
 template <typename T, int P>
-class alignas(sizeof(T) * P > 64 ? 64 : sizeof(T) * P) NativeSimd {
+class alignas((sizeof(T) * P >= 64) ? 64 :
+              (sizeof(T) * P >= 32) ? 32 :
+              (sizeof(T) * P >= 16) ? 16 :
+              (sizeof(T) * P >= 8)  ? 8  : alignof(T)) NativeSimd {
 public:
   using Scalar = T;
   static constexpr int PackSize = P;

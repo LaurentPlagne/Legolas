@@ -47,13 +47,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install build tools (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build build-essential
+
       - name: Configure CMake
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build all targets
         run: |
-          cmake --build build --config Release --parallel
+          cmake --build build --config Release --parallel || {
+            echo "::error::Parallel build failed, re-running verbose to show compiler error:"
+            cmake --build build --config Release -v
+            exit 1
+          }
 
       - name: Run CTest test suite
         run: |
