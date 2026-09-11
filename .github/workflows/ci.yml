@@ -57,7 +57,7 @@ jobs:
           else
             PREFIX_PATH="/usr"
           fi
-          cmake -B build -G Ninja \
+          cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" \
             -DUSE_TBB=${{ matrix.use_tbb }} \
@@ -65,7 +65,13 @@ jobs:
 
       - name: Build all targets
         run: |
-          cmake --build build --parallel || cmake --build build --verbose
+          cmake --build build --parallel 2>&1 | tee build.log || {
+            echo "### ❌ Build Failure Log (${{ matrix.os }} | TBB=${{ matrix.use_tbb }} | Eigen=${{ matrix.use_eigen }})" >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
+            tail -n 120 build.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
 
       - name: Run CTest test suite
         run: |
