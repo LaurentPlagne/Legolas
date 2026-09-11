@@ -1,7 +1,7 @@
 /**
  * project  DESCARTES
  *
- * @file     SparseMatrixVectorProductTBB.hxx
+ * @file     SparseMatrixVectorProductParallel.hxx
  *
  * @author Laurent PLAGNE
  * @date   june 2004 - january 2005
@@ -11,17 +11,13 @@
  *   
  * (c) Copyright EDF R&D - CEA 2001-2005 
  */
-#ifndef __LEGOLAS_SPARSEMATRIXVECTORPRODUCTTBB_HXX__
-#define __LEGOLAS_SPARSEMATRIXVECTORPRODUCTTBB_HXX__
+#ifndef __LEGOLAS_SPARSEMATRIXVECTORPRODUCTPARALLEL_HXX__
+#define __LEGOLAS_SPARSEMATRIXVECTORPRODUCTPARALLEL_HXX__
 
 #include "UTILITES.hxx"
 #include "X86Timer.hxx"
 
-#include "my_tbb_parallel_for.hxx"
-
-//#include "tbb/task_scheduler_init.h"
-//#include "tbb/parallel_for.h"
-//#include "tbb/blocked_range.h"
+#include "Parallel.hxx"
 
 
 
@@ -41,7 +37,7 @@ namespace Legolas{
     }
     
     
-    inline void operator()(const my_tbb::blocked_range<int> & r) const {
+    inline void operator()(const Legolas::blocked_range<int> & r) const {
       
       typename MATRIX::FilledRows rows(A_);
       
@@ -65,7 +61,7 @@ namespace Legolas{
 
 
 
-  class SparseMatrixVectorProductTBB{
+  class SparseMatrixVectorProductParallel{
   public:
 
     template<class ASSIGN_MODE>
@@ -84,8 +80,7 @@ namespace Legolas{
 
 	LineFunctor<ASSIGN_MODE,MATRIX,VECTOR,VECTOR_INOUT> lf(A,X,Y);
 
-	//	my_tbb::parallel_for(my_tbb::blocked_range<int>(0,A.nrows(),100),lf);
-	my_tbb::parallel_for(my_tbb::blocked_range<int>(0,A.nrows()),lf);
+	Legolas::parallel_for(Legolas::blocked_range<int>(0,A.nrows()),lf);
 	  
 
       }

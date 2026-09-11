@@ -13,10 +13,6 @@
 #include "stringConvert.hxx"
 // #include "X86Timer.hxx"
 
-//#if USING_TBB == 1
-//#include "tbb/parallel_reduce.h"
-//#endif
-
 #include "Legolas/Vector/FlatRecursiveTraits.hxx"
 #include "Legolas/Vector/BuildLevelSizes.hxx"
 

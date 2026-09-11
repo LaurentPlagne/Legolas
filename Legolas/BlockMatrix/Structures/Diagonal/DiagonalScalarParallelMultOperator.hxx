@@ -3,6 +3,7 @@
 
 #include "Legolas/Vector/Vector.hxx"
 #include "Legolas/BlockMatrix/ScalarMatrixMultOperator.hxx"
+#include "Parallel.hxx"
 
 namespace Legolas{
 
@@ -17,7 +18,7 @@ namespace Legolas{
 			const double & a,
 			const V1D & X, V1D & Y):A_(A),a_(a),X_(X),Y_(Y){}
     
-    inline void operator()(const my_tbb::blocked_range<int> & r) const {
+    inline void operator()(const Legolas::blocked_range<int> & r) const {
       
       for (int i=r.begin() ; i!=r.end() ; i++){
 	Y_[i]+=a_*A_.diagonalGetElement(i)*X_[i];
@@ -34,7 +35,7 @@ namespace Legolas{
     MultLineOperator(const SCALAR_MATRIX & A,
 		     const V1D & X, V1D & Y):A_(A),X_(X),Y_(Y){}
     
-    inline void operator()(const my_tbb::blocked_range<int> & r) const {
+    inline void operator()(const Legolas::blocked_range<int> & r) const {
       
       for (int i=r.begin() ; i!=r.end() ; i++){
 	Y_[i]=A_.diagonalGetElement(i)*X_[i];
@@ -63,7 +64,7 @@ namespace Legolas{
       //Y+=a*A*X
       void addMult(const SCALAR_MATRIX & A, const double & a, const V1D & X, V1D & Y){
 	
-	my_tbb::parallel_for(my_tbb::blocked_range<int>(0,A.nrows(),100),AddMultLineOperator<SCALAR_MATRIX,V1D>(A,a,X,Y));
+	Legolas::parallel_for(Legolas::blocked_range<int>(0,A.nrows(),100),AddMultLineOperator<SCALAR_MATRIX,V1D>(A,a,X,Y));
 	
 	// const int n=A.nrows();
 	// RealType factor(a);
@@ -75,7 +76,7 @@ namespace Legolas{
       //Y=A*X
       void mult(const SCALAR_MATRIX & A, const V1D & X, V1D & Y){
 	
-	my_tbb::parallel_for(my_tbb::blocked_range<int>(0,A.nrows(),100),MultLineOperator<SCALAR_MATRIX,V1D>(A,X,Y));
+	Legolas::parallel_for(Legolas::blocked_range<int>(0,A.nrows(),100),MultLineOperator<SCALAR_MATRIX,V1D>(A,X,Y));
 	
 	// const int n=A.nrows();
 	// for (int i=0 ; i < n ; i++ ){

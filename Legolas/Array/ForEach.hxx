@@ -1,6 +1,6 @@
 #pragma once
 
-#include "my_tbb_parallel_for.hxx"
+#include "Parallel.hxx"
 
 
 namespace Legolas{
@@ -62,7 +62,7 @@ namespace Legolas{
 
   template <class ALGO, typename... ARRAYS>
   void parallel_ranged_for_each(int begin, int end, ALGO algo, ARRAYS... rest){
-    my_tbb::parallel_for(size_t(begin),size_t(end),[=](size_t i){algo(i,rest...);});
+    Legolas::parallel_for(size_t(begin),size_t(end),[=](size_t i){algo(i,rest...);});
    }
 
 

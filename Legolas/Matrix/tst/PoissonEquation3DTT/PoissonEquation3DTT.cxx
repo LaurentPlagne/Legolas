@@ -39,7 +39,7 @@
 #include "Legolas/Algorithm/SparseGaussSeidel.hxx"
 
 #include "Tensorial3DProduct.hxx"
-#include "Tensorial3DProductTBB.hxx"
+#include "Tensorial3DProductParallel.hxx"
 #include "SourceFunctor.hxx"
 #include "UniformMesh.hxx"
 
@@ -274,7 +274,7 @@ int main( int argc,  char *argv[] )
   X86Timer chronos_solve;
 
   typedef Tensorial3DProductV0 TPS;
-  //typedef Tensorial3DProductTBB TPS;
+  //typedef Tensorial3DProductParallel TPS;
 
   chronos.start();
   chronos_solve.start();

@@ -17,7 +17,7 @@
 #include "RecursiveTraits.hxx"
 #include "Legolas/Vector/ForAll.hxx"
 #include "Legolas/Vector/VirtualVector.hxx"
-#include "my_tbb_parallel_for.hxx"
+#include "Parallel.hxx"
 
 
 namespace Legolas{
@@ -113,7 +113,7 @@ namespace Legolas{
     DotFunctor(const EXPR_L & l,
 	       const EXPR_R & r):left_(l),right_(r),sum_(0){}
 
-    inline void operator()( const my_tbb::blocked_range<size_t>& r ) {
+    inline void operator()( const Legolas::blocked_range<size_t>& r ) {
 
       const size_t b=r.begin();
       const size_t e=r.end();
@@ -133,7 +133,7 @@ namespace Legolas{
       //      }
     }
 
-    DotFunctor(DotFunctor & x, my_tbb::split ) : left_(x.left_),
+    DotFunctor(DotFunctor & x, Legolas::split ) : left_(x.left_),
 						 right_(x.right_),
 						 sum_(0.0) {}
 
@@ -164,7 +164,7 @@ namespace Legolas{
 
     DotFunctor<DERIVED_LEFT,DERIVED_RIGHT> df(l,r);
 
-    my_tbb::parallel_reduce(my_tbb::blocked_range<size_t>(0,nbBlocks), df );
+    Legolas::parallel_reduce(Legolas::blocked_range<size_t>(0,nbBlocks), df );
 
     double result=df.sum_;
 
@@ -898,7 +898,7 @@ namespace Legolas{
       RelativeDiffAndCopyFunctor(RealType * l,
 				 const RealType * r):left_(l),right_(r),sum_(0),sumx_(0){}
 
-      inline void operator()( const my_tbb::blocked_range<size_t>& r ) {
+      inline void operator()( const Legolas::blocked_range<size_t>& r ) {
 	for( size_t i=r.begin(); i!=r.end(); ++i ){
 	  //	  const double xi=right_[i];
 	  //	  const double diff=left_[i]-xi;
@@ -914,7 +914,7 @@ namespace Legolas{
 	}
       }
 
-      RelativeDiffAndCopyFunctor(RelativeDiffAndCopyFunctor & x, my_tbb::split ) : left_(x.left_),
+      RelativeDiffAndCopyFunctor(RelativeDiffAndCopyFunctor & x, Legolas::split ) : left_(x.left_),
 										   right_(x.right_),
 										   sum_(0.0) ,
 										   sumx_(0.0)
@@ -940,7 +940,7 @@ namespace Legolas{
       assertSameShapes(this->shape(),right.shape());
 
       RelativeDiffAndCopyFunctor ff(this->realDataPtr(),right.realDataPtr());
-      my_tbb::parallel_reduce(my_tbb::blocked_range<size_t>(0,this->flatSize()), ff);
+      Legolas::parallel_reduce(Legolas::blocked_range<size_t>(0,this->flatSize()), ff);
       return sqrt(ff.sum_/ff.sumx_);
 
     }
@@ -989,7 +989,7 @@ namespace Legolas{
   public:
     SquareNorm2Functor(const EXPR & expr):expr_(expr),sum_(0.0){}
 
-    inline void operator()( const my_tbb::blocked_range<size_t>& r ) {
+    inline void operator()( const Legolas::blocked_range<size_t>& r ) {
       const size_t b=r.begin();
       const size_t e=r.end();
       for( size_t i=b; i!=e; ++i ){
@@ -998,7 +998,7 @@ namespace Legolas{
       }
     }
 
-    SquareNorm2Functor(SquareNorm2Functor & x, my_tbb::split ) : expr_(x.expr_),
+    SquareNorm2Functor(SquareNorm2Functor & x, Legolas::split ) : expr_(x.expr_),
 								 sum_(0.0) {}
 
     void join( const SquareNorm2Functor & y ) {sum_+=y.sum_;}
@@ -1017,7 +1017,7 @@ namespace Legolas{
     const DERIVED & v=vec.getCVR();
 
     SquareNorm2Functor<DERIVED> sf(v);
-    my_tbb::parallel_reduce(my_tbb::blocked_range<size_t>(0,v.flatSize(),10), sf );
+    Legolas::parallel_reduce(Legolas::blocked_range<size_t>(0,v.flatSize(),10), sf );
     return sf.sum_;
   }
 

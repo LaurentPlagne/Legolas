@@ -60,7 +60,7 @@ Testing multi-core thread scaling from 1 to 8 threads on the Apple M1 Max Firest
 
 ```bash
 # Build the benchmark executable
-cmake -B build -DUSE_TBB=OFF
+cmake -B build
 cmake --build build -j8
 
 # Run the MultiThomas benchmark suite

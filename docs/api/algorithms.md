@@ -38,7 +38,7 @@ Legolas::map(InvertElements(), In, Out);
 
 ## `Legolas::parmap` (Multi-Core + SIMD)
 
-Distributes problem instance ranges across worker threads using the native **Work-Stealing engine** (or Intel oneTBB), while executing packed SIMD vector instructions inside each chunk.
+Distributes problem instance ranges across worker threads using the native **Work-Stealing engine**, while executing packed SIMD vector instructions inside each chunk.
 
 ```cpp
 template <class ALGO, typename... ARRAYS>
@@ -81,8 +81,8 @@ export LEGOLAS_NUM_THREADS=4
 You can also configure the number of threads programmatically:
 
 ```cpp
-#include "Legolas/include/my_tbb_parallel_for.hxx"
+#include "Legolas/include/Parallel.hxx"
 
-// Set number of worker threads:
-my_tbb::task_scheduler_init init(4);
+// Set number of worker threads (Legolas:: or LGS::):
+LGS::task_scheduler_init init(4);
 ```

@@ -1,8 +1,6 @@
 #ifndef _LEGOLAS_ASSIGN_HXX__
 #define _LEGOLAS_ASSIGN_HXX__
 
-//#include "Legolas/Vector/AssignTraits.hxx"
-//#include "Legolas/Vector/TBBBlockAssign.hxx"
 #include "Legolas/Vector/Assign/ParallelAssign.hxx"
 #include "Legolas/Vector/Assign/SequentialAssign.hxx"
 
@@ -28,7 +26,6 @@ namespace Legolas{
       }
       else{
 	ParallelAssign<ASSIGN_MODE,ELEMENT>::apply(N,source,target,blockSize);
-	//TBBBlockAssign<ASSIGN_MODE,ELEMENT>::apply(N,source,target,blockSize);
       }
     }
   };

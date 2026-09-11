@@ -1,28 +1,14 @@
-/**
- * project  DESCARTES
- *
- * @file     DiagonalMatrixInversionTBB.hxx
- *
- * @author Laurent PLAGNE
- * @date   june 2004 - january 2005
- *
- * @par Modifications
- * - author date object
- *   
- * (c) Copyright EDF R&D - CEA 2001-2005 
- */
-#ifndef __LEGOLAS_DIAGONALMATRIXINVERSIONTBB_HXX__
-#define __LEGOLAS_DIAGONALMATRIXINVERSIONTBB_HXX__
+#ifndef __LEGOLAS_DIAGONALMATRIXINVERSIONPARALLEL_HXX__
+#define __LEGOLAS_DIAGONALMATRIXINVERSIONPARALLEL_HXX__
 
 #include "Legolas/Algorithm/IterationControl.hxx"
 #include "Legolas/Algorithm/ComputeLinearSystemResidual.hxx"
-//#include "Legolas/Algorithm/LinearSolverWorkSpace.hxx"
 #include "Legolas/Algorithm/LinearSolver.hxx"
-#include "my_tbb_parallel_for.hxx"
+#include "Parallel.hxx"
 
 namespace Legolas{
 
-  class DiagonalMatrixInversionTBB{
+  class DiagonalMatrixInversionParallel{
   public :
   
     template <class TA, class TX, class TB>
@@ -36,15 +22,14 @@ namespace Legolas{
       }
 
       Engine(const TA & A, TX & X, const TB & B):LinearSolver<TA,TX,TB>(A,X,B){
-	MESSAGE("DiagonalMatrixInversionTBB Ctor");
+	MESSAGE("DiagonalMatrixInversionParallel Ctor");
       }
 
       Engine(const TA & A, TX & X, const TB & B,const typename Base::VectorPoolPtr & vectorPoolPtr):LinearSolver<TA,TX,TB>(A,X,B,vectorPoolPtr){
-	MESSAGE("DiagonalMatrixInversionTBB Ctor");
+	MESSAGE("DiagonalMatrixInversionParallel Ctor");
       }
       
-      inline std::string name( void ) const { return "DiagonalMatrixInversionTBB";}
-
+      inline std::string name( void ) const { return "DiagonalMatrixInversionParallel";}
 
       class InverseFunctor{
       private:
@@ -58,40 +43,26 @@ namespace Legolas{
 		       const TB & B, 
 		       TX & X):ls_(ls),A_(A),B_(B),X_(X){}
 
-		
-	inline void operator()(const my_tbb::blocked_range<int> & r) const {
-
-	  //	  LinearSolver<TA,TX,TB> ls(ls_);
-
+	inline void operator()(const Legolas::blocked_range<int> & r) const {
 	  for (int i=r.begin() ; i!=r.end() ; i++){
 	    ls_.blockSolve(A_.diagonalGetElement(i),X_[i],B_[i],i);
 	  }
 	}
       };
-	
 
-	
       void solve(const TA & A, TX & X, const TB & B){
-
-	//	INFOS("ICCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-
-	my_tbb::parallel_for(my_tbb::blocked_range<int>(0,B.size()),InverseFunctor(*this,A,B,X));
-	
+	Legolas::parallel_for(Legolas::blocked_range<int>(0,B.size()),InverseFunctor(*this,A,B,X));
 	ComputeLinearSystemResidual::apply(A,X,B);
-
       }
 
       void transposeSolve(const TA & A, TX & X, const TB & B){
 	INFOS("not yet implemented");
 	throw std::runtime_error("Not yet implemented");
-
       }
 
     };
   };
 
-
-
 }
 
-#endif	
+#endif

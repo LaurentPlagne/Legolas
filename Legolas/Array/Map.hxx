@@ -1,6 +1,6 @@
 #pragma once
 
-#include "my_tbb_parallel_for.hxx"
+#include "Parallel.hxx"
 #include "Legolas/Array/ForEach.hxx"
 
 namespace Legolas{
@@ -12,10 +12,10 @@ namespace Legolas{
   }
   template <class ALGO, typename... ARRAYS>
   void parallel_ranged_map(int begin, int end, ALGO algo, ARRAYS... rest){
-    my_tbb::parallel_for(my_tbb::blocked_range<int>(begin,end),
-		      [=](my_tbb::blocked_range<int> r){
+    Legolas::parallel_for(Legolas::blocked_range<int>(begin,end),
+		      [=](Legolas::blocked_range<int> r){
 			algo(r.begin(),r.end(),rest...);}
-		      ,my_tbb::auto_partitioner());
+		      ,Legolas::auto_partitioner());
   }
 
 

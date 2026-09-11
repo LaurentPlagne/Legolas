@@ -1,11 +1,11 @@
-#ifndef __TENSORIAL3DPRODUCTTBB_HXX__
-#define __TENSORIAL3DPRODUCTTBB_HXX__
+#ifndef __TENSORIAL3DPRODUCTPARALLEL_HXX__
+#define __TENSORIAL3DPRODUCTPARALLEL_HXX__
 
 #include "X86Timer.hxx"
 #include "Legolas/Algorithm/ATLASDenseMatrixVectorProduct.hxx"
 #include "Legolas/Algorithm/ATLASDenseMatrixMatrixProduct.hxx"
 
-#include "my_tbb_parallel_for.hxx"
+#include "Parallel.hxx"
 
 // U=(M_{X}\otimes M_{Y}\otimes M_{Z})S
 
@@ -21,7 +21,7 @@ struct MzMyFunctor{
 	      const V3D & S,
 	      V3D & U):Mz_(Mz),My_(My),S_(S),U_(U){}
 
-  inline void operator ()(const my_tbb::blocked_range<int> & r) const {
+  inline void operator ()(const Legolas::blocked_range<int> & r) const {
 
 
     const int sizeY=My_.nrows();
@@ -72,7 +72,7 @@ struct MxFunctor{
 	    const V3D & U,
 	    V3D & Uzxy):Mx_(Mx),My_(My),U_(U),Uzxy_(Uzxy){}
 
-  inline void operator ()(const my_tbb::blocked_range<int> & r) const {
+  inline void operator ()(const Legolas::blocked_range<int> & r) const {
 
     const int sizeX=Mx_.nrows();
     const int sizeY=My_.nrows();
@@ -104,7 +104,7 @@ struct MxFunctor{
 	      
 
 
-struct Tensorial3DProductTBB{
+struct Tensorial3DProductParallel{
   
 
 
@@ -120,10 +120,10 @@ struct Tensorial3DProductTBB{
     const int sizeZ=Mz.nrows();
     
     MzMyFunctor<DENSE_MATRIX_2D,VECTOR_3D> mzmyFuntor(Mz,My,S,U);
-    my_tbb::parallel_for(my_tbb::blocked_range<int>(0,sizeX),mzmyFuntor);
+    Legolas::parallel_for(Legolas::blocked_range<int>(0,sizeX),mzmyFuntor);
 
     MxFunctor<DENSE_MATRIX_2D,VECTOR_3D> mxFuntor(Mx,My,U,Uzxy);
-    my_tbb::parallel_for(my_tbb::blocked_range<int>(0,sizeZ),mxFuntor);
+    Legolas::parallel_for(Legolas::blocked_range<int>(0,sizeZ),mxFuntor);
 
   }
   
@@ -191,7 +191,7 @@ struct Tensorial3DProductTBB{
     for (int i=0 ; i< sizeX ; i++){
       
       chronos.start();
-      for (int k=0 ; k< sizeZ ; k++){//lecture permutée
+      for (int k=0 ; k< sizeZ ; k++){//lecture permutÃ©e
 	for (int j=0 ; j< sizeY ; j++){
 	  Vzy(k,j)=Szxy[k][i][j];
 	}

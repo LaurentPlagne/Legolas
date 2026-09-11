@@ -2,7 +2,7 @@
 #define _LEGOLAS_PARALLELASSIGN_HXX__
 
 //#include "AssignTraits.hxx"
-#include "my_tbb_parallel_for.hxx"
+#include "Parallel.hxx"
 
 namespace Legolas{
 
@@ -18,7 +18,7 @@ namespace Legolas{
     {
     }
     
-    inline void operator ()(const my_tbb::blocked_range<size_t> & r) const {
+    inline void operator ()(const Legolas::blocked_range<size_t> & r) const {
 
       size_t b=r.begin();
       size_t e=r.end();
@@ -50,13 +50,10 @@ namespace Legolas{
 
       //      INFOS("ICI");
       
-      //      static my_tbb::affinity_partitioner ap; 
-      //      my_tbb::parallel_for(my_tbb::blocked_range<int>(0,nblocks),CopyFunctor<ASSIGN_MODE,DERIVED,RealType>(source,target,blockSize),ap);
-      
-      my_tbb::parallel_for(my_tbb::blocked_range<size_t>(0,N),AssignFunctor<ASSIGN_MODE,DERIVED,RealType>(source,target));
+      Legolas::parallel_for(Legolas::blocked_range<size_t>(0,N),AssignFunctor<ASSIGN_MODE,DERIVED,RealType>(source,target));
       
     }
   };
 }
 
-#endif //__TBBBLOCKASSIGN_HXX__
+#endif

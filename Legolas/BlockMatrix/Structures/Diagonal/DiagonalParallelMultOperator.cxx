@@ -1,6 +1,6 @@
 #include "Legolas/BlockMatrix/Structures/Diagonal/DiagonalBlockMatrix.hxx"
 #include "Legolas/BlockMatrix/Structures/Diagonal/DiagonalParallelMultOperator.hxx"
-#include "my_tbb_parallel_for.hxx"
+#include "Parallel.hxx"
 
 
 namespace Legolas{
@@ -17,7 +17,7 @@ namespace Legolas{
   public:
     RangeDiagonalAddMultOperator(const DiagonalVirtualBlockMatrix & A, const double & a,
 				 const VirtualVector & X, VirtualVector & Y):A_(A),a_(a),X_(X),Y_(Y){}
-    inline void operator()(const my_tbb::blocked_range<int> & r) const {
+    inline void operator()(const Legolas::blocked_range<int> & r) const {
       for (int i=r.begin() ; i!=r.end() ; i++){
 	A_.diagonalGetElement(i).addMult(a_,X_.getElement(i),Y_.getElement(i));
       }
@@ -31,7 +31,7 @@ namespace Legolas{
   public:
     RangeDiagonalMultOperator(const DiagonalVirtualBlockMatrix & A,
 				 const VirtualVector & X, VirtualVector & Y):A_(A),X_(X),Y_(Y){}
-    inline void operator()(const my_tbb::blocked_range<int> & r) const {
+    inline void operator()(const Legolas::blocked_range<int> & r) const {
       for (int i=r.begin() ; i!=r.end() ; i++){
 	A_.diagonalGetElement(i).mult(X_.getElement(i),Y_.getElement(i));
       }
@@ -43,13 +43,13 @@ namespace Legolas{
   
   void DiagonalParallelMultOperator::addMult(const DiagonalVirtualBlockMatrix & A, const double & a,
 					    const VirtualVector & X, VirtualVector & Y){
-    my_tbb::parallel_for(my_tbb::blocked_range<int>(0,A.nrows()),RangeDiagonalAddMultOperator(A,a,X,Y));
+    Legolas::parallel_for(Legolas::blocked_range<int>(0,A.nrows()),RangeDiagonalAddMultOperator(A,a,X,Y));
   }
 
   
   void DiagonalParallelMultOperator::mult(const DiagonalVirtualBlockMatrix & A,
 					 const VirtualVector & X, VirtualVector & Y){
-    my_tbb::parallel_for(my_tbb::blocked_range<int>(0,A.nrows()),RangeDiagonalMultOperator(A,X,Y));
+    Legolas::parallel_for(Legolas::blocked_range<int>(0,A.nrows()),RangeDiagonalMultOperator(A,X,Y));
     
   }
 }

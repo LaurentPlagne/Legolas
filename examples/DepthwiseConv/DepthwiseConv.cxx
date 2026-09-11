@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
     std::cout << "    Speedup: " << speedup_neon << "x vs Scalar Baseline" << std::endl;
 
     // ---------------------------------------------------------------
-    // 3. Legolas Parallel + NEON SIMD (Work-Stealing / TBB)
+    // 3. Legolas Parallel + NEON SIMD (Work-Stealing)
     // ---------------------------------------------------------------
     NeonArray out_par(C, S);
     out_par.fill(0.0f);

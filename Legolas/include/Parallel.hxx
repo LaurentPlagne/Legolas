@@ -1,5 +1,4 @@
-#ifndef __MYTBBPARALLELFOR_HXX__
-#define __MYTBBPARALLELFOR_HXX__
+#pragma once
 
 #include <iostream>
 #include <cstdio>
@@ -7,18 +6,15 @@
 #include <vector>
 #include <list>
 #include <algorithm>
-//#include <stdio.h>
-//#include <stdlib.h>
-#include "dkconfig.hxx"	/* pour rï¿½cupï¿½rer la valeur de la macro USING_TBB utilisï¿½e plus bas */
-#include "UTILITES.hxx"
 #include <chrono>
-
-//#define USING_TBB 0
+#include "UTILITES.hxx"
+#include "StaticScheduler.hxx"
+#include "WorkStealing.hxx"
 
 inline int legolas_thread_number( void ){
   /*
    * Récupère dans l'environnement le nombre de threads souhaité
-   * via LEGOLAS_NUM_THREADS (ou OMP_NUM_THREADS).
+   * via LEGOLAS_NUM_THREADS (ou OMP_NUM_THREADS en repli standard).
    */
   int result=-1;
   const char * pSTN = std::getenv("LEGOLAS_NUM_THREADS");
@@ -36,28 +32,22 @@ inline int legolas_thread_number( void ){
   return result;
 }
 
+namespace Legolas{
 
-
-#include "StaticScheduler.hxx"
-#include "WorkStealing.hxx"
-
-namespace no_tbb{
-
-  using Legolas::StaticScheduler::task_scheduler_init;
-  using Legolas::StaticScheduler::parallel_for;
-  using Legolas::StaticScheduler::blocked_range;
-  using Legolas::StaticScheduler::auto_partitioner;
-  using Legolas::StaticScheduler::simple_partitioner;
-  using Legolas::StaticScheduler::static_partitioner;
-  using Legolas::StaticScheduler::split;
+  using StaticScheduler::task_scheduler_init;
+  using StaticScheduler::parallel_for;
+  using StaticScheduler::blocked_range;
+  using StaticScheduler::auto_partitioner;
+  using StaticScheduler::simple_partitioner;
+  using StaticScheduler::static_partitioner;
+  using StaticScheduler::split;
 
   template <class Range, class Functor>
-  void parallel_reduce(const Range & range, Functor & functor,int part=0){
+  inline void parallel_reduce(const Range & range, Functor & functor, int part=0){
     functor(range);
   }
 
   typedef int affinity_partitioner;
-
 
   template <class T>
   struct parallel_do_feeder: public std::list<T>{
@@ -67,16 +57,13 @@ namespace no_tbb{
     }
   };
 
-
-
   template<typename Iterator, typename Body, typename Item>
   inline void select_parallel_do( Iterator first, Iterator last, const Body& body, void (Body::*)(Item) const){
-    std::for_each(first, last, body) ;
+    std::for_each(first, last, body);
   }
 
   template<typename Iterator, typename Body, typename Item, typename _Item>
   inline void select_parallel_do( Iterator first, Iterator last, const Body& body, void (Body::*)(Item, parallel_do_feeder<_Item>&) const){
-    //    typedef typename Body::argument_type Item;
     parallel_do_feeder<_Item> feeder;
 
     while (first!=last){
@@ -93,7 +80,6 @@ namespace no_tbb{
     }
   }
 
-
   template <class FORWARD_ITERATOR, class Body>
   inline void parallel_do(FORWARD_ITERATOR first, const FORWARD_ITERATOR & last, Body body) {
     if (first!=last){
@@ -105,7 +91,6 @@ namespace no_tbb{
   class atomic{
     T data_;
   public:
-
     T & data(){ return data_;}
     const T & data() const { return data_;}
 
@@ -149,10 +134,6 @@ namespace no_tbb{
   template <class T> bool operator > (const T & a,  const atomic<T> & b){ return (a>b.data());}
   template <class T> bool operator < (const T & a,  const atomic<T> & b){ return (a<b.data());}
 
-
-
-
-
   template <class T>
   class concurrent_vector: public std::vector<T>{
   public:
@@ -169,26 +150,23 @@ namespace no_tbb{
       auto nanoseconds=std::chrono::duration_cast<std::chrono::nanoseconds>(end_.getBase()-begin_.getBase()).count() ;
       return double(nanoseconds)/1.e9;
     }
-
   };
 
+  typedef std::chrono::high_resolution_clock Clock;
+  typedef std::chrono::time_point<Clock> BaseTimer;
 
-//typedef std::chrono::time_point<std::chrono::system_clock> BaseTimer;
-typedef std::chrono::high_resolution_clock Clock;
-typedef std::chrono::time_point<Clock> BaseTimer;
-
-class tick_count : public BaseTimer{
+  class tick_count : public BaseTimer{
   public:
-  tick_count( const BaseTimer & other):BaseTimer(other){}
-  tick_count( const tick_count & other):BaseTimer(other){}
+    tick_count( const BaseTimer & other):BaseTimer(other){}
+    tick_count( const tick_count & other):BaseTimer(other){}
 
-  const BaseTimer & getBase( void ){ return static_cast<const BaseTimer &>(*this);}
+    const BaseTimer & getBase( void ){ return static_cast<const BaseTimer &>(*this);}
 
-  tick_count( void ):BaseTimer(){}
+    tick_count( void ):BaseTimer(){}
 
     static inline tick_count now( void ){ return Clock::now() ;}
-  inline tick_count_interval<tick_count> operator - (const tick_count & right){
-    return tick_count_interval<tick_count>(right,*this);
+    inline tick_count_interval<tick_count> operator - (const tick_count & right){
+      return tick_count_interval<tick_count>(right,*this);
     }
   };
 
@@ -199,10 +177,7 @@ class tick_count : public BaseTimer{
     reference local( void ){ return data_;}
   };
 
-}//my_tbb
+} // namespace Legolas
 
-
-
-namespace my_tbb = no_tbb;
-
-#endif
+// Official concise project namespace alias:
+namespace LGS = Legolas;

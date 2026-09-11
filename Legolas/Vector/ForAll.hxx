@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Parallel.hxx"
+
 #define LOG2_OF_BLOCKSIZE 10
 
 namespace Legolas{
@@ -94,7 +96,7 @@ namespace Legolas{
     const RANGE_FUNCTOR & rangeFunctor_;
   public:
     BlockFunctor(const RANGE_FUNCTOR & rangeFunctor):rangeFunctor_(rangeFunctor){}
-    void operator()(const my_tbb::blocked_range<size_t>& r) const {
+    void operator()(const Legolas::blocked_range<size_t>& r) const {
       const size_t b=r.begin();
       const size_t e=r.end();
       const size_t begin=b<<LOG2_OF_BLOCKSIZE;
@@ -117,7 +119,7 @@ namespace Legolas{
 	//blocked Part
 	BlockFunctor<RANGE_FUNCTOR> blockFunctor(rangeFunctor);
 	
-	my_tbb::parallel_for(my_tbb::blocked_range<size_t>(0,nbBlocks), blockFunctor);
+	Legolas::parallel_for(Legolas::blocked_range<size_t>(0,nbBlocks), blockFunctor);
 	
 	//reminder
 	const size_t smallBlockBegin=nbBlocks<<LOG2_OF_BLOCKSIZE;

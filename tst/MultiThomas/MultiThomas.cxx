@@ -6,10 +6,7 @@
 #include "Legolas/Array/Array.hxx"
 #include "Legolas/Array/Map.hxx"
 #include "helper.hxx"
-
-#if defined(TBB_INTERFACE_VERSION) && TBB_INTERFACE_VERSION >= 12000
-#include <tbb/global_control.h>
-#endif
+#include "Parallel.hxx"
 
 
 struct ThomasSolver{
@@ -279,11 +276,7 @@ void goSpeedUpBench(void){
   std::vector<int> nthreads({1,2,3,4,5,6,7,8});
 
   for (auto nthread : nthreads) {
-#if defined(TBB_INTERFACE_VERSION) && TBB_INTERFACE_VERSION >= 12000
-    tbb::global_control init(tbb::global_control::max_allowed_parallelism, nthread);
-#else
-    my_tbb::task_scheduler_init init(nthread);
-#endif
+    Legolas::task_scheduler_init init(nthread);
     std::vector<int> sizes = makeSizes();
     const int nbPoints = sizes.size();
     std::vector<double> perfs(nbPoints);

@@ -1,7 +1,7 @@
 #include "Legolas/BlockMatrix/Structures/Sparse/SparseBlockMatrix.hxx"
 #include "Legolas/BlockMatrix/Structures/Sparse/SparseParallelMultOperator.hxx"
 
-#include "my_tbb_parallel_for.hxx"
+#include "Parallel.hxx"
 
 namespace Legolas{
 
@@ -20,7 +20,7 @@ namespace Legolas{
 			const double & a,
 			const VirtualVector & X, VirtualVector & Y):A_(A),a_(a),X_(X),Y_(Y){}
     
-    inline void operator()(const my_tbb::blocked_range<int> & r) const {
+    inline void operator()(const Legolas::blocked_range<int> & r) const {
       
       for (int i=r.begin() ; i!=r.end() ; i++){
 	for (int j=A_.beginColInRow(i) ; j < A_.endColInRow(i) ; j=A_.nextColInRow(i,j) ){
@@ -33,7 +33,7 @@ namespace Legolas{
   void SparseParallelMultOperator::addMult(const SparseVirtualBlockMatrix & A, const double & a,
 					   const VirtualVector & X, VirtualVector & Y){
     
-    my_tbb::parallel_for(my_tbb::blocked_range<int>(0,A.nrows()),AddMultLineOperator(A,a,X,Y));
+    Legolas::parallel_for(Legolas::blocked_range<int>(0,A.nrows()),AddMultLineOperator(A,a,X,Y));
     
     // for (int i=0 ; i< A.nrows() ; i++){
     //   for (int j=A.beginColInRow(i) ; j < A.endColInRow(i) ; j=A.nextColInRow(i,j) ){
@@ -51,7 +51,7 @@ namespace Legolas{
     MultLineOperator(const SparseVirtualBlockMatrix & A,
 		     const VirtualVector & X, VirtualVector & Y):A_(A),X_(X),Y_(Y){}
     
-    inline void operator()(const my_tbb::blocked_range<int> & r) const {
+    inline void operator()(const Legolas::blocked_range<int> & r) const {
       
       for (int i=r.begin() ; i!=r.end() ; i++){
 	//first col
@@ -78,7 +78,7 @@ namespace Legolas{
   void SparseParallelMultOperator::mult(const SparseVirtualBlockMatrix & A,
 					const VirtualVector & X, VirtualVector & Y){
     
-    my_tbb::parallel_for(my_tbb::blocked_range<int>(0,A.nrows()),MultLineOperator(A,X,Y));
+    Legolas::parallel_for(Legolas::blocked_range<int>(0,A.nrows()),MultLineOperator(A,X,Y));
     
     // for (int i=0 ; i< A.nrows() ; i++){
     //   for (int j=A.beginColInRow(i) ; j < A.endColInRow(i) ; j=A.nextColInRow(i,j) ){

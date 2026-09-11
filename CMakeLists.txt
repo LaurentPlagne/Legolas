@@ -43,8 +43,6 @@ endif()
 
 find_package(Threads REQUIRED)
 
-add_definitions(-DUSING_TBB=0)
-
 enable_testing()
 
 add_subdirectory(Legolas)

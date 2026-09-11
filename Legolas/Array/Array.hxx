@@ -175,8 +175,6 @@ namespace Legolas{
     Shape shape_;
     bool owner_;
     typedef Legolas::allocator<RealType> Allocator;
-    //    typedef std::vector<RealType,tbb::cache_aligned_allocator<RealType> >Data;
-    //    Data data_;
     RealType * dataPtr_;
 
 
@@ -340,7 +338,7 @@ namespace Legolas{
 
       const int parallelChunks=std::max((int(nChunks)-1),0);
 
-      my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
+      Legolas::parallel_for(0,parallelChunks,[=](size_t i){
         const size_t begin=i*chunkSize;
         std::fill(this->dataPtr_ + begin, this->dataPtr_ + begin + chunkSize, value);
       });
@@ -392,7 +390,7 @@ namespace Legolas{
         const size_t nChunks=this->flatSize()/chunkSize;
         const int parallelChunks=std::max((int(nChunks)-1),0);
 
-        my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
+        Legolas::parallel_for(0,parallelChunks,[=](size_t i){
           const size_t begin=i*chunkSize;
           std::memcpy(this->dataPtr_ + begin, right.dataPtr_ + begin, chunkSize * sizeof(RealType));
         });
@@ -424,7 +422,7 @@ namespace Legolas{
 
       const int parallelChunks=std::max((int(nChunks)-1),0);
 
-      my_tbb::parallel_for(0,parallelChunks,[=](size_t i){
+      Legolas::parallel_for(0,parallelChunks,[=](size_t i){
         const size_t begin=i*chunkSize;
         std::memcpy(this->dataPtr_ + begin, right.getArray().dataPtr_ + begin, chunkSize * sizeof(RealType));
       });
