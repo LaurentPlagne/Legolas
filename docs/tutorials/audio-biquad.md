@@ -14,7 +14,7 @@ where:
 
 <p align="center">
   <audio controls preload="metadata" style="width: 100%; max-width: 540px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.25); margin: 1rem 0;">
-    <source src="../assets/media/biquad_demo.mp3" type="audio/mpeg">
+    <source src="../../assets/media/biquad_demo.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 </p>

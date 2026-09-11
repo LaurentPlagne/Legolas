@@ -70,7 +70,7 @@
       </div>
     </div>
     <div class="showcase-footer">
-      <a class="showcase-link" href="tutorials/video-pipeline.md">Explore Video Pipeline Showcase →</a>
+      <a class="showcase-link" href="tutorials/video-pipeline/">Explore Video Pipeline Showcase →</a>
       <span class="source-tag">examples/VideoPipeline</span>
     </div>
   </div>
@@ -122,7 +122,7 @@
       </div>
     </div>
     <div class="showcase-footer">
-      <a class="showcase-link" href="tutorials/audio-biquad.md">Explore Audio DSP Showcase →</a>
+      <a class="showcase-link" href="tutorials/audio-biquad/">Explore Audio DSP Showcase →</a>
       <span class="source-tag">examples/AudioBiquad</span>
     </div>
   </div>
@@ -168,7 +168,7 @@
       </div>
     </div>
     <div class="showcase-footer">
-      <a class="showcase-link" href="tutorials/depthwise-conv.md">Explore Edge AI Showcase →</a>
+      <a class="showcase-link" href="tutorials/depthwise-conv/">Explore Edge AI Showcase →</a>
       <span class="source-tag">examples/DepthwiseConv</span>
     </div>
   </div>
@@ -214,7 +214,7 @@
       </div>
     </div>
     <div class="showcase-footer">
-      <a class="showcase-link" href="tutorials/tridiagonal-thomas.md">Explore MultiThomas Showcase →</a>
+      <a class="showcase-link" href="tutorials/tridiagonal-thomas/">Explore MultiThomas Showcase →</a>
       <span class="source-tag">tst/MultiThomas</span>
     </div>
   </div>
@@ -244,13 +244,13 @@ The exact same generic algorithm code written using natural scalar math compiles
 
 ## Key Technical Highlights
 
-- :rocket: **Break the Recurrence Barrier**: Vectorize tridiagonal solvers (Thomas algorithm), IIR digital filters, and depthwise convolutions with 100% hardware SIMD register saturation.
-- :package: **100% Header-Only & Zero Dependencies**: Drop into any project with `#include <Legolas/Array/Array.hxx>`. No precompiled libraries, no link flags, and zero external dependencies. Pure standard C++14.
-- :zap: **Write Once, Vectorize Everywhere**: A single template implementation works for scalar floats and hardware SIMD vectors (`Legolas::NativeSimd<T, P>`).
-- :twisted_right_wards_arrows: **Two-Level Decoupled Parallelism**: 
+- 🚀 **Break the Recurrence Barrier**: Vectorize tridiagonal solvers (Thomas algorithm), IIR digital filters, and depthwise convolutions with 100% hardware SIMD register saturation.
+- 📦 **100% Header-Only & Zero Dependencies**: Drop into any project with `#include <Legolas/Array/Array.hxx>`. No precompiled libraries, no link flags, and zero external dependencies. Pure standard C++14.
+- ⚡ **Write Once, Vectorize Everywhere**: A single template implementation works for scalar floats and hardware SIMD vectors (`Legolas::NativeSimd<T, P>`).
+- 🔀 **Two-Level Decoupled Parallelism**: 
     1. **Data-Level (SIMD)**: Automatic via Data Layout Interleaving.
     2. **Thread-Level (Multi-Core)**: Built-in, header-only zero-allocation parallel loop scheduler.
-- :apple: **Cross-Platform**: Validated on Apple Silicon ARM64 (NEON), Linux x86_64 (AVX2 / AVX-512), and Windows MSVC.
+- 🍏 **Cross-Platform**: Validated on Apple Silicon ARM64 (NEON), Linux x86_64 (AVX2 / AVX-512), and Windows MSVC.
 
 ```cmake
 # Add Legolas++ to your CMakeLists.txt in 4 lines:
@@ -266,11 +266,11 @@ target_link_libraries(my_project PRIVATE Legolas)
 
 | Feature | Compilers (GCC/Clang) | Traditional Linear Algebra (BLAS, Armadillo) | Deep Learning Frameworks (PyTorch, oneDNN) | **Legolas++** |
 | :--- | :---: | :---: | :---: | :---: |
-| **Vectorize Recurrences ($X_i = f(X_{i-1})$)** | ❌ Fails (scalar $1\times$) | ❌ Scalar loops ($1\times$) | ❌ Custom handwritten kernels | :white_check_mark: **Automatic SIMD ($4\times - 16\times$)** |
-| **Write Once, Vectorize Everywhere** | ❌ Manual intrinsics needed | ⚠️ Limited to non-recursive ops | ❌ Separate CPU/GPU implementations | :white_check_mark: **Single generic scalar syntax** |
-| **Data Layout Interleaving (DLI)** | ❌ Manual memory transforms | ❌ Fixed row/col major | ⚠️ Heavy tensor reshape overhead | :white_check_mark: **Native in the tensor type** |
-| **External Dependencies** | None | BLAS / LAPACK | Heavy (LibTorch, Python, MKL) | :white_check_mark: **Zero (Pure C++14)** |
-| **Integration Model** | N/A | Variable | Multi-GB binaries | :white_check_mark: **100% Header-Only** |
+| **Vectorize Recurrences ($X_i = f(X_{i-1})$)** | ❌ Fails (scalar $1\times$) | ❌ Scalar loops ($1\times$) | ❌ Custom handwritten kernels | ✅ **Automatic SIMD ($4\times - 16\times$)** |
+| **Write Once, Vectorize Everywhere** | ❌ Manual intrinsics needed | ⚠️ Limited to non-recursive ops | ❌ Separate CPU/GPU implementations | ✅ **Single generic scalar syntax** |
+| **Data Layout Interleaving (DLI)** | ❌ Manual memory transforms | ❌ Fixed row/col major | ⚠️ Heavy tensor reshape overhead | ✅ **Native in the tensor type** |
+| **External Dependencies** | None | BLAS / LAPACK | Heavy (LibTorch, Python, MKL) | ✅ **Zero (Pure C++14)** |
+| **Integration Model** | N/A | Variable | Multi-GB binaries | ✅ **100% Header-Only** |
 
 ---
 

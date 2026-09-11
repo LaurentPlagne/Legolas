@@ -8,7 +8,7 @@ In modern convolutional neural networks designed for mobile and edge inferenceâ€
 While Pointwise convolution maps cleanly to BLAS/GEMM, the **Depthwise Convolution** is frequently the memory-bandwidth and efficiency bottleneck on CPU hardware.
 
 <p align="center">
-  <img src="../assets/images/depthwise_conv_diagram.svg" alt="Depthwise 2D Convolution with Legolas DLI" width="880" height="380" style="max-width: 100%; height: auto; border-radius: 10px; margin: 1rem 0;">
+  <img src="../../assets/images/depthwise_conv_diagram.svg" alt="Depthwise 2D Convolution with Legolas DLI" width="880" height="380" style="max-width: 100%; height: auto; border-radius: 10px; margin: 1rem 0;">
 </p>
 <p align="center"><em>Figure: Depthwise 2D Convolution Architecture â€” Legolas packs P=4 channels contiguously so a single SIMD FMA instruction computes 4 channel convolutions simultaneously in 1 clock cycle.</em></p>
 

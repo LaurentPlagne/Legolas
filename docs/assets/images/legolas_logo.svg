@@ -12,6 +12,7 @@
       .bow-tip { fill: #0d9488; }
       .bow-string { stroke: #64748b; stroke-width: 2; }
       .bow-node { fill: #ee6f40; stroke: #0e4b4b; stroke-width: 1.5; }
+      .arrow-shaft { fill: #ee6f40; }
       .lane-0 { fill: #0d9488; }
       .lane-1 { fill: #ea580c; }
       .lane-2 { fill: #ee6f40; }
@@ -28,6 +29,7 @@
         .bow-tip { fill: #5eead4; }
         .bow-string { stroke: #64748b; }
         .bow-node { fill: #ee6f40; stroke: #5eead4; }
+        .arrow-shaft { fill: #ffffff; }
         .lane-0 { fill: #5eead4; }
         .lane-1 { fill: #fb923c; }
         .lane-2 { fill: #ee6f40; }
@@ -38,57 +40,42 @@
     </style>
   </defs>
 
-  <!-- EMBLEM: Option 3 Cyber Bow & 4-Lane SIMD Vector Arrow -->
+  <!-- EMBLEM: Option 3 Cyber Bow & 4-Lane SIMD Vector Arrow (Continuous, zero gap) -->
   <g transform="translate(15, 8)">
-    <!-- Bowstring & Nock Region -->
     <path d="M 34,8 L 52,47 L 34,86" fill="none" class="bow-string" stroke-linecap="round" stroke-linejoin="round" />
     <circle cx="52" cy="47" r="4" fill="#ee6f40" />
 
-    <!-- Cyber Recurve Bow -->
     <path d="M 36,6 C 22,14 12,28 12,47 C 12,66 22,80 36,88 C 31,81 20,68 20,47 C 20,26 31,13 36,6 Z" 
           class="bow-shape" />
     
-    <!-- Bow Limb Energy Tips -->
     <polygon points="36,6 42,3 39,11" class="bow-tip" />
     <polygon points="36,88 42,91 39,83" class="bow-tip" />
     <circle cx="20" cy="47" r="4.5" class="bow-node" />
 
+    <!-- CONTINUOUS CENTRAL ARROW SHAFT -->
+    <rect x="52" y="45" width="52" height="4" rx="2" class="arrow-shaft" />
+
     <!-- 4 SOLID SIMD Vector Lanes -->
-    <!-- Lane 0 (Upper Track) -->
-    <g>
-      <rect x="46" y="30" width="46" height="4" rx="2" class="lane-0" />
-      <polygon points="92,32 98,38 95,40 89,34" class="lane-0" />
-    </g>
+    <rect x="46" y="28" width="54" height="4" rx="2" class="lane-0" />
+    <polygon points="98,28 106,36 103,38 95,30" class="lane-0" />
 
-    <!-- Lane 1 (Mid-Upper Track) -->
-    <rect x="54" y="40" width="48" height="4.5" rx="2" class="lane-1" />
+    <rect x="52" y="37" width="50" height="4" rx="2" class="lane-1" />
 
-    <!-- Lane 2 (Mid-Lower Track) -->
-    <rect x="54" y="50" width="48" height="4.5" rx="2" class="lane-2" />
+    <rect x="52" y="53" width="50" height="4" rx="2" class="lane-2" />
 
-    <!-- Lane 3 (Lower Track) -->
-    <g>
-      <rect x="46" y="60" width="46" height="4" rx="2" class="lane-3" />
-      <polygon points="92,62 98,56 95,54 89,60" class="lane-3" />
-    </g>
+    <rect x="46" y="62" width="54" height="4" rx="2" class="lane-3" />
+    <polygon points="98,66 106,58 103,56 95,64" class="lane-3" />
 
     <!-- Central Supersonic Vector Arrowhead -->
     <polygon points="126,47 96,33 103,47 96,61" class="arrow-wings" />
-    <!-- Core Diamond Pivot -->
     <polygon points="122,47 110,43 104,47 110,51" fill="#ffffff" />
-    <!-- Center Pivot Node -->
     <circle cx="104" cy="47" r="2.2" class="arrow-pivot" />
   </g>
 
   <!-- TYPOGRAPHY & BRANDING -->
   <g transform="translate(160, 20)">
-    <!-- Main Title: Legolas++ -->
     <text x="0" y="42" class="brand-title">Legolas<tspan class="brand-plus">++</tspan></text>
-    
-    <!-- Subtitle: SIMD Tensor & DLI Engine -->
     <text x="2" y="64" class="brand-sub">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
-
-    <!-- Technical Tagline -->
     <text x="2" y="78" class="brand-mono">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
   </g>
 </svg>
