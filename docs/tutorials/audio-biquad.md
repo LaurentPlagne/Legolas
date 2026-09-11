@@ -12,6 +12,14 @@ where:
 - $x[n]$ is the current input sample, and $x[n-1], x[n-2]$ are past inputs.
 - $y[n]$ is the current output sample, and $y[n-1], y[n-2]$ are past outputs (recursive feedback).
 
+<p align="center">
+  <audio controls preload="metadata" style="width: 100%; max-width: 540px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.25); margin: 1rem 0;">
+    <source src="../assets/media/biquad_demo.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+</p>
+<p align="center"><em>🔊 Audio Demonstration: 0s–3s: Unfiltered multi-tone synthesizer signal with bright high frequencies · 3s–6s: Processed through Legolas 2nd-order Biquad resonant low-pass filter (600 Hz cutoff).</em></p>
+
 ---
 
 ## The Vectorization Challenge in Audio

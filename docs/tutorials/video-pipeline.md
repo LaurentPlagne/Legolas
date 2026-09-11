@@ -12,6 +12,14 @@ A standard real-time vision pre-processing pipeline consists of:
 3. **Motion-Edge Fusion**: Blending spatial boundaries with temporal motion:
    $$O(r, c) = \alpha \cdot G_{spatial} + \beta \cdot M_{temporal}$$
 
+<p align="center">
+  <video autoplay loop muted playsinline controls width="100%" style="max-width: 760px; border-radius: 10px; border: 1px solid #283a50; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" poster="../assets/media/video_pipeline_demo.webp">
+    <source src="../assets/media/video_pipeline_demo.mp4" type="video/mp4">
+    <img src="../assets/media/video_pipeline_demo.webp" alt="Video Pipeline Demonstration" width="100%">
+  </video>
+</p>
+<p align="center"><em>Figure: Real-Time Multi-Stream Processing — Raw Input Feed (Left) vs Legolas DLI Sobel Edge & Motion Detection running at 17,264 FPS (Right).</em></p>
+
 ---
 
 ## The Vectorization Challenge in Multi-Stream Video

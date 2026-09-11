@@ -30,8 +30,17 @@
       </div>
       <h3 class="showcase-title">🎥 32-Stream Real-Time Video Pipeline</h3>
       <p class="showcase-description">
-        Continuous spatial 3×3 Sobel edge extraction combined with quadratic temporal motion differencing across 32 concurrent 720p HD video streams. Evaluated on Apple Silicon M1 Max.
+        Spatial 3×3 Sobel edge extraction fused with quadratic temporal motion differencing across 32 concurrent 720p HD feeds.
       </p>
+
+      <!-- Video Player Preview -->
+      <div style="margin: 0.8rem 0; border-radius: 8px; overflow: hidden; border: 1px solid #283a50; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <video autoplay loop muted playsinline width="100%" poster="assets/media/video_pipeline_demo.webp">
+          <source src="assets/media/video_pipeline_demo.mp4" type="video/mp4">
+          <img src="assets/media/video_pipeline_demo.webp" alt="Video Pipeline Demonstration" width="100%">
+        </video>
+      </div>
+
       <div class="metric-row">
         <div class="metric-pill">
           <span class="metric-value highlight-orange">8,442 FPS</span>
@@ -43,7 +52,7 @@
         </div>
         <div class="metric-pill">
           <span class="metric-value">15.91 GPix/s</span>
-          <span class="metric-label">Peak Throughput</span>
+          <span class="metric-label">Throughput</span>
         </div>
       </div>
       <div class="energy-box">
@@ -51,7 +60,7 @@
         <div class="energy-box-body">
           • <strong>CPU:</strong> Consumes only <span class="energy-stat">3.55 µJ per HD frame</span> (0.259 GPixels/Watt).<br>
           • <strong>Metal GPU:</strong> Drops to <span class="energy-stat">2.43 µJ per HD frame</span> (0.379 GPixels/Watt).<br>
-          • <strong>Green Impact:</strong> <strong>87.2% energy reduction</strong> vs scalar baseline. Sustains <strong>287 concurrent 60 FPS feeds</strong> on a single 40 W laptop without thermal throttling.
+          • <strong>Green Impact:</strong> <strong>87.2% energy reduction</strong> vs scalar. Sustains <strong>287 concurrent 60 FPS feeds</strong> on a 40 W laptop.
         </div>
       </div>
     </div>
@@ -70,8 +79,20 @@
       </div>
       <h3 class="showcase-title">🎧 64-Channel Studio Audio IIR Biquad</h3>
       <p class="showcase-description">
-        Recursive Direct Form II digital biquad filtering across 64 parallel audio tracks. Demonstrates vectorization of recursive digital signal processing where compilers strictly fail.
+        Recursive Direct Form II digital biquad filtering across 64 parallel audio tracks. Overcomes the recursive feedback barrier.
       </p>
+
+      <!-- Audio Player Preview -->
+      <div style="margin: 0.9rem 0; padding: 0.6rem; border-radius: 8px; background: rgba(15, 23, 34, 0.6); border: 1px solid #283a50;">
+        <audio controls preload="none" style="width: 100%;">
+          <source src="assets/media/biquad_demo.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+        <div style="font-size: 0.74rem; color: #94a3b8; text-align: center; margin-top: 0.35rem;">
+          🔊 <strong>Listen:</strong> 0s–3s raw synth chord → 3s–6s Biquad 600 Hz low-pass filter
+        </div>
+      </div>
+
       <div class="metric-row">
         <div class="metric-pill">
           <span class="metric-value highlight-orange">5,832 MS/s</span>
@@ -89,9 +110,9 @@
       <div class="energy-box">
         <div class="energy-box-title">🌱 Ultra-Low Power Consumption</div>
         <div class="energy-box-body">
-          • <strong>Power Draw:</strong> Processes 64 channels of studio-grade 192 kHz audio with <span class="energy-stat">&lt; 0.05 W</span>.<br>
-          • <strong>Energy Density:</strong> Consumes just <span class="energy-stat">5.14 nJ per filtered sample</span> (194.4 MSamples/Joule).<br>
-          • <strong>Green Impact:</strong> Replaces dedicated 500 W hardware DSP racks with pure software running on low-power mobile or edge CPUs.
+          • <strong>Power Draw:</strong> Filters 64 channels of studio 192 kHz audio with <span class="energy-stat">&lt; 0.05 W</span>.<br>
+          • <strong>Energy Density:</strong> Consumes just <span class="energy-stat">5.14 nJ per sample</span> (194.4 MSamples/Joule).<br>
+          • <strong>Green Impact:</strong> Replaces dedicated 500 W hardware DSP racks with pure software on low-power CPUs.
         </div>
       </div>
     </div>
@@ -110,8 +131,14 @@
       </div>
       <h3 class="showcase-title">🧠 Depthwise Separable 2D Convolution</h3>
       <p class="showcase-description">
-        Core compute primitive of lightweight edge vision neural networks (MobileNet, ConvNeXt, EfficientNet). Vectorizes per-channel spatial filters across large batch ensembles.
+        Compute primitive of lightweight vision neural networks. Vectorizes per-channel spatial filters across large batches.
       </p>
+
+      <!-- Architecture Diagram Preview -->
+      <div style="margin: 0.8rem 0; border-radius: 8px; overflow: hidden; border: 1px solid #283a50;">
+        <img src="assets/images/depthwise_conv_diagram.svg" alt="Depthwise 2D Convolution Architecture" width="100%">
+      </div>
+
       <div class="metric-row">
         <div class="metric-pill">
           <span class="metric-value highlight-orange">212.3 GFlops</span>
@@ -130,8 +157,8 @@
         <div class="energy-box-title">🌱 Embedded Battery Autonomy</div>
         <div class="energy-box-body">
           • <strong>Compute Density:</strong> Delivers <span class="energy-stat">7.08 GFlops/Watt</span> on standard CPU cores.<br>
-          • <strong>Zero Transfer Overhead:</strong> Avoids high-power GPU bus copies and discrete accelerator wake-up latency.<br>
-          • <strong>Green Impact:</strong> Cuts inference power by <span class="energy-stat">82.8%</span>, maximizing battery life for robotics, drones, and edge cameras.
+          • <strong>Zero Transfer Overhead:</strong> Avoids high-power discrete GPU wake-up latency.<br>
+          • <strong>Green Impact:</strong> Cuts inference power by <span class="energy-stat">82.8%</span>, maximizing battery life for robotics and drones.
         </div>
       </div>
     </div>
@@ -141,7 +168,7 @@
     </div>
   </div>
 
-  <!-- SHOWCASE 4: Scientific Computing -->
+  <!-- SHOWCASE 4: Scientific Computing (Placed at the end of the list) -->
   <div class="showcase-card">
     <div>
       <div class="showcase-header">
@@ -150,8 +177,14 @@
       </div>
       <h3 class="showcase-title">🔬 MultiThomas Tridiagonal Solver</h3>
       <p class="showcase-description">
-        Solving 262,144 coupled tridiagonal linear systems (134.2 million unknowns) arising in Alternating Direction Implicit (ADI) heat diffusion, Navier-Stokes, and quantitative finance PDEs.
+        Solving 262,144 coupled tridiagonal linear systems (134.2 million unknowns) for Alternating Direction Implicit (ADI) heat diffusion, Navier-Stokes, and quantitative finance.
       </p>
+
+      <!-- Benchmark Plot Preview -->
+      <div style="margin: 0.8rem 0; border-radius: 8px; overflow: hidden; border: 1px solid #283a50; background: #0f1722;">
+        <img src="assets/images/Thomas_comparison.png" alt="MultiThomas Throughput Benchmark" width="100%">
+      </div>
+
       <div class="metric-row">
         <div class="metric-pill">
           <span class="metric-value highlight-orange">69.40 GFlops</span>
@@ -169,9 +202,9 @@
       <div class="energy-box">
         <div class="energy-box-title">🌱 Hyperscale Cluster Compute Density</div>
         <div class="energy-box-body">
-          • <strong>HPC Efficiency:</strong> Delivers <span class="energy-stat">2.31 GFlops/Watt</span> on sequential recurrences where standard compilers yield only 0.07 GFlops/Watt.<br>
-          • <strong>Scale:</strong> Solves 134 million unknowns in milliseconds with zero memory reordering overhead.<br>
-          • <strong>Green Impact:</strong> <strong>33× higher compute density per Joule</strong>, drastically shrinking cloud HPC electricity bills.
+          • <strong>HPC Efficiency:</strong> Delivers <span class="energy-stat">2.31 GFlops/Watt</span> on sequential recurrences (vs 0.07 GFlops/Watt for standard compilers).<br>
+          • <strong>Scale:</strong> Solves 134 million unknowns with zero memory reordering overhead.<br>
+          • <strong>Green Impact:</strong> <strong>33× higher compute density per Joule</strong>, drastically shrinking cloud electricity bills.
         </div>
       </div>
     </div>
