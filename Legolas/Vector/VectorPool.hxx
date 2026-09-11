@@ -1,7 +1,7 @@
 #ifndef __VECTOR_POOL_HXX__
 #define __VECTOR_POOL_HXX__
 
-#include <pthread.h>
+#include <mutex>
 
 
 #include "Legolas/Vector/Vector.hxx"
@@ -27,14 +27,13 @@ namespace Legolas{
     AvailableVectorMap availableVectorMap_;
     UsedVectorMap usedVectorMap_;
 
-    pthread_mutex_t mutexsum;
+    std::mutex mutexsum;
     
   public:
     
     VectorPool( void ):availableVectorMap_(),
 		       usedVectorMap_(),
 		       mutexsum(){
-      pthread_mutex_init(&mutexsum, NULL);
     }
 		       
     
@@ -53,7 +52,7 @@ namespace Legolas{
 
     MultiVector<REAL_TYPE,LEVEL> * aquireVectorPtr(const typename ShapeTraits<LEVEL>::Type & shape){
       
-      pthread_mutex_lock (&mutexsum);
+      std::lock_guard<std::mutex> lock(mutexsum);
       typename AvailableVectorMap::iterator iter=availableVectorMap_.find(shape);
 
       MultiVector<REAL_TYPE,LEVEL> * result=0;
@@ -75,12 +74,12 @@ namespace Legolas{
       
       usedVectorMap_.insert(std::make_pair(result,shape));
 
-      pthread_mutex_unlock (&mutexsum);
       return result;
     }
     
     void releaseVectorPtr(MultiVector<REAL_TYPE,LEVEL> * vectorPtr){
       
+      std::lock_guard<std::mutex> lock(mutexsum);
       typename UsedVectorMap::iterator iter=usedVectorMap_.find(vectorPtr);
       availableVectorMap_.insert(std::make_pair((*iter).second,vectorPtr));//Create item in the available map
       usedVectorMap_.erase(iter); //remove item from the used vector map
@@ -106,8 +105,6 @@ namespace Legolas{
       }
       //      INFOS("Total Memory Releasead By this Memory Pool :"<<sum<<" MB");
       
-
-      pthread_mutex_destroy(&mutexsum);
     }
   };
 

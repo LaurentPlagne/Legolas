@@ -14,7 +14,7 @@
 #ifndef SINGLETONTIMERTABLE_HXX
 #define SINGLETONTIMERTABLE_HXX
 
-#include <pthread.h>
+#include <mutex>
 
 #include "UTILITES.hxx"
 #include <map>
@@ -28,17 +28,15 @@ class SingletonTimerTable{
 public:
 
   typedef std::map< std::string , std::vector<double> > MeasurementType;
-  pthread_mutex_t mutexsum;
+  std::mutex mutexsum;
 
   SingletonTimerTable( void ):_measurements(),_cumulate_measurement(0.0)
   {
-    pthread_mutex_init(&mutexsum, NULL);
     //INFOS("SingletonTimerTable Default Ctor");
   }
 
   ~SingletonTimerTable( void )
   {
-    pthread_mutex_destroy(&mutexsum);
     //INFOS("Dtor");
 
     MeasurementType::iterator it;
@@ -78,9 +76,8 @@ public:
   }
 
   void add_measurement( const std::string & operation_name , double operation_time ){
-    pthread_mutex_lock (&mutexsum);
+    std::lock_guard<std::mutex> lock(mutexsum);
     _measurements[operation_name].push_back(operation_time);
-    pthread_mutex_unlock (&mutexsum);
   }
 
   void cumulate_measurement(double operation_time){
