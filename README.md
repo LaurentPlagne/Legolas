@@ -266,6 +266,9 @@ c++ -O3 -std=c++14 -I/path/to/Legolas/Legolas/.. -I/path/to/Legolas/Legolas/incl
 
 ### Run Showcases
 ```bash
+# Real-Time Multi-Stream Video Pipeline showcase (8,400+ FPS in 720p HD):
+./build/examples/VideoPipeline
+
 # AI Depthwise 2D Convolution showcase:
 ./build/examples/DepthwiseConv
 

@@ -53,6 +53,7 @@ Testing multi-core thread scaling from 1 to 8 threads on the Apple M1 Max Firest
 | **MultiThomas** | Scientific Computing | GFlops | 2.10 GFlops | **69.40 GFlops** | **33.0x** | $0.00$ |
 | **Depthwise 2D Conv** | AI & Vision (MobileNet) | GFlops | 36.40 GFlops | **212.30 GFlops** | **5.83x** | $0.00$ |
 | **Audio IIR Biquad** | Audio DSP (64 Tracks) | MSamples/s | 397.9 MS/s | **5,832.2 MS/s** | **14.66x** | $0.00$ |
+| **Video Pipeline** | Vision / NVR (32 Feeds) | FPS | 1,579.6 FPS | **8,442.1 FPS** (7.78 GPix/s) | **5.34x** | $< 10^{-7}$ |
 
 ---
 

@@ -4,5 +4,9 @@ target_link_libraries(DepthwiseConv Legolas)
 add_executable(AudioBiquad AudioBiquad/AudioBiquad.cxx)
 target_link_libraries(AudioBiquad Legolas)
 
+add_executable(VideoPipeline VideoPipeline/VideoPipeline.cxx)
+target_link_libraries(VideoPipeline Legolas)
+
 add_test(NAME DepthwiseConv COMMAND DepthwiseConv)
 add_test(NAME AudioBiquad COMMAND AudioBiquad)
+add_test(NAME VideoPipeline COMMAND VideoPipeline)
