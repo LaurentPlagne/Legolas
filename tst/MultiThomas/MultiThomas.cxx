@@ -7,6 +7,10 @@
 #include "Legolas/Array/Map.hxx"
 #include "helper.hxx"
 
+#if defined(TBB_INTERFACE_VERSION) && TBB_INTERFACE_VERSION >= 12000
+#include <tbb/global_control.h>
+#endif
+
 
 struct ThomasSolver{
   template <class A2D>
@@ -275,7 +279,11 @@ void goSpeedUpBench(void){
   std::vector<int> nthreads({1,2,3,4,5,6,7,8});
 
   for (auto nthread : nthreads) {
-    tbb::task_scheduler_init init(nthread);
+#if defined(TBB_INTERFACE_VERSION) && TBB_INTERFACE_VERSION >= 12000
+    tbb::global_control init(tbb::global_control::max_allowed_parallelism, nthread);
+#else
+    my_tbb::task_scheduler_init init(nthread);
+#endif
     std::vector<int> sizes = makeSizes();
     const int nbPoints = sizes.size();
     std::vector<double> perfs(nbPoints);
@@ -332,7 +340,7 @@ int main( int argc,  char *argv[] )
   goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
   goBench< ThomasBench<Legolas::Array<RealType,2>, ParMap > >();
   goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
-
+  goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
 
   return 0;
 }

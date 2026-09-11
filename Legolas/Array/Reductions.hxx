@@ -331,34 +331,34 @@ inline double dotAssumeZeroPadding(const BaseArray<DERIVED> & baLeft, const Base
   
   const int lvsize=lv.size();
 
+#if USING_TBB == 1
   const double result= tbb::parallel_deterministic_reduce(
 							  tbb::blocked_range<int>(0,lvsize,256),
 							  double(0.0),
 							  [&](const tbb::blocked_range<int> & r, double sum)->double {
-							    //							    INFOS("r.begin()="<<r.begin());
-							    //							    const int bsize=r.end()-r.begin();
-							    //							    INFOS("bsize="<<bsize);
 							    typename DERIVED::PackedRealType psum(0.0);
 							    for (int i=r.begin(); i<r.end() ; i++){
 							      psum+=lv[i]*rv[i];
 							    }
-							    
 							    for (int j=0; j<psum.size() ; j++){
 							      sum+=psum(j);
 							    }
-							    
-							    //							    sum+=left.getEigenView(r.begin(),bsize).matrix().dot(right.getEigenView(r.begin(),bsize).matrix());
-							    //							    INFOS("apres="<<r.begin());
-							    //							    INFOS("apres="<<bsize);
-							    //							    sum+
-							    //							    for(int i=r.begin(); i!=r.end(); ++i )
-							    //							      sum += lv(i)*rv(i);
 							    return sum;
 							  },
 							  [&]( double x, double y )->double {
 							    return x+y;
 							  }
 							  );
+#else
+  double result = 0.0;
+  for (int i=0; i<lvsize ; i++){
+    typename DERIVED::PackedRealType psum(0.0);
+    psum += lv[i] * rv[i];
+    for (int j=0; j<psum.size() ; j++){
+      result += psum(j);
+    }
+  }
+#endif
   
   return result;
 }

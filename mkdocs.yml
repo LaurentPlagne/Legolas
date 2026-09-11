@@ -1,0 +1,79 @@
+site_name: Legolas++
+site_description: High-Performance C++ Tensor Engine for Automatic SIMD Vectorization & Multi-Core Work-Stealing via Data Layout Interleaving (DLI).
+site_author: Laurent Plagne
+repo_name: laurentplagne/Legolas
+repo_url: https://github.com/laurentplagne/Legolas
+
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - tables
+  - attr_list
+  - md_in_html
+
+extra_javascript:
+  - assets/javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation & Build: getting-started/install.md
+      - Quickstart Guide: getting-started/quickstart.md
+  - Core Concepts:
+      - The Recurrence Barrier: core-concepts/recurrence-barrier.md
+      - Data Layout Interleaving (DLI): core-concepts/data-layout-interleaving.md
+      - Hybrid SIMD & Work-Stealing: core-concepts/hybrid-parallelism.md
+  - Tutorials:
+      - Tridiagonal Recurrence (Thomas / ADI): tutorials/tridiagonal-thomas.md
+      - AI & Edge Vision (Depthwise Conv): tutorials/depthwise-conv.md
+      - Real-Time Audio DSP (IIR Biquad): tutorials/audio-biquad.md
+  - Benchmarks:
+      - Apple Silicon (M1 Max ARM64): benchmarks/apple-silicon-m1.md
+  - API Reference:
+      - Legolas::Array: api/array.md
+      - Parallel Algorithms (map / parmap): api/algorithms.md

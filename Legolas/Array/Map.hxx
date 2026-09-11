@@ -12,11 +12,10 @@ namespace Legolas{
   }
   template <class ALGO, typename... ARRAYS>
   void parallel_ranged_map(int begin, int end, ALGO algo, ARRAYS... rest){
-    tbb::parallel_for(tbb::blocked_range<int>(begin,end),
-		      [=](tbb::blocked_range<int> r){
+    my_tbb::parallel_for(my_tbb::blocked_range<int>(begin,end),
+		      [=](my_tbb::blocked_range<int> r){
 			algo(r.begin(),r.end(),rest...);}
-		      ,tbb::auto_partitioner());
-			//		      });
+		      ,my_tbb::auto_partitioner());
   }
 
 

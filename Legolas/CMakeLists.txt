@@ -6,8 +6,8 @@ file(GLOB Legolas_SRC
   "BlockMatrix/Structures/*/*.cxx"
   )
 add_library(Legolas SHARED ${Legolas_SRC})
-if ( TBB_FOUND )
+if ( TBB_FOUND AND USE_TBB )
   target_link_libraries(Legolas ${TBB_LIBRARIES})
-endif ( TBB_FOUND)
+endif ()
 
 

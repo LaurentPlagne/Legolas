@@ -9,7 +9,7 @@
 #include <algorithm>
 //#include <stdio.h>
 //#include <stdlib.h>
-#include "dkconfig.hxx"	/* pour r�cup�rer la valeur de la macro USING_TBB utilis�e plus bas */
+#include "dkconfig.hxx"	/* pour rï¿½cupï¿½rer la valeur de la macro USING_TBB utilisï¿½e plus bas */
 #include "UTILITES.hxx"
 #include <chrono>
 
@@ -17,11 +17,11 @@
 
 inline int spn_thread_number( void ){
   /*
-   * la fonction spn_thread_number r�cup�re dans l'environnement la valeur
-   * positionnant le param�tre shell SPN_THREAD_NUMBER (s'il a �t� positionn�)
+   * la fonction spn_thread_number rï¿½cupï¿½re dans l'environnement la valeur
+   * positionnant le paramï¿½tre shell SPN_THREAD_NUMBER (s'il a ï¿½tï¿½ positionnï¿½)
    * pour configurer l'utilisation des TBB.
    */
-  int result=-1; /* valeur par d�fuat si SPN_THREAD_NUMBER n'est positionn� */
+  int result=-1; /* valeur par dï¿½fuat si SPN_THREAD_NUMBER n'est positionnï¿½ */
   char * pSTN=0;
   pSTN = getenv ("SPN_THREAD_NUMBER");
   if (pSTN!=NULL){
@@ -30,7 +30,7 @@ inline int spn_thread_number( void ){
     MESSAGE("SPN_THREAD_NUMBER="<<result);
   }
   else{
-    MESSAGE("SPN_THREAD_NUMBER est non positionn� (-> nthreads==nprocs).");
+    MESSAGE("SPN_THREAD_NUMBER est non positionnï¿½ (-> nthreads==nprocs).");
   }
 
   return result;
@@ -38,29 +38,16 @@ inline int spn_thread_number( void ){
 
 
 
+#include "WorkStealing.hxx"
+
 namespace no_tbb{
 
-
-  struct task_scheduler_init{
-    int i_;
-    task_scheduler_init(int i):i_(i){}
-
-    static int default_num_threads() { return 1 ; }
-    inline void terminate( void ) const {}
-
-  };
-
-  template <class Range, class Functor>
-  void parallel_for(const Range & range, const Functor & functor,int part=0){
-    functor(range);
-  }
-
-  template <class Index, class Functor>
-  void parallel_for(Index first, Index last, const Functor & functor,int part=0){
-    for (Index i=first ; i<last ; i++){
-      functor(i);
-    }
-  }
+  using Legolas::WorkStealing::task_scheduler_init;
+  using Legolas::WorkStealing::parallel_for;
+  using Legolas::WorkStealing::blocked_range;
+  using Legolas::WorkStealing::auto_partitioner;
+  using Legolas::WorkStealing::simple_partitioner;
+  using Legolas::WorkStealing::split;
 
   template <class Range, class Functor>
   void parallel_reduce(const Range & range, Functor & functor,int part=0){
@@ -68,28 +55,7 @@ namespace no_tbb{
   }
 
   typedef int affinity_partitioner;
-  typedef int auto_partitioner;
-  typedef int simple_partitioner;
   typedef int static_partitioner;
-
-  struct split{};
-
-
-  template <class T>
-  struct blocked_range{
-    T begin_;
-    T end_;
-    int grainSize_;
-    blocked_range(T begin, T end, int grainSize=1):
-            begin_(begin),
-            end_(end),
-            grainSize_(grainSize)
-    {
-    }
-
-    const T & begin( void ) const { return begin_;}
-    const T & end( void ) const { return end_;}
-  };
 
 
   template <class T>
@@ -236,12 +202,12 @@ class tick_count : public BaseTimer{
 
 
 
-#if ! defined (USING_TBB)	/* macro d�finie dans dkconfig.hxx */
+#if ! defined (USING_TBB)	/* macro dï¿½finie dans dkconfig.hxx */
 #error C macro USING_TBB is not defined
 #endif	/* #if ! defined (USING_TBB) */
 
 
-#if USING_TBB == 1		/* macro d�finie dans dkconfig.hxx */
+#if USING_TBB == 1		/* macro dï¿½finie dans dkconfig.hxx */
 
 #define TBB_PREVIEW_STATIC_PARTITIONER 1
 #include "tbb/tbb.h"
@@ -255,14 +221,14 @@ namespace my_tbb=tbb;
 
 #elif USING_TBB == 0
 
-#warning  USING_TBB est positionnée a 0
-#warning  USING_TBB est positionnée a 0
-#warning  USING_TBB est positionnée a 0
-#warning  USING_TBB est positionnée a 0
-#warning  USING_TBB est positionnée a 0
-#warning  USING_TBB est positionnée a 0
-#warning  USING_TBB est positionnée a 0
-#warning  USING_TBB est positionnée a 0
+#warning  USING_TBB est positionnÃ©e a 0
+#warning  USING_TBB est positionnÃ©e a 0
+#warning  USING_TBB est positionnÃ©e a 0
+#warning  USING_TBB est positionnÃ©e a 0
+#warning  USING_TBB est positionnÃ©e a 0
+#warning  USING_TBB est positionnÃ©e a 0
+#warning  USING_TBB est positionnÃ©e a 0
+#warning  USING_TBB est positionnÃ©e a 0
 namespace my_tbb=no_tbb;
 
 #else	/* #if USING_TBB == 1 */

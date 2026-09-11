@@ -21,16 +21,21 @@ struct EigenBlockMapTraits{
 };
 
 
+#if defined(__AVX512F__)
+static const int DEFAULT_ALIGN_BYTES = 64;
+#elif defined(__AVX__) || defined(__AVX2__)
+static const int DEFAULT_ALIGN_BYTES = 32;
+#else
+static const int DEFAULT_ALIGN_BYTES = 16;
+#endif
+
 template <class BLOCK>
 struct EigenBlockMapTraits<BLOCK,0>{
-  //  typedef Eigen::Map<BLOCK,Eigen::Aligned> Map;
-  typedef Eigen::Map<BLOCK,Eigen::Aligned32> Map;
+  typedef Eigen::Map<BLOCK,Eigen::Unaligned> Map;
 };
 
-
-//16 pour SSE et 32 pour AVX
-//template <class BLOCK, int BYTE=16>
-template <class BLOCK, int BYTE=32>  
+// 16 pour NEON/SSE et 32 pour AVX
+template <class BLOCK, int BYTE=DEFAULT_ALIGN_BYTES>  
 struct EigenBlockMap{
   static const int modulo=sizeof(BLOCK)%BYTE;
   typedef typename EigenBlockMapTraits<BLOCK,modulo>::Map Map;

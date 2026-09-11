@@ -11,8 +11,12 @@
 typedef double DkReal		/* --with-myprec=double */;
 
 #undef USING_MEMORY
+#ifndef USING_TBB
 #define USING_TBB 1
+#endif
+#ifndef USING_X86_TIMER
 #define USING_X86_TIMER 1	/* --enable-x86timer */
+#endif
 #define HAS_PROC 1
 
 #define sizeof_size_t 8

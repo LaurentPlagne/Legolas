@@ -13,7 +13,13 @@
 #include "Legolas/Array/Reductions.hxx"
 #include "Legolas/StaticArray/StaticArray.hxx"
 
-//#define ZEROINIT
+#if defined(__GNUC__) || defined(__clang__)
+#  define LEGOLAS_ALWAYS_INLINE __attribute__((always_inline)) inline
+#elif defined(_MSC_VER)
+#  define LEGOLAS_ALWAYS_INLINE __forceinline
+#else
+#  define LEGOLAS_ALWAYS_INLINE inline
+#endif
 
 namespace Legolas{
 
@@ -342,12 +348,16 @@ namespace Legolas{
     //typedef Eigen::Map<const EigenArray,Eigen::Aligned> ConstEigenView;
 
     typedef Eigen::Array<RealType,Eigen::Dynamic,1> EigenArray;
+#if defined(__AVX512F__)
+    typedef Eigen::Map<EigenArray,Eigen::Aligned64> EigenView;
+    typedef Eigen::Map<const EigenArray,Eigen::Aligned64> ConstEigenView;
+#elif defined(__AVX__) || defined(__AVX2__)
     typedef Eigen::Map<EigenArray,Eigen::Aligned32> EigenView;
     typedef Eigen::Map<const EigenArray,Eigen::Aligned32> ConstEigenView;
-    //    typedef Eigen::Map<EigenArray,Eigen::Aligned> EigenView;
-    //    typedef Eigen::Map<const EigenArray,Eigen::Aligned> ConstEigenView;
-    //typedef Eigen::Map<EigenArray> EigenView;
-    //    typedef Eigen::Map<const EigenArray> ConstEigenView;
+#else
+    typedef Eigen::Map<EigenArray,Eigen::Unaligned> EigenView;
+    typedef Eigen::Map<const EigenArray,Eigen::Unaligned> ConstEigenView;
+#endif
 
 
     typedef int ArrayView;
@@ -645,7 +655,7 @@ namespace Legolas{
 
 
 
-    GetElement operator[](int i){
+    LEGOLAS_ALWAYS_INLINE GetElement operator[](int i){
 #ifndef NDEBUG
       if ( (i<0) || (i>=this->size()) ) {
         INFOS("i="<<i<<"this->size()="<<this->size());
@@ -654,7 +664,7 @@ namespace Legolas{
 #endif
       return ART::getElement(*this,i);
     }
-    ConstGetElement operator[](int i) const {
+    LEGOLAS_ALWAYS_INLINE ConstGetElement operator[](int i) const {
 #ifndef NDEBUG
       if ( (i<0) || (i>=this->size()) ) {
         INFOS("i="<<i<<"this->size()="<<this->size());
