@@ -6,6 +6,8 @@ repo_url: https://github.com/laurentplagne/Legolas
 
 theme:
   name: material
+  logo: assets/images/legolas_icon.svg
+  favicon: assets/images/legolas_icon.svg
   language: en
   palette:
     - scheme: slate

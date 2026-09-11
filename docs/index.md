@@ -1,6 +1,10 @@
 # Legolas++: Building Blocks for Linear Algebra Solvers
 
 <p align="center">
+  <img src="assets/images/legolas_logo.svg" alt="Legolas++ Logo" width="380" style="margin: 1rem 0;">
+</p>
+
+<p align="center">
   <em>High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization of Recurrences via Data Layout Interleaving (DLI).</em>
 </p>
 
