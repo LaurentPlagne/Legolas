@@ -2,15 +2,26 @@
 
 In video surveillance (NVR), autonomous vehicles, robotics, and broadcast servers, vision processing engines must ingest and process multiple high-definition video streams simultaneously in real time (e.g. 16 to 64 camera streams at 60+ FPS).
 
-A standard real-time vision pre-processing pipeline consists of:
-1. **Spatial Feature Extraction**: 3x3 Sobel gradient magnitude for edge detection:
-   $$G_x = (p_{02} + 2p_{12} + p_{22}) - (p_{00} + 2p_{10} + p_{20})$$
-   $$G_y = (p_{20} + 2p_{21} + p_{22}) - (p_{00} + 2p_{01} + p_{02})$$
-   $$G_{spatial} = \frac{1}{8}(G_x^2 + G_y^2)$$
-2. **Temporal Motion Estimation**: Frame differencing between the current frame $I_t$ and the previous frame $I_{t-1}$:
-   $$M_{temporal} = (I_t(r, c) - I_{t-1}(r, c))^2$$
-3. **Motion-Edge Fusion**: Blending spatial boundaries with temporal motion:
-   $$O(r, c) = \alpha \cdot G_{spatial} + \beta \cdot M_{temporal}$$
+A standard real-time vision pre-processing pipeline consists of three successive stages per pixel:
+
+### 1. Spatial Feature Extraction ($3 \times 3$ Sobel Gradient)
+Detects structural edges and boundaries across neighboring pixels:
+
+$$\begin{aligned}
+G_x &= (p_{02} + 2p_{12} + p_{22}) - (p_{00} + 2p_{10} + p_{20}) \\
+G_y &= (p_{20} + 2p_{21} + p_{22}) - (p_{00} + 2p_{01} + p_{02}) \\
+G_{\text{spatial}} &= \frac{1}{8}\left(G_x^2 + G_y^2\right)
+\end{aligned}$$
+
+### 2. Temporal Motion Estimation (Frame Differencing)
+Measures dynamic variation between the current frame $I_t$ and previous frame $I_{t-1}$:
+
+$$M_{\text{temporal}} = \left(I_t(r, c) - I_{t-1}(r, c)\right)^2$$
+
+### 3. Motion-Edge Fusion
+Blends spatial boundaries and temporal activity into a unified perception mask:
+
+$$O(r, c) = \alpha \cdot G_{\text{spatial}} + \beta \cdot M_{\text{temporal}}$$
 
 <p align="center">
   <video autoplay loop muted playsinline controls width="100%" style="max-width: 760px; border-radius: 10px; border: 1px solid #283a50; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" poster="../../assets/media/video_pipeline_demo.webp">

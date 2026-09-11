@@ -1,43 +1,78 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="iconArrowGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ee6f40" />
+      <stop offset="50%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <linearGradient id="lane0Grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#177272" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <linearGradient id="lane1Grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#177272" />
+      <stop offset="100%" stop-color="#2dd4bf" />
+    </linearGradient>
+
+    <linearGradient id="lane2Grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#fb923c" />
+    </linearGradient>
+
+    <linearGradient id="lane3Grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#ee6f40" />
+    </linearGradient>
+
+    <filter id="iconGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
   <!-- Dark Squircle Background -->
-  <rect x="4" y="4" width="120" height="120" rx="26" fill="#0f1722" stroke="#253549" stroke-width="2.5" />
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="#0f1722" stroke="#253549" stroke-width="2.5" />
 
-  <!-- BOLD EMBLEM: Fully continuous bow & 4-lane arrow with ZERO gap -->
-  <g transform="translate(6, 8)">
-    <!-- Bowstring -->
-    <path d="M 32,16 L 48,56 L 32,96" fill="none" stroke="#64748b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-    <circle cx="48" cy="56" r="4.5" fill="#ee6f40" />
-
-    <!-- Cyber Recurve Bow -->
-    <path d="M 34,12 C 18,22 8,38 8,56 C 8,74 18,90 34,100 C 28,92 16,76 16,56 C 16,36 28,20 34,12 Z" 
-          fill="#177272" stroke="#5eead4" stroke-width="2" />
-    
-    <!-- Bow Tips & Grip Accent -->
-    <polygon points="34,12 40,8 37,18" fill="#5eead4" />
-    <polygon points="34,100 40,104 37,94" fill="#5eead4" />
-    <circle cx="16" cy="56" r="4" fill="#ee6f40" />
-
-    <!-- CONTINUOUS MAIN ARROW SHAFT (Bridges bowstring directly into arrowhead) -->
-    <rect x="48" y="53.5" width="50" height="5" rx="2.5" fill="#ffffff" />
-
-    <!-- 4 SIMD LANES (Spanning continuously from string to arrowhead wings) -->
-    <!-- Lane 0 (Upper Track, Mint) -->
-    <rect x="46" y="34" width="46" height="5" rx="2.5" fill="#5eead4" />
-    <polygon points="90,34 98,42 95,44 87,36" fill="#5eead4" />
-
-    <!-- Lane 1 (Mid-Upper Track, Peach Coral) -->
-    <rect x="50" y="44" width="46" height="5" rx="2.5" fill="#fb923c" />
-
-    <!-- Lane 2 (Mid-Lower Track, Warm Coral) -->
-    <rect x="50" y="63" width="46" height="5" rx="2.5" fill="#ee6f40" />
-
-    <!-- Lane 3 (Lower Track, Emerald) -->
-    <rect x="46" y="73" width="46" height="5" rx="2.5" fill="#34d399" />
-    <polygon points="90,78 98,70 95,68 87,76" fill="#34d399" />
-
-    <!-- Supersonic Arrowhead (Firmly attached to shaft and lanes) -->
-    <polygon points="118,56 88,38 96,56 88,74" fill="#ee6f40" stroke="#f28b63" stroke-width="2" />
-    <polygon points="112,56 100,51 96,56 100,61" fill="#ffffff" />
-    <circle cx="96" cy="56" r="2.5" fill="#5eead4" />
+  <!-- C++ PLUS-PLUS ACCENTS (Top Left) -->
+  <g transform="translate(18, 20)">
+    <!-- First + (Mint) -->
+    <line x1="6" y1="2" x2="6" y2="12" stroke="#34d399" stroke-width="3" stroke-linecap="round" />
+    <line x1="1" y1="7" x2="11" y2="7" stroke="#34d399" stroke-width="3" stroke-linecap="round" />
+    <!-- Second + (Coral) -->
+    <line x1="18" y1="2" x2="18" y2="12" stroke="#ee6f40" stroke-width="3" stroke-linecap="round" />
+    <line x1="13" y1="7" x2="23" y2="7" stroke="#ee6f40" stroke-width="3" stroke-linecap="round" />
   </g>
+
+  <!-- MATRIX MEMORY CELLS (DLI Memory Layout) -->
+  <!-- Lane 0 Data Blocks -->
+  <rect x="16" y="46" width="7" height="5" rx="2" fill="#177272" opacity="0.75" />
+  <rect x="26" y="46" width="10" height="5" rx="2" fill="#2dd4bf" opacity="0.9" />
+  <!-- Lane 0 Streaming Track (Mint) -->
+  <path d="M 39,48.5 L 50,48.5 C 60,48.5 68,44 74,36 L 80,30" fill="none" stroke="url(#lane0Grad)" stroke-width="4.5" stroke-linecap="round" />
+
+  <!-- Lane 1 Data Blocks -->
+  <rect x="16" y="58" width="11" height="5" rx="2" fill="#177272" opacity="0.65" />
+  <rect x="30" y="58" width="8" height="5" rx="2" fill="#2dd4bf" opacity="0.9" />
+  <!-- Lane 1 Streaming Track (Teal/Cyan) -->
+  <path d="M 41,60.5 L 54,60.5 C 65,60.5 74,54 81,45 L 87,38" fill="none" stroke="url(#lane1Grad)" stroke-width="4.5" stroke-linecap="round" />
+
+  <!-- Lane 2 Data Blocks -->
+  <rect x="16" y="70" width="8" height="5" rx="2" fill="#2dd4bf" opacity="0.65" />
+  <rect x="27" y="70" width="12" height="5" rx="2" fill="#fb923c" opacity="0.9" />
+  <!-- Lane 2 Streaming Track (Peach/Coral) -->
+  <path d="M 42,72.5 L 58,72.5 C 70,72.5 80,64 88,54 L 94,47" fill="none" stroke="url(#lane2Grad)" stroke-width="4.5" stroke-linecap="round" />
+
+  <!-- Lane 3 Data Blocks -->
+  <rect x="16" y="82" width="13" height="5" rx="2" fill="#fb923c" opacity="0.65" />
+  <rect x="32" y="82" width="8" height="5" rx="2" fill="#ee6f40" opacity="0.9" />
+  <!-- Lane 3 Streaming Track (Warm Coral) -->
+  <path d="M 43,84.5 L 62,84.5 C 76,84.5 87,74 95,63 L 100,56" fill="none" stroke="url(#lane3Grad)" stroke-width="4.5" stroke-linecap="round" />
+
+  <!-- SUPERSONIC SIMD VECTOR ARROWHEAD (Option 1) -->
+  <polygon points="114,14 74,28 92,36 100,56" fill="url(#iconArrowGrad)" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round" />
+  <!-- Speed Core Highlight -->
+  <polygon points="110,18 86,29 93,34 98,44" fill="#ffffff" opacity="0.85" />
+  <circle cx="92" cy="36" r="2.5" fill="#34d399" />
 </svg>

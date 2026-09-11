@@ -26,10 +26,14 @@ The classical $O(N)$ solution is the **Thomas algorithm** (Gaussian elimination 
 ## 1. The Algorithm
 
 The algorithm consists of two sweeps:
-1. **Forward elimination**: Modifies the upper diagonal into $S$ and updates $X$:
-   $$s = D_i - L_i S_{i-1}, \quad S_i = \frac{U_i}{s}, \quad X_i = \frac{B_i - L_i X_{i-1}}{s}$$
-2. **Backward substitution**:
-   $$X_i = X_i - S_{i+1} X_{i+1}$$
+
+- **1. Forward elimination**: Modifies the upper diagonal into $S$ and updates $X$:
+
+    $$s = D_i - L_i S_{i-1}, \quad S_i = \frac{U_i}{s}, \quad X_i = \frac{B_i - L_i X_{i-1}}{s}$$
+
+- **2. Backward substitution**:
+
+    $$X_i = X_i - S_{i+1} X_{i+1}$$
 
 Both sweeps are sequential recurrences: forward sweep propagates from $i=0$ to $N-1$, and backward sweep propagates from $i=N-2$ down to $0$.
 
