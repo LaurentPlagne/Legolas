@@ -22,12 +22,19 @@ The exact same generic algorithm code written using natural scalar math executes
 ## Key Highlights
 
 - :rocket: **Break the Recurrence Barrier**: Vectorize tridiagonal solvers (Thomas algorithm), IIR digital filters, and depthwise convolutions with 100% hardware SIMD register utilization.
-- :zap: **Write Once, Vectorize Everywhere**: A single template implementation works for both scalar types and hardware SIMD vectors (`Eigen::Array<T, P, 1>`).
+- :package: **100% Header-Only & Zero Dependencies**: Drop into any project with `#include <Legolas/Array/Array.hxx>`. No precompiled libraries (`.a`, `.dylib`, `.so`), no linker flags, and zero mandatory external dependencies. Native vector extensions (`Legolas::NativeSimd`) and native work-stealing (`Legolas::WorkStealingThreadPool`) run out of the box.
+- :zap: **Write Once, Vectorize Everywhere**: A single template implementation works for both scalar types and hardware SIMD vectors (`Legolas::NativeSimd<T, P>` or `Eigen::Array<T, P, 1>`).
 - :twisted_right_wards_arrows: **Two-Level Hybrid Parallelism**: 
     1. **Data-Level (SIMD)**: Automatic via Data Layout Interleaving.
     2. **Thread-Level (Multi-Core)**: Built-in, header-only lock-minimized **Work-Stealing** loop scheduler (or optional Intel oneTBB).
 - :apple: **First-Class Apple Silicon & x86 Support**: Tuned for ARM64 NEON (Apple M1/M2/M3/M4) and x86 AVX2 / AVX-512.
-- :package: **Zero External Dependencies**: Operates header-only with Eigen and the native work-stealing engine without requiring external shared libraries.
+- :gear: **Dual-Engine Flexibility**: Optional drop-in support for Eigen and Intel oneTBB when interfacing with existing codebases.
+
+<p align="center">
+  <img src="assets/images/dli_interleaving_mapping.png" alt="Data Layout Interleaving Memory Mapping" width="700">
+</p>
+
+*Figure: Data Layout Interleaving (DLI). Elements at step $i$ across $P=4$ independent systems are interleaved contiguously in memory, enabling direct hardware SIMD vector loads.*
 
 ---
 

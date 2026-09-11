@@ -13,6 +13,9 @@ In practice, however, many algorithms in engineering, finance, and AI fail to ve
 
 ## What is a Loop-Carried Dependency?
 
+![Tridiagonal Linear System TX = B from ARRAY presentation](../assets/images/dli_tridiagonal_single.png)
+*Figure 1: Tridiagonal linear system $TX = B$ with matrix bands $(L, D, U)$, solution vector $X$, and right-hand side $B$.*
+
 Consider the forward sweep of the classic **Thomas algorithm** for tridiagonal systems $T x = b$, or a 1st-order IIR filter:
 
 ```cpp

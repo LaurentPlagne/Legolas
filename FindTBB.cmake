@@ -40,6 +40,13 @@ set (TBB_INCLUDE_DIRS ${TBB_INCLUDE_DIR})
 
 # version
 set (_VERSION_FILE ${TBB_INCLUDE_DIR}/tbb/tbb_stddef.h)
+if (NOT EXISTS ${_VERSION_FILE})
+  set (_VERSION_FILE ${TBB_INCLUDE_DIR}/tbb/version.h)
+endif()
+if (NOT EXISTS ${_VERSION_FILE})
+  set (_VERSION_FILE ${TBB_INCLUDE_DIR}/oneapi/tbb/version.h)
+endif()
+
 if (EXISTS ${_VERSION_FILE})
   file (STRINGS ${_VERSION_FILE} _VERSION_MAJOR_STRING REGEX ".*define[ ]+TBB_VERSION_MAJOR[ ]+[0-9]+.*")
   file (STRINGS ${_VERSION_FILE} _VERSION_MINOR_STRING REGEX ".*define[ ]+TBB_VERSION_MINOR[ ]+[0-9]+.*")

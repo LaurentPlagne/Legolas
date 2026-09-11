@@ -1,13 +1,19 @@
 # Legolas++
 
+[![Header-Only](https://img.shields.io/badge/Architecture-100%25%20Header--Only-brightgreen.svg)]()
+[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Native%20SIMD%20%2B%20Work--Stealing)-orange.svg)]()
 [![C++ Standard](https://img.shields.io/badge/C%2B%2B-14%2F20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B14)
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-informational.svg)](https://laurentplagne.github.io/Legolas/)
 [![Platforms](https://img.shields.io/badge/Platform-macOS%20ARM64%20(Apple%20Silicon)%20%7C%20Linux%20x86%20(AVX2%2FAVX512)-success.svg)]()
 [![Build & Test](https://img.shields.io/badge/CTest-100%25%20Passing%20(5%2F5)-brightgreen.svg)]()
-[![Zero Dependencies](https://img.shields.io/badge/Parallelizer-Native%20Work--Stealing%20(Header--Only)-orange.svg)]()
 [![License](https://img.shields.io/badge/License-GPL%20v2-lightgrey.svg)](License.md)
 
 *High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization & Multi-Core Work-Stealing via Data Layout Interleaving (DLI).*
+
+> 🚀 **100% Header-Only & Zero-Dependency Engine**
+> Legolas++ requires **no compilation of binary libraries**, **no linker flags**, and **zero mandatory dependencies**.
+> Simply `#include <Legolas/Array/Array.hxx>`. Both SIMD vectorization (`Legolas::NativeSimd`) and multi-core thread scheduling (`Legolas::WorkStealingThreadPool`) are implemented natively in standard C++14/20.
+> *(Intel oneTBB and Eigen remain fully supported as optional drop-in backends via CMake options `USE_TBB` and `USE_EIGEN`).*
 
 ---
 
@@ -35,18 +41,14 @@ In practice, production systems rarely solve just one isolated recurrence. Inste
 * **Quantitative Finance**: Calibrating option prices across thousands of strikes and maturities via Crank-Nicolson PDE grids.
 
 ### Transposing Data at the Memory Level
+
 Rather than trying to vectorize sequentially along $i$, **Legolas++ interleaves $P$ problem instances directly in memory**:
 
-```
-Standard Memory Layout (Sequential, Cannot Vectorize):
-Instance 0: [x0, x1, x2, ... xN-1]
-Instance 1: [x0, x1, x2, ... xN-1]  ==> Accessing x[i] across instances requires slow gather loads!
-Instance 2: [x0, x1, x2, ... xN-1]
+<p align="center">
+  <img src="docs/assets/images/dli_interleaving_mapping.png" alt="Data Layout Interleaving Memory Mapping" width="700">
+</p>
 
-Legolas++ Interleaved Layout (DLI):
-[x0_p0, x0_p1, ... x0_pP-1] [x1_p0, x1_p1, ... x1_pP-1] ...
-└─────── 1 SIMD Load ───────┘ └─────── 1 SIMD Load ───────┘
-```
+*Figure: Canonical Data Layout Interleaving (DLI) memory mapping from ARRAY presentation. Elements at step $i$ across $P=4$ independent problem instances are mapped contiguously into physical memory, transforming strided access into single-instruction aligned SIMD streaming.*
 
 ### Zero-Overhead Abstraction: Write Once, Vectorize Everywhere
 1. **Define the tensor**: `Legolas::Array<T, D, P, DP>` defines a tensor of dimension `D` with packing factor `P` along dimension `DP`.

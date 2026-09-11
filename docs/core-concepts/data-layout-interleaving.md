@@ -8,59 +8,54 @@ Rather than attempting to parallelize along the sequential recurrence dimension 
 
 ## Memory Layout Comparison
 
-Suppose we are solving $M$ independent instances of a recurrence problem of size $N$. Let $x_{j, i}$ denote element $i$ of problem instance $j$.
+## The Fundamental Motivation: Independent Ensembles
 
-### 1. Standard Layout (AoS / SoA Row-Major)
+In high-performance numerical computing, we rarely solve a single isolated recurrence in isolation. Instead, we typically solve an **ensemble of $M$ independent problem instances** of size $N$:
 
-In standard C++ (e.g. `std::vector<std::vector<float>>` or a flat buffer `float[M][N]`):
-
-```
-Instance 0: [ x0,0 , x0,1 , x0,2 , ... , x0,N-1 ]
-Instance 1: [ x1,0 , x1,1 , x1,2 , ... , x1,N-1 ]
-Instance 2: [ x2,0 , x2,1 , x2,2 , ... , x2,N-1 ]
-Instance 3: [ x3,0 , x3,1 , x3,2 , ... , x3,N-1 ]
-```
-
-To load element $i=0$ across instances 0, 1, 2, 3 into a SIMD vector register, the CPU must issue 4 separate scalar loads with a stride of $N$ floats (or a hardware gather instruction). Strided loads and gathers are notoriously slow and waste cache bandwidth.
+![Stack of independent tridiagonal linear systems from ARRAY presentation](../assets/images/dli_tridiagonal_multi.png)
+*Figure 1: Ensemble of $M$ independent linear systems $T_j X_j = B_j$ (each of size $N$) represented as 2D slices $j = 0, 1, 2, 3\dots$ with tridiagonal bands $(L, D, U)[j][i]$.*
 
 ---
 
-### 2. Legolas++ Interleaved Layout (DLI)
+## The Cross-System Vectorization Dilemma
 
-With Legolas++, data is allocated so that elements at position $i$ across $P$ consecutive problem instances are contiguous in memory:
+Consider trying to vectorize across these independent systems using a SIMD vector width of $P = 2, 4,$ or $8$:
+
+![SIMD stride dilemma across independent slices](../assets/images/dli_simd_width2.png)
+*Figure 2: Without interleaving, elements at identical step $i$ across systems (e.g. $D[0][0]$ and $D[1][0]$) reside on distinct memory slices separated by stride $N$. Loading them into a SIMD vector requires costly non-contiguous gather operations.*
+
+In standard C++ (e.g. `std::vector<std::vector<float>>`, nested arrays, or standard row-major flat buffers `float[M][N]`):
+- System $j=0$: `[ X[0][0], X[0][1], X[0][2], ... X[0][N-1] ]`
+- System $j=1$: `[ X[1][0], X[1][1], X[1][2], ... X[1][N-1] ]`
+- System $j=2$: `[ X[2][0], X[2][1], X[2][2], ... X[2][N-1] ]`
+- System $j=3$: `[ X[3][0], X[3][1], X[3][2], ... X[3][N-1] ]`
+
+To pack elements $X[0][i], X[1][i], X[2][i], X[3][i]$ into a 128-bit or 256-bit SIMD register, the CPU cannot issue a linear vector load. It must either perform scalar gathers or explicit register transposes, bottlenecking the memory subsystem and destroying throughput.
+
+---
+
+## The Legolas++ Solution: Data Layout Interleaving (DLI)
+
+Legolas++ eliminates this overhead by **interleaving data across systems directly at allocation time**:
+
+![Canonical Data Layout Interleaving memory mapping from presentation](../assets/images/dli_interleaving_mapping.png)
+*Figure 3: Canonical DLI memory mapping for `Legolas::Array<float, 2, 4, 2> X(nj, ni)`. Corresponding elements from 4 adjacent systems are placed contiguously in physical memory.*
+
+With a packing factor of $P = 4$ along dimension $D = 2$:
 
 ```
-Packet 0 (i=0): [ x0,0 , x1,0 , x2,0 , x3,0 ]  <-- 1 Single SIMD Vector Load!
-Packet 1 (i=1): [ x0,1 , x1,1 , x2,1 , x3,1 ]  <-- 1 Single SIMD Vector Load!
-Packet 2 (i=2): [ x0,2 , x1,2 , x2,2 , x3,2 ]  <-- 1 Single SIMD Vector Load!
+Physical Memory Stream:
+Packet 0 (i = 0): [ X[0][0], X[1][0], X[2][0], X[3][0] ]  <-- 1 Single Aligned SIMD Load
+Packet 1 (i = 1): [ X[0][1], X[1][1], X[2][1], X[3][1] ]  <-- 1 Single Aligned SIMD Load
+Packet 2 (i = 2): [ X[0][2], X[1][2], X[2][2], X[3][2] ]  <-- 1 Single Aligned SIMD Load
 ...
-Packet N-1:     [ x0,N-1 , x1,N-1 , x2,N-1 , x3,N-1 ]
+Packet N-1 (i = N-1): [ X[0][N-1], X[1][N-1], X[2][N-1], X[3][N-1] ]
 ```
 
-```mermaid
-graph TD
-    subgraph Contiguous_Memory [Contiguous Physical Memory]
-        P0["[x0,0 | x1,0 | x2,0 | x3,0]"]
-        P1["[x0,1 | x1,1 | x2,1 | x3,1]"]
-        P2["[x0,2 | x1,2 | x2,2 | x3,2]"]
-    end
-
-    P0 -->|1x 128-bit Vector Load| SIMD0["SIMD Register (i = 0)"]
-    P1 -->|1x 128-bit Vector Load| SIMD1["SIMD Register (i = 1)"]
-    P2 -->|1x 128-bit Vector Load| SIMD2["SIMD Register (i = 2)"]
-
-    style P0 fill:#059669,stroke:#047857,color:#fff
-    style P1 fill:#059669,stroke:#047857,color:#fff
-    style P2 fill:#059669,stroke:#047857,color:#fff
-    style SIMD0 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style SIMD1 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style SIMD2 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-```
-
-When stepping sequentially through $i = 0, 1, \dots, N-1$, the CPU accesses memory in **linear streaming fashion**:
-- Perfect L1/L2 prefetching.
-- Zero cache line waste.
-- Single-instruction aligned vector loads (`ldr q` on ARM NEON, `vmovaps` on AVX).
+When stepping sequentially through $i = 0, 1, \dots, N-1$ along the recurrence:
+- **100% Contiguous Linear Streaming**: Hardware L1/L2 prefetchers operate at peak theoretical bandwidth.
+- **Zero Gather / Scatter**: Every vector load/store is a single unmasked 128-bit, 256-bit, or 512-bit instruction (`ldr q` on ARM NEON, `vmovaps` on x86 AVX2/AVX-512).
+- **Zero Transpose Overhead**: No instructions are wasted on register shuffles or unpacking.
 
 ---
 
@@ -70,16 +65,24 @@ How does Legolas++ present this interleaved layout to user code without making t
 
 When an array `Legolas::Array<float, 2, P, 2>` is passed to an algorithm via `Legolas::map` or `Legolas::parmap`:
 1. Legolas++ calls `.getPackedView()` on the tensor.
-2. The packed view has rank 2, but its effective outer dimension is $M / P$, and its element scalar type is reinterpreted as an **Eigen fixed-size vector**:
-   ```cpp
-   Eigen::Array<float, P, 1>
-   ```
-3. In user code:
+2. The packed view has rank 2, but its effective outer dimension is $M / P$, and its element scalar type is reinterpreted directly as a SIMD vector pack:
+   - **Zero-Dependency Native Backend** (default): `Legolas::NativeSimd<float, P>` (using GCC/Clang vector extensions `__attribute__((vector_size(P * sizeof(float))))`).
+   - **Eigen Backend** (optional): `Eigen::Array<float, P, 1>`.
+3. In user code, the exact same mathematical solver runs unchanged:
    ```cpp
    auto row = A[j];
-   auto val = row[i]; // val is an Eigen::Array<float, P, 1>!
+   auto val = row[i]; // val is a SIMD vector pack of P floats!
    ```
-4. All arithmetic operators (`+`, `-`, `*`, `/`) applied to `val` are mapped by Eigen directly into hardware vector instructions.
+4. All arithmetic operators (`+`, `-`, `*`, `/`, FMA) applied to `val` are emitted by the compiler directly as native hardware vector instructions (ARM NEON `fadd.4s`, `fmla.4s` or x86 AVX2 `vaddps`, `vfmadd213ps`).
+
+---
+
+## Historical Benchmark Validation: Skylake AVX2
+
+The performance impact of this transformation was originally demonstrated on an Intel Core i7-6700K (Skylake 4.0 GHz, AVX2):
+
+![Skylake AVX2 Reference Benchmark from ARRAY presentation](../assets/images/dli_skylake_avx2_bench.png)
+*Figure 4: Historical benchmark on Intel Skylake (4 cores, 4.0 GHz, AVX2). Transitioning from scalar ($P=1$) to AVX2 ($P=8$) combined with multi-core parallel mapping (`parmap`) elevates tridiagonal recurrence throughput from 2.4 GFlops to **91.1 GFlops**.*
 
 ---
 

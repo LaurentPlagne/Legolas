@@ -25,6 +25,8 @@ endif()
 
 set ( CMAKE_CXX_FLAGS "-Wall -Wno-deprecated-declarations -std=c++14 ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
 
+find_package(Threads REQUIRED)
+
 option(USE_TBB "Use Intel TBB library (otherwise uses native WorkStealing)" ON)
 option(USE_EIGEN "Use Eigen library for SIMD arrays (otherwise uses native NativeSimd)" ON)
 

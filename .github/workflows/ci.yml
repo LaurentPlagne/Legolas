@@ -65,7 +65,7 @@ jobs:
 
       - name: Build all targets
         run: |
-          cmake --build build --parallel
+          cmake --build build --parallel || cmake --build build --verbose
 
       - name: Run CTest test suite
         run: |
