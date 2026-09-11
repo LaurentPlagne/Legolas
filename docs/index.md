@@ -82,6 +82,16 @@ On tridiagonal recurrence systems ($N_x \in [8, 512]$, up to 262,144 systems, 13
   <img src="assets/images/Thomas_comparison.png" alt="Throughput Comparison" width="850"/>
 </p>
 
+### Real-World Domain Showcases
+
+| Application | Domain | Metric | Scalar Baseline | Legolas (CPU / GPU) | Speedup | Guide |
+| :--- | :--- | :--- | :--- | :--- | :---: | :---: |
+| **MultiThomas** | Scientific Computing | GFlops | 2.10 GFlops | **69.40 GFlops** (8 Cores) | **33.0x** | [Tutorial 1](tutorials/tridiagonal-thomas.md) |
+| **Depthwise 2D Conv** | AI & Edge Vision (MobileNet) | GFlops | 36.40 GFlops | **212.30 GFlops** (8 Cores) | **5.83x** | [Tutorial 2](tutorials/depthwise-conv.md) |
+| **Audio IIR Biquad** | Real-Time Audio DSP (64 Tracks) | MSamples/s | 397.9 MS/s | **5,832.2 MS/s** (8 Cores) | **14.66x** | [Tutorial 3](tutorials/audio-biquad.md) |
+| **Video Pipeline (CPU)** | Multi-Stream Vision (32 HD Feeds) | FPS | 1,579.6 FPS | **8,442.1 FPS** (7.78 GPix/s) | **5.34x** | [Tutorial 4](tutorials/video-pipeline.md) |
+| **Video Pipeline (Metal GPU)** | Multi-Stream Vision (32 HD Feeds) | FPS | 302.1 FPS | **17,263.9 FPS** (15.91 GPix/s) | **57.15x** | [Tutorial 4](tutorials/video-pipeline.md) |
+
 ---
 
 ## Quick Example in 15 Seconds
