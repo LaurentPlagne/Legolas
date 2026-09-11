@@ -126,15 +126,7 @@ jobs:
 
       - name: Build all targets
         run: |
-          cmake --build build --config Release 2>&1 | tee build.log || {
-            ERRS=$(grep -E '(error C[0-9]+|fatal error)' build.log | head -n 10 | tr '\n' ' ')
-            echo "::error::$ERRS"
-            echo "### ❌ Windows MSVC Build Failure Log" >> $GITHUB_STEP_SUMMARY
-            echo '```text' >> $GITHUB_STEP_SUMMARY
-            tail -n 120 build.log >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
-          }
+          cmake --build build --config Release --parallel
 
       - name: Run CTest test suite
         run: |
@@ -143,21 +135,12 @@ jobs:
       - name: Run Verification Benchmarks
         run: |
           echo "=== 1. AI MobileNet Depthwise 2D Convolution ==="
-          ./build/examples/Release/DepthwiseConv.exe || true
+          find build -name "DepthwiseConv.exe" -exec {} \; || true
           echo "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
-          ./build/examples/Release/AudioBiquad.exe || true
+          find build -name "AudioBiquad.exe" -exec {} \; || true
           echo "=== 3. Tridiagonal Thomas Example ==="
-          ./build/tst/MultiThomasExample/Release/MultiThomasExample.exe || true
-          if [ -f "./build/tst/MultiThomas/Release/MultiThomas.exe" ]; then
-            echo "=== 4. Fast Thomas (Nx=64) ==="
-            ./build/tst/MultiThomas/Release/MultiThomas.exe 64 || true
-          fi
-
-      - name: Upload Windows build log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-msvc-build-log
-          path: build.log
+          find build -name "MultiThomasExample.exe" -exec {} \; || true
+          echo "=== 4. Fast Thomas (Nx=64) ==="
+          find build -name "MultiThomas.exe" -exec {} 64 \; || true
 
 

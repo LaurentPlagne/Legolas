@@ -8,6 +8,10 @@
 
 # include <cstdlib>
 
+#if defined(_MSC_VER)
+typedef unsigned int uint;
+#endif
+
 
 # if defined( ICI )
 # error ICI est deja definie

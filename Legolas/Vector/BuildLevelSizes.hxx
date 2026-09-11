@@ -10,8 +10,8 @@ using Legolas::SizeType;
 namespace Legolas{
 
   inline void displayLevelSizes(const std::vector< std::vector<int> > & ls){
-    for (uint l=0 ; l < ls.size() ; l++){
-      for (uint i=0 ; i < ls[l].size() ; i++){
+    for (size_t l=0 ; l < ls.size() ; l++){
+      for (size_t i=0 ; i < ls[l].size() ; i++){
 	INFOS("ls["<<l<<"]["<<i<<"]="<<ls[l][i]);
       }
     }
