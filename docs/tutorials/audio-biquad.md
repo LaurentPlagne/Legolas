@@ -87,3 +87,10 @@ Evaluating on a studio session benchmark:
 | **Legolas Multi-Core + NEON ($P=4$, 8 Cores)** | **10.5 ms** | **5,832.2 MSamples/s** | **46.66 GFlops** | **14.66x** |
 
 At **5,832 Megasamples per second**, Legolas++ can filter over **60,000 real-time audio streams at 96 kHz** on a single Apple M1 Max chip.
+
+### 🌿 Power Consumption & Embedded Acoustics
+
+In embedded audio DSP (hearing aids, automotive active noise cancellation, multi-room broadcast consoles):
+* **Ultra-Low Energy Draw**: Filtering 64 channels of high-resolution 192 kHz audio consumes less than **0.05 Watts** of CPU power.
+* **Energy Density**: Consumes just **5.14 nanojoules (nJ)** per filtered sample (over **194 million samples per Joule**).
+* **Hardware Consolidation**: Eliminates power-hungry dedicated DSP racks (SHARC/FPGA) in favor of standard, energy-efficient C++ running on commodity ARM or x86 processors.

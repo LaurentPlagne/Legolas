@@ -1,0 +1,300 @@
+/* ==========================================================================
+   TriScale Innov Theme for Legolas++ (MkDocs Material)
+   Colors inspired by https://triscale-innov.com:
+     - Primary Deep Teal:  #177272
+     - Primary Light Teal: #229999
+     - Primary Dark Teal:  #0e4b4b
+     - Accent Warm Coral:  #ee6f40
+     - Accent Light Coral: #f28b63
+     - Accent Coral Glow:  rgba(238, 111, 64, 0.15)
+     - Slate Background:   #0f1722
+     - Card Background:    #182230
+     - Card Border:        #253549
+   ========================================================================== */
+
+:root {
+  --md-primary-fg-color:        #177272;
+  --md-primary-fg-color--light: #229999;
+  --md-primary-fg-color--dark:  #0e4b4b;
+  --md-accent-fg-color:         #ee6f40;
+  --md-accent-fg-color--transparent: rgba(238, 111, 64, 0.12);
+  --md-typeset-a-color:         #177272;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #177272;
+  --md-primary-fg-color--light: #28a3a3;
+  --md-primary-fg-color--dark:  #0b3838;
+  --md-accent-fg-color:         #ee6f40;
+  --md-accent-fg-color--transparent: rgba(238, 111, 64, 0.18);
+  --md-default-bg-color:        #0f1722;
+  --md-default-bg-color--light: #16202e;
+  --md-default-bg-color--lighter: #1e2b3d;
+  --md-typeset-a-color:         #38bdf8;
+}
+
+/* Header & Navigation */
+.md-header {
+  background-color: #177272 !important;
+  box-shadow: 0 2px 10px rgba(14, 75, 75, 0.4);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: #0d2828 !important;
+  border-bottom: 1px solid #1c4d4d;
+}
+
+.md-tabs {
+  background-color: #0e4b4b !important;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: #0a1f1f !important;
+  border-bottom: 1px solid #163636;
+}
+
+.md-tabs__link--active, 
+.md-tabs__link:hover {
+  color: #ee6f40 !important;
+}
+
+/* Links & Accents */
+.md-typeset a:hover {
+  color: #ee6f40 !important;
+  text-decoration: underline;
+}
+
+/* Admonitions */
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: #177272;
+}
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary {
+  background-color: rgba(23, 114, 114, 0.12);
+}
+
+.md-typeset .admonition.warning,
+.md-typeset details.warning,
+.md-typeset .admonition.important,
+.md-typeset details.important {
+  border-color: #ee6f40;
+}
+.md-typeset .warning > .admonition-title,
+.md-typeset .warning > summary,
+.md-typeset .important > .admonition-title,
+.md-typeset .important > summary {
+  background-color: rgba(238, 111, 64, 0.12);
+}
+
+/* Buttons */
+.md-button--primary {
+  background-color: #ee6f40 !important;
+  border-color: #ee6f40 !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.md-button--primary:hover {
+  background-color: #f28b63 !important;
+  border-color: #f28b63 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(238, 111, 64, 0.35);
+}
+
+.md-button--secondary {
+  background-color: transparent !important;
+  border-color: #177272 !important;
+  color: #177272 !important;
+  font-weight: 700;
+}
+
+[data-md-color-scheme="slate"] .md-button--secondary {
+  color: #38bdf8 !important;
+  border-color: #38bdf8 !important;
+}
+
+/* ==========================================================================
+   Showcase Cards & Energy Efficiency Highlights (TriScale Aesthetics)
+   ========================================================================== */
+
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.5rem;
+  margin: 1.8rem 0 2.5rem 0;
+}
+
+.showcase-card {
+  position: relative;
+  background: linear-gradient(145deg, #131d2b 0%, #1a2738 100%);
+  border: 1px solid #283a50;
+  border-top: 4px solid #177272;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.showcase-card:hover {
+  transform: translateY(-4px);
+  border-top-color: #ee6f40;
+  border-color: #3a5372;
+  box-shadow: 0 8px 30px rgba(23, 114, 114, 0.25);
+}
+
+.showcase-card.featured {
+  border-top: 4px solid #ee6f40;
+  background: linear-gradient(145deg, #152030 0%, #1e2c3e 100%);
+}
+
+.showcase-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.showcase-domain {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background-color: rgba(23, 114, 114, 0.25);
+  color: #5eead4;
+  border: 1px solid rgba(23, 114, 114, 0.5);
+}
+
+.showcase-badge-hot {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background-color: rgba(238, 111, 64, 0.25);
+  color: #ee6f40;
+  border: 1px solid rgba(238, 111, 64, 0.6);
+}
+
+.showcase-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0.25rem 0 0.5rem 0;
+}
+
+.showcase-description {
+  font-size: 0.92rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+/* Metrics Pill Row */
+.metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.metric-pill {
+  flex: 1;
+  min-width: 100px;
+  background-color: rgba(15, 23, 34, 0.7);
+  border: 1px solid #223447;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  text-align: center;
+}
+
+.metric-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #38bdf8;
+  display: block;
+}
+
+.metric-value.highlight-orange {
+  color: #ee6f40;
+}
+
+.metric-value.highlight-green {
+  color: #34d399;
+}
+
+.metric-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Green Computing & Energy Box */
+.energy-box {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(23, 114, 114, 0.15) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1.1rem;
+}
+
+.energy-box-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #34d399;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.energy-box-body {
+  font-size: 0.83rem;
+  color: #e2e8f0;
+  line-height: 1.45;
+}
+
+.energy-stat {
+  font-weight: 700;
+  color: #5eead4;
+}
+
+/* Card Action Footer */
+.showcase-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #223447;
+  padding-top: 0.9rem;
+  margin-top: auto;
+}
+
+.showcase-link {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ee6f40 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  text-decoration: none !important;
+}
+
+.showcase-link:hover {
+  color: #f28b63 !important;
+  transform: translateX(3px);
+}
+
+.source-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #64748b;
+}

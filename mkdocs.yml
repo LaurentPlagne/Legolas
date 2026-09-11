@@ -9,14 +9,14 @@ theme:
   language: en
   palette:
     - scheme: slate
-      primary: indigo
-      accent: cyan
+      primary: teal
+      accent: deep orange
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
     - scheme: default
-      primary: indigo
-      accent: cyan
+      primary: teal
+      accent: deep orange
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -29,6 +29,9 @@ theme:
     - search.highlight
     - content.code.copy
     - content.tabs.link
+
+extra_css:
+  - assets/stylesheets/triscale.css
 
 plugins:
   - search
@@ -61,15 +64,15 @@ nav:
   - Getting Started:
       - Installation & Build: getting-started/install.md
       - Quickstart Guide: getting-started/quickstart.md
+  - Industrial Showcases:
+      - Real-Time Video Pipeline (CPU & Metal): tutorials/video-pipeline.md
+      - Real-Time Audio DSP (64 Tracks): tutorials/audio-biquad.md
+      - AI & Edge Vision (Depthwise Conv): tutorials/depthwise-conv.md
+      - Scientific Computing (Thomas / ADI): tutorials/tridiagonal-thomas.md
   - Core Concepts:
       - The Recurrence Barrier: core-concepts/recurrence-barrier.md
       - Data Layout Interleaving (DLI): core-concepts/data-layout-interleaving.md
       - Hybrid SIMD & Work-Stealing: core-concepts/hybrid-parallelism.md
-  - Tutorials:
-      - Tridiagonal Recurrence (Thomas / ADI): tutorials/tridiagonal-thomas.md
-      - AI & Edge Vision (Depthwise Conv): tutorials/depthwise-conv.md
-      - Real-Time Audio DSP (IIR Biquad): tutorials/audio-biquad.md
-      - Real-Time Video Pipeline (Vision): tutorials/video-pipeline.md
   - Benchmarks:
       - Apple Silicon (M1 Max ARM64): benchmarks/apple-silicon-m1.md
       - Cross-Platform & Cloud: benchmarks/cross-platform.md
