@@ -4,7 +4,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/images/legolas_logo_dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="docs/assets/images/legolas_logo_light.svg">
-    <img src="docs/assets/images/legolas_logo.svg" alt="Legolas++ Tensor SIMD Engine Logo" width="440">
+    <img src="docs/assets/images/legolas_logo.svg" alt="Legolas++ Tensor SIMD Engine Logo" width="340">
   </picture>
 </p>
 
