@@ -53,20 +53,26 @@ Testing multi-core thread scaling from 1 to 8 threads on the Apple M1 Max Firest
 | **MultiThomas** | Scientific Computing | GFlops | 2.10 GFlops | **69.40 GFlops** | **33.0x** | $0.00$ |
 | **Depthwise 2D Conv** | AI & Vision (MobileNet) | GFlops | 36.40 GFlops | **212.30 GFlops** | **5.83x** | $0.00$ |
 | **Audio IIR Biquad** | Audio DSP (64 Tracks) | MSamples/s | 397.9 MS/s | **5,832.2 MS/s** | **14.66x** | $0.00$ |
-| **Video Pipeline** | Vision / NVR (32 Feeds) | FPS | 1,579.6 FPS | **8,442.1 FPS** (7.78 GPix/s) | **5.34x** | $< 10^{-7}$ |
+| **Video Pipeline (CPU)** | Vision / NVR (32 Feeds) | FPS | 1,579.6 FPS | **8,442.1 FPS** (7.78 GPix/s) | **5.34x** | $< 10^{-7}$ |
+| **Video Pipeline (Metal GPU)** | Vision / NVR (32 Feeds) | FPS | 302.1 FPS | **17,263.9 FPS** (15.91 GPix/s) | **57.15x** | $< 10^{-7}$ |
 
 ---
 
 ## Reproducing the Benchmarks Locally
 
 ```bash
-# Build the benchmark executable
+# Build all showcase executables
 cmake -B build
 cmake --build build -j8
 
+# Run the CPU showcases
+./build/examples/DepthwiseConv
+./build/examples/AudioBiquad
+./build/examples/VideoPipeline
+
+# Run Apple Silicon Metal GPU benchmark (macOS)
+./build/examples/VideoPipelineMetal
+
 # Run the MultiThomas benchmark suite
 ./build/tst/MultiThomas/MultiThomas
-
-# Generate updated SVG, PNG, and HTML reports
-python3 tst/MultiThomas/plotPerfModern.py build/tst/MultiThomas
 ```

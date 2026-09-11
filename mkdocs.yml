@@ -69,6 +69,7 @@ nav:
       - Tridiagonal Recurrence (Thomas / ADI): tutorials/tridiagonal-thomas.md
       - AI & Edge Vision (Depthwise Conv): tutorials/depthwise-conv.md
       - Real-Time Audio DSP (IIR Biquad): tutorials/audio-biquad.md
+      - Real-Time Video Pipeline (Vision): tutorials/video-pipeline.md
   - Benchmarks:
       - Apple Silicon (M1 Max ARM64): benchmarks/apple-silicon-m1.md
       - Cross-Platform & Cloud: benchmarks/cross-platform.md
