@@ -1,4 +1,4 @@
-# Tutorial 2: AI & Edge Vision (Depthwise Convolution)
+# Edge AI & Vision: Depthwise 2D Convolution
 
 In modern convolutional neural networks designed for mobile and edge inference—such as **MobileNet (V1, V2, V3)**, **ConvNeXt**, **Xception**, and **EfficientNet**—standard convolutions are replaced by **Depthwise Separable Convolutions**:
 

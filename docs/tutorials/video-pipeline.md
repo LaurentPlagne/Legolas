@@ -1,4 +1,4 @@
-# Tutorial 4: Real-Time Multi-Stream Video Pipeline (Edge & Motion)
+# Real-Time Video Pipeline (CPU & Metal GPU)
 
 In video surveillance (NVR), autonomous vehicles, robotics, and broadcast servers, vision processing engines must ingest and process multiple high-definition video streams simultaneously in real time (e.g. 16 to 64 camera streams at 60+ FPS).
 

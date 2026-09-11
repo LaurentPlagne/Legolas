@@ -19,6 +19,45 @@
   --md-accent-fg-color:         #ee6f40;
   --md-accent-fg-color--transparent: rgba(238, 111, 64, 0.12);
   --md-typeset-a-color:         #177272;
+  --md-default-bg-color:        #f8fafc;
+  --md-default-bg-color--light: #ffffff;
+  --md-default-bg-color--lighter: #f1f5f9;
+}
+
+/* Global Typography Scaling (Harmonious proportions, preventing huge text) */
+.md-typeset h1 {
+  font-size: 1.55rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+  margin-top: 0.5rem;
+  margin-bottom: 0.9rem;
+  line-height: 1.25;
+}
+
+.md-typeset h2 {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.3;
+}
+
+.md-typeset h3 {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  margin-top: 1.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.md-typeset p, 
+.md-typeset li {
+  font-size: 0.88rem !important;
+  line-height: 1.65 !important;
+}
+
+.md-typeset code {
+  font-size: 0.82rem !important;
 }
 
 [data-md-color-scheme="slate"] {

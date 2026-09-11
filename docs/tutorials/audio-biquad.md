@@ -1,4 +1,4 @@
-# Tutorial 3: Real-Time Audio DSP (IIR Biquad Filter)
+# Real-Time Studio Audio DSP (64-Channel IIR Biquad)
 
 In digital audio workstations (DAWs) like Logic Pro, Ableton Live, and ProTools, as well as spatial audio systems (Dolby Atmos, Ambisonics), audio signals are processed through banks of **Infinite Impulse Response (IIR) Biquad Filters**.
 

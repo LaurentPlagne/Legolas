@@ -1,4 +1,4 @@
-# Tutorial 1: Tridiagonal Recurrence (Thomas / ADI)
+# Scientific Computing: MultiThomas Tridiagonal Solver
 
 Tridiagonal matrix systems arise constantly in computational science:
 - 2D and 3D heat and diffusion equations solved via **Alternating Direction Implicit (ADI)** schemes.

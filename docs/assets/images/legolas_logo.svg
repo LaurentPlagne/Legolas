@@ -3,165 +3,92 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&amp;family=JetBrains+Mono:wght@600&amp;display=swap');
       
-      /* DEFAULT: LIGHT MODE (Readable on pure white and light backgrounds) */
-      .brand-title { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 40px; fill: #0f172a; letter-spacing: -0.5px; }
-      .brand-plus { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 44px; fill: #ee6f40; }
-      .brand-sub { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 700; font-size: 10.5px; fill: #0e5e5e; letter-spacing: 2.2px; text-transform: uppercase; }
-      .brand-mono { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; fill: #64748b; font-weight: 600; }
-      .bow-shape { fill: url(#bowGrad); stroke: #0e4b4b; stroke-width: 1.2; }
+      /* DEFAULT: LIGHT MODE */
+      .brand-title { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 38px; fill: #0f172a; letter-spacing: -0.5px; }
+      .brand-plus { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 42px; fill: #ee6f40; }
+      .brand-sub { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 700; font-size: 10px; fill: #0e5e5e; letter-spacing: 2px; text-transform: uppercase; }
+      .brand-mono { font-family: 'JetBrains Mono', monospace; font-size: 9px; fill: #64748b; font-weight: 600; }
+      .bow-shape { fill: #177272; stroke: #0e4b4b; stroke-width: 1.5; }
       .bow-tip { fill: #0d9488; }
-      .bow-string { stroke: #94a3b8; stroke-width: 2; }
+      .bow-string { stroke: #64748b; stroke-width: 2; }
       .bow-node { fill: #ee6f40; stroke: #0e4b4b; stroke-width: 1.5; }
-      .lane-0 { stroke: url(#lane0Grad); stroke-width: 3; }
-      .lane-0-guide { stroke: #0d9488; stroke-width: 2.2; }
-      .lane-1 { stroke: url(#lane1Grad); stroke-width: 3.5; }
-      .lane-2 { stroke: url(#lane2Grad); stroke-width: 3.5; }
-      .lane-3 { stroke: url(#lane3Grad); stroke-width: 3; }
-      .lane-3-guide { stroke: #047857; stroke-width: 2.2; }
-      .arrow-wings { fill: url(#arrowGrad); stroke: #c2410c; stroke-width: 1; }
-      .arrow-pivot { fill: #ee6f40; }
+      .lane-0 { fill: #0d9488; }
+      .lane-1 { fill: #ea580c; }
+      .lane-2 { fill: #ee6f40; }
+      .lane-3 { fill: #047857; }
+      .arrow-wings { fill: #ee6f40; stroke: #c2410c; stroke-width: 1.5; }
+      .arrow-pivot { fill: #0d9488; }
 
-      /* AUTOMATIC ADAPTATION: DARK MODE (when user/OS prefers dark mode) */
+      /* AUTOMATIC ADAPTATION: DARK MODE */
       @media (prefers-color-scheme: dark) {
         .brand-title { fill: #f8fafc; }
         .brand-sub { fill: #5eead4; }
         .brand-mono { fill: #94a3b8; }
-        .bow-shape { fill: url(#bowGradDark); stroke: #5eead4; stroke-width: 1.2; }
+        .bow-shape { fill: #177272; stroke: #5eead4; stroke-width: 1.5; }
         .bow-tip { fill: #5eead4; }
-        .bow-string { stroke: #475569; }
+        .bow-string { stroke: #64748b; }
         .bow-node { fill: #ee6f40; stroke: #5eead4; }
-        .lane-0 { stroke: url(#lane0GradDark); }
-        .lane-0-guide { stroke: #5eead4; }
-        .lane-1 { stroke: url(#lane1GradDark); }
-        .lane-2 { stroke: url(#lane2GradDark); }
-        .lane-3 { stroke: url(#lane3GradDark); }
-        .lane-3-guide { stroke: #34d399; }
-        .arrow-wings { fill: url(#arrowGradDark); stroke: #f28b63; }
+        .lane-0 { fill: #5eead4; }
+        .lane-1 { fill: #fb923c; }
+        .lane-2 { fill: #ee6f40; }
+        .lane-3 { fill: #34d399; }
+        .arrow-wings { fill: #ee6f40; stroke: #f28b63; }
         .arrow-pivot { fill: #5eead4; }
       }
     </style>
-
-    <!-- Gradients for Light Mode -->
-    <linearGradient id="bowGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#177272" />
-      <stop offset="50%" stop-color="#0e4b4b" />
-      <stop offset="100%" stop-color="#177272" />
-    </linearGradient>
-
-    <linearGradient id="arrowGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#ee6f40" />
-      <stop offset="100%" stop-color="#ea580c" />
-    </linearGradient>
-
-    <linearGradient id="lane0Grad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#14b8a6" />
-      <stop offset="100%" stop-color="#0d9488" />
-    </linearGradient>
-
-    <linearGradient id="lane1Grad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#fb923c" />
-      <stop offset="100%" stop-color="#ee6f40" />
-    </linearGradient>
-
-    <linearGradient id="lane2Grad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#f97316" />
-      <stop offset="100%" stop-color="#ea580c" />
-    </linearGradient>
-
-    <linearGradient id="lane3Grad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#10b981" />
-      <stop offset="100%" stop-color="#047857" />
-    </linearGradient>
-
-    <!-- Gradients for Dark Mode -->
-    <linearGradient id="bowGradDark" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#28a3a3" />
-      <stop offset="50%" stop-color="#177272" />
-      <stop offset="100%" stop-color="#229999" />
-    </linearGradient>
-
-    <linearGradient id="arrowGradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#f28b63" />
-      <stop offset="100%" stop-color="#ee6f40" />
-    </linearGradient>
-
-    <linearGradient id="lane0GradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#5eead4" />
-      <stop offset="100%" stop-color="#2dd4bf" />
-    </linearGradient>
-
-    <linearGradient id="lane1GradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#fed7aa" />
-      <stop offset="100%" stop-color="#fb923c" />
-    </linearGradient>
-
-    <linearGradient id="lane2GradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#fdba74" />
-      <stop offset="100%" stop-color="#f97316" />
-    </linearGradient>
-
-    <linearGradient id="lane3GradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#6ee7b7" />
-      <stop offset="100%" stop-color="#34d399" />
-    </linearGradient>
   </defs>
 
   <!-- EMBLEM: Option 3 Cyber Bow & 4-Lane SIMD Vector Arrow -->
-  <g transform="translate(10, 5)">
+  <g transform="translate(15, 8)">
     <!-- Bowstring & Nock Region -->
-    <path d="M 36,12 L 54,50 L 36,88" fill="none" class="bow-string" stroke-linecap="round" stroke-linejoin="round" />
-    <circle cx="54" cy="50" r="3.5" fill="#ee6f40" />
+    <path d="M 34,8 L 52,47 L 34,86" fill="none" class="bow-string" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="52" cy="47" r="4" fill="#ee6f40" />
 
     <!-- Cyber Recurve Bow -->
-    <path d="M 38,10 C 24,18 14,32 14,50 C 14,68 24,82 38,90 C 34,84 22,70 22,50 C 22,30 34,16 38,10 Z" 
+    <path d="M 36,6 C 22,14 12,28 12,47 C 12,66 22,80 36,88 C 31,81 20,68 20,47 C 20,26 31,13 36,6 Z" 
           class="bow-shape" />
     
-    <!-- Bow Limb Tips & Energy Accents -->
-    <path d="M 38,10 L 44,7 L 41,15 Z" class="bow-tip" />
-    <path d="M 38,90 L 44,93 L 41,85 Z" class="bow-tip" />
-    <circle cx="22" cy="50" r="4.5" class="bow-node" />
+    <!-- Bow Limb Energy Tips -->
+    <polygon points="36,6 42,3 39,11" class="bow-tip" />
+    <polygon points="36,88 42,91 39,83" class="bow-tip" />
+    <circle cx="20" cy="47" r="4.5" class="bow-node" />
 
-    <!-- 4 SIMD Vector Lanes (Data Streams firing forward) -->
-    <!-- Lane 0 (Upper SIMD Track) -->
+    <!-- 4 SOLID SIMD Vector Lanes -->
+    <!-- Lane 0 (Upper Track) -->
     <g>
-      <line x1="48" y1="35" x2="88" y2="35" class="lane-0" stroke-linecap="round" />
-      <path d="M 88,35 L 98,44" class="lane-0-guide" stroke-linecap="round" stroke-dasharray="3,2" />
+      <rect x="46" y="30" width="46" height="4" rx="2" class="lane-0" />
+      <polygon points="92,32 98,38 95,40 89,34" class="lane-0" />
     </g>
 
     <!-- Lane 1 (Mid-Upper Track) -->
-    <g>
-      <line x1="56" y1="45" x2="100" y2="45" class="lane-1" stroke-linecap="round" />
-    </g>
+    <rect x="54" y="40" width="48" height="4.5" rx="2" class="lane-1" />
 
     <!-- Lane 2 (Mid-Lower Track) -->
-    <g>
-      <line x1="56" y1="55" x2="100" y2="55" class="lane-2" stroke-linecap="round" />
-    </g>
+    <rect x="54" y="50" width="48" height="4.5" rx="2" class="lane-2" />
 
-    <!-- Lane 3 (Lower SIMD Track) -->
+    <!-- Lane 3 (Lower Track) -->
     <g>
-      <line x1="48" y1="65" x2="88" y2="65" class="lane-3" stroke-linecap="round" />
-      <path d="M 88,65 L 98,56" class="lane-3-guide" stroke-linecap="round" stroke-dasharray="3,2" />
+      <rect x="46" y="60" width="46" height="4" rx="2" class="lane-3" />
+      <polygon points="92,62 98,56 95,54 89,60" class="lane-3" />
     </g>
 
     <!-- Central Supersonic Vector Arrowhead -->
-    <!-- Main Arrowhead Wings -->
-    <polygon points="124,50 96,36 103,50 96,64" class="arrow-wings" />
+    <polygon points="126,47 96,33 103,47 96,61" class="arrow-wings" />
     <!-- Core Diamond Pivot -->
-    <polygon points="120,50 108,46 103,50 108,54" fill="#ffffff" opacity="0.95" />
-    <!-- Pulse Ring -->
-    <circle cx="103" cy="50" r="1.8" class="arrow-pivot" />
+    <polygon points="122,47 110,43 104,47 110,51" fill="#ffffff" />
+    <!-- Center Pivot Node -->
+    <circle cx="104" cy="47" r="2.2" class="arrow-pivot" />
   </g>
 
   <!-- TYPOGRAPHY & BRANDING -->
-  <g transform="translate(150, 20)">
+  <g transform="translate(160, 20)">
     <!-- Main Title: Legolas++ -->
-    <text x="0" y="44" class="brand-title">Legolas<tspan class="brand-plus">++</tspan></text>
+    <text x="0" y="42" class="brand-title">Legolas<tspan class="brand-plus">++</tspan></text>
     
     <!-- Subtitle: SIMD Tensor & DLI Engine -->
-    <text x="2" y="66" class="brand-sub">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
+    <text x="2" y="64" class="brand-sub">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
 
     <!-- Technical Tagline -->
-    <text x="2" y="80" class="brand-mono">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
+    <text x="2" y="78" class="brand-mono">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
   </g>
 </svg>

@@ -2,100 +2,65 @@
   <defs>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&amp;family=JetBrains+Mono:wght@600&amp;display=swap');
-      .brand-title-dark { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 40px; fill: #f8fafc; letter-spacing: -0.5px; }
-      .brand-plus-dark { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 44px; fill: #ee6f40; }
-      .brand-sub-dark { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 700; font-size: 10.5px; fill: #5eead4; letter-spacing: 2.2px; text-transform: uppercase; }
-      .brand-mono-dark { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; fill: #94a3b8; font-weight: 600; }
+      .brand-title-dark { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 38px; fill: #f8fafc; letter-spacing: -0.5px; }
+      .brand-plus-dark { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 42px; fill: #ee6f40; }
+      .brand-sub-dark { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 700; font-size: 10px; fill: #5eead4; letter-spacing: 2px; text-transform: uppercase; }
+      .brand-mono-dark { font-family: 'JetBrains Mono', monospace; font-size: 9px; fill: #94a3b8; font-weight: 600; }
     </style>
-
-    <linearGradient id="bowGradDark" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#28a3a3" />
-      <stop offset="50%" stop-color="#177272" />
-      <stop offset="100%" stop-color="#229999" />
-    </linearGradient>
-
-    <linearGradient id="arrowGradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#f28b63" />
-      <stop offset="100%" stop-color="#ee6f40" />
-    </linearGradient>
-
-    <linearGradient id="lane0GradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#5eead4" />
-      <stop offset="100%" stop-color="#2dd4bf" />
-    </linearGradient>
-
-    <linearGradient id="lane1GradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#fed7aa" />
-      <stop offset="100%" stop-color="#fb923c" />
-    </linearGradient>
-
-    <linearGradient id="lane2GradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#fdba74" />
-      <stop offset="100%" stop-color="#f97316" />
-    </linearGradient>
-
-    <linearGradient id="lane3GradDark" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#6ee7b7" />
-      <stop offset="100%" stop-color="#34d399" />
-    </linearGradient>
   </defs>
 
   <!-- EMBLEM: Option 3 Cyber Bow & 4-Lane SIMD Vector Arrow (Dark Mode) -->
-  <g transform="translate(10, 5)">
+  <g transform="translate(15, 8)">
     <!-- Bowstring & Nock Region -->
-    <path d="M 36,12 L 54,50 L 36,88" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-    <circle cx="54" cy="50" r="3.5" fill="#ee6f40" />
+    <path d="M 34,8 L 52,47 L 34,86" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="52" cy="47" r="4" fill="#ee6f40" />
 
     <!-- Cyber Recurve Bow (Teal with Mint Accents) -->
-    <path d="M 38,10 C 24,18 14,32 14,50 C 14,68 24,82 38,90 C 34,84 22,70 22,50 C 22,30 34,16 38,10 Z" 
-          fill="url(#bowGradDark)" stroke="#5eead4" stroke-width="1.2" />
+    <path d="M 36,6 C 22,14 12,28 12,47 C 12,66 22,80 36,88 C 31,81 20,68 20,47 C 20,26 31,13 36,6 Z" 
+          fill="#177272" stroke="#5eead4" stroke-width="1.5" />
     
-    <!-- Bow Limb Tips & Energy Accents -->
-    <path d="M 38,10 L 44,7 L 41,15 Z" fill="#5eead4" />
-    <path d="M 38,90 L 44,93 L 41,85 Z" fill="#5eead4" />
-    <circle cx="22" cy="50" r="4.5" fill="#ee6f40" stroke="#5eead4" stroke-width="1.5" />
+    <!-- Bow Limb Energy Tips -->
+    <polygon points="36,6 42,3 39,11" fill="#5eead4" />
+    <polygon points="36,88 42,91 39,83" fill="#5eead4" />
+    <circle cx="20" cy="47" r="4.5" fill="#ee6f40" stroke="#5eead4" stroke-width="1.5" />
 
-    <!-- 4 SIMD Vector Lanes (Data Streams firing forward) -->
-    <!-- Lane 0 (Upper SIMD Track) -->
+    <!-- 4 SOLID SIMD Vector Lanes (Glowing in Dark Mode) -->
+    <!-- Lane 0 (Upper SIMD Track, Bright Mint) -->
     <g>
-      <line x1="48" y1="35" x2="88" y2="35" stroke="url(#lane0GradDark)" stroke-width="3" stroke-linecap="round" />
-      <path d="M 88,35 L 98,44" stroke="#5eead4" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3,2" />
+      <rect x="46" y="30" width="46" height="4" rx="2" fill="#5eead4" />
+      <polygon points="92,32 98,38 95,40 89,34" fill="#5eead4" />
     </g>
 
-    <!-- Lane 1 (Mid-Upper Track) -->
-    <g>
-      <line x1="56" y1="45" x2="100" y2="45" stroke="url(#lane1GradDark)" stroke-width="3.5" stroke-linecap="round" />
-    </g>
+    <!-- Lane 1 (Mid-Upper Track, Peach Coral) -->
+    <rect x="54" y="40" width="48" height="4.5" rx="2" fill="#fb923c" />
 
-    <!-- Lane 2 (Mid-Lower Track) -->
-    <g>
-      <line x1="56" y1="55" x2="100" y2="55" stroke="url(#lane2GradDark)" stroke-width="3.5" stroke-linecap="round" />
-    </g>
+    <!-- Lane 2 (Mid-Lower Track, Warm Coral) -->
+    <rect x="54" y="50" width="48" height="4.5" rx="2" fill="#ee6f40" />
 
-    <!-- Lane 3 (Lower SIMD Track) -->
+    <!-- Lane 3 (Lower SIMD Track, Bright Emerald) -->
     <g>
-      <line x1="48" y1="65" x2="88" y2="65" stroke="url(#lane3GradDark)" stroke-width="3" stroke-linecap="round" />
-      <path d="M 88,65 L 98,56" stroke="#34d399" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3,2" />
+      <rect x="46" y="60" width="46" height="4" rx="2" fill="#34d399" />
+      <polygon points="92,62 98,56 95,54 89,60" fill="#34d399" />
     </g>
 
     <!-- Central Supersonic Vector Arrowhead -->
     <!-- Main Arrowhead Wings -->
-    <polygon points="124,50 96,36 103,50 96,64" fill="url(#arrowGradDark)" stroke="#f28b63" stroke-width="1" />
+    <polygon points="126,47 96,33 103,47 96,61" fill="#ee6f40" stroke="#f28b63" stroke-width="1.5" />
     <!-- Core Diamond Pivot -->
-    <polygon points="120,50 108,46 103,50 108,54" fill="#ffffff" opacity="0.95" />
-    <!-- Pulse Ring -->
-    <circle cx="103" cy="50" r="1.8" fill="#5eead4" />
+    <polygon points="122,47 110,43 104,47 110,51" fill="#ffffff" />
+    <!-- Center Pivot Node -->
+    <circle cx="104" cy="47" r="2.2" fill="#5eead4" />
   </g>
 
   <!-- TYPOGRAPHY & BRANDING (Dark Mode: White / Mint / Coral) -->
-  <g transform="translate(150, 20)">
+  <g transform="translate(160, 20)">
     <!-- Main Title: Legolas++ -->
-    <text x="0" y="44" class="brand-title-dark">Legolas<tspan class="brand-plus-dark">++</tspan></text>
+    <text x="0" y="42" class="brand-title-dark">Legolas<tspan class="brand-plus-dark">++</tspan></text>
     
     <!-- Subtitle: SIMD Tensor & DLI Engine -->
-    <text x="2" y="66" class="brand-sub-dark">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
+    <text x="2" y="64" class="brand-sub-dark">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
 
     <!-- Technical Tagline -->
-    <text x="2" y="80" class="brand-mono-dark">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
+    <text x="2" y="78" class="brand-mono-dark">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
   </g>
 </svg>
