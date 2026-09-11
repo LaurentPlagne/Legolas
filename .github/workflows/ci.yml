@@ -127,6 +127,8 @@ jobs:
       - name: Build all targets
         run: |
           cmake --build build --config Release 2>&1 | tee build.log || {
+            ERRS=$(grep -E '(error C[0-9]+|fatal error)' build.log | head -n 10 | tr '\n' ' ')
+            echo "::error::$ERRS"
             echo "### ❌ Windows MSVC Build Failure Log" >> $GITHUB_STEP_SUMMARY
             echo '```text' >> $GITHUB_STEP_SUMMARY
             tail -n 120 build.log >> $GITHUB_STEP_SUMMARY
