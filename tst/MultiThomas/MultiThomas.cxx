@@ -304,36 +304,23 @@ int main( int argc,  char *argv[] )
 {
   INFOS("MultiThomasTest");
   using RealType=float;
+
+  if (argc > 1) {
+    int nx = std::atoi(argv[1]);
+    if (nx <= 0) nx = 256;
+    std::cout << "[Fast Thomas Benchmark] Running with Nx=" << nx << std::endl;
+    double gf_p1_seq = ThomasBench<Legolas::Array<RealType,2>, SeqMap>::evalGflops(nx);
+    double gf_p4_seq = ThomasBench<Legolas::Array<RealType,2,4,2>, SeqMap>::evalGflops(nx);
+    double gf_p8_seq = ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap>::evalGflops(nx);
+    double gf_p8_par = ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap>::evalGflops(nx);
+    std::cout << "Thomas_P1_Seq: " << gf_p1_seq << " GFlops" << std::endl;
+    std::cout << "Thomas_P4_Seq: " << gf_p4_seq << " GFlops" << std::endl;
+    std::cout << "Thomas_P8_Seq: " << gf_p8_seq << " GFlops" << std::endl;
+    std::cout << "Thomas_P8_Par: " << gf_p8_par << " GFlops" << std::endl;
+    return 0;
+  }
+
   goSpeedUpBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
-
-
-//  using ThisBench=ThomasBench<Legolas::Array<RealType,2,8,2>,SeqMap>;
-//
-//  const double gflops=ThisBench ::evalGflops(64);
-//
-//  std::cout << ThisBench::name() << " gflops="<<gflops << std::endl;
-
-
-  // goBench< ThomasLDLBench<Legolas::Array<RealType,2>, SeqMap > >();
-  // goBench< ThomasLDLBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();
-  // goBench< ThomasLDLBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
-  // goBench< ThomasLDLBench<Legolas::Array<RealType,2>, ParMap > >();
-  // goBench< ThomasLDLBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
-  // goBench< ThomasLDLBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
-
-  // goBench< LaplacianBench<Legolas::Array<RealType,2>, SeqMap > >();
-  // goBench< LaplacianBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();
-  // goBench< LaplacianBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
-  // goBench< LaplacianBench<Legolas::Array<RealType,2>, ParMap > >();
-  // goBench< LaplacianBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
-  // goBench< LaplacianBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
-
-//  goBench< ThomasBench<Legolas::Array<RealType,2>, SeqMap > >();
-//  goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();
-//  goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, SeqMap > >();
-//  goBench< ThomasBench<Legolas::Array<RealType,2>, ParMap > >();
-//  goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, ParMap > >();
-//  goBench< ThomasBench<Legolas::Array<RealType,2,8,2>, ParMap > >();
 
   goBench< ThomasBench<Legolas::Array<RealType,2>, SeqMap > >();
   goBench< ThomasBench<Legolas::Array<RealType,2,4,2>, SeqMap > >();

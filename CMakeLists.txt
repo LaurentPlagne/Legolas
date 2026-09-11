@@ -26,6 +26,7 @@ endif()
 set ( CMAKE_CXX_FLAGS "-Wall -Wno-deprecated-declarations -std=c++14 ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
 
 option(USE_TBB "Use Intel TBB library (otherwise uses native WorkStealing)" ON)
+option(USE_EIGEN "Use Eigen library for SIMD arrays (otherwise uses native NativeSimd)" ON)
 
 if (USE_TBB)
   find_package(TBB QUIET)
@@ -40,8 +41,22 @@ else()
   add_definitions(-DUSING_TBB=0)
 endif()
 
-find_package(Eigen3 REQUIRED)
-include_directories(${EIGEN3_INCLUDE_DIR})
+find_package(Eigen3 QUIET)
+if (EIGEN3_FOUND)
+  include_directories(${EIGEN3_INCLUDE_DIR})
+endif()
+
+if (USE_EIGEN)
+  if (EIGEN3_FOUND)
+    message(STATUS "Using Eigen backend for SIMD arrays: ${EIGEN3_INCLUDE_DIR}")
+    add_definitions(-DUSE_EIGEN=1)
+  else()
+    message(WARNING "Eigen3 requested but not found, falling back to NativeSimd")
+    set(USE_EIGEN OFF)
+  endif()
+else()
+  message(STATUS "Using native NativeSimd vector packs (Eigen disabled)")
+endif()
 
 enable_testing()
 

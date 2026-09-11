@@ -1,0 +1,118 @@
+[
+  {
+    "cfg": {
+      "id": "Q1",
+      "name": "TBB + Eigen (Reference)",
+      "build_dir": "/Users/laurentplagne/Projects/Legolas/build_q1",
+      "cmake_flags": [
+        "-DUSE_TBB=ON",
+        "-DUSE_EIGEN=ON"
+      ]
+    },
+    "depthwise": {
+      "time_ms": 0.22,
+      "gflops": 127.72,
+      "speedup": 17.68,
+      "error": 0.0
+    },
+    "audio": {
+      "time_ms": 7.48,
+      "msamples_sec": 8216.05,
+      "speedup": 21.2,
+      "error": 0.0
+    },
+    "thomas": {
+      "seq_p1": 1.58793,
+      "seq_p4": 4.92946,
+      "seq_p8": 9.54753,
+      "par_p8": 64.0766
+    }
+  },
+  {
+    "cfg": {
+      "id": "Q2",
+      "name": "WorkStealing + Eigen",
+      "build_dir": "/Users/laurentplagne/Projects/Legolas/build_q2",
+      "cmake_flags": [
+        "-DUSE_TBB=OFF",
+        "-DUSE_EIGEN=ON"
+      ]
+    },
+    "depthwise": {
+      "time_ms": 0.25,
+      "gflops": 112.73,
+      "speedup": 15.75,
+      "error": 0.0
+    },
+    "audio": {
+      "time_ms": 7.57,
+      "msamples_sec": 8111.71,
+      "speedup": 20.63,
+      "error": 0.0
+    },
+    "thomas": {
+      "seq_p1": 1.57703,
+      "seq_p4": 4.97668,
+      "seq_p8": 9.60657,
+      "par_p8": 63.9826
+    }
+  },
+  {
+    "cfg": {
+      "id": "Q3",
+      "name": "TBB + NativeSIMD",
+      "build_dir": "/Users/laurentplagne/Projects/Legolas/build_q3",
+      "cmake_flags": [
+        "-DUSE_TBB=ON",
+        "-DUSE_EIGEN=OFF"
+      ]
+    },
+    "depthwise": {
+      "time_ms": 0.23,
+      "gflops": 120.08,
+      "speedup": 16.48,
+      "error": 0.0
+    },
+    "audio": {
+      "time_ms": 6.72,
+      "msamples_sec": 9139.87,
+      "speedup": 23.02,
+      "error": 0.0
+    },
+    "thomas": {
+      "seq_p1": 1.5802,
+      "seq_p4": 5.0104,
+      "seq_p8": 9.78614,
+      "par_p8": 67.3867
+    }
+  },
+  {
+    "cfg": {
+      "id": "Q4",
+      "name": "WorkStealing + NativeSIMD (Zero-Dep)",
+      "build_dir": "/Users/laurentplagne/Projects/Legolas/build_q4",
+      "cmake_flags": [
+        "-DUSE_TBB=OFF",
+        "-DUSE_EIGEN=OFF"
+      ]
+    },
+    "depthwise": {
+      "time_ms": 0.23,
+      "gflops": 120.73,
+      "speedup": 16.48,
+      "error": 0.0
+    },
+    "audio": {
+      "time_ms": 8.03,
+      "msamples_sec": 7650.13,
+      "speedup": 19.33,
+      "error": 0.0
+    },
+    "thomas": {
+      "seq_p1": 1.56888,
+      "seq_p4": 5.01829,
+      "seq_p8": 9.8078,
+      "par_p8": 65.0241
+    }
+  }
+]

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Legolas/Array/NativeSimd.hxx"
+
 namespace Legolas{
 
 //*************************************** Begin Accumulate ****************************************//
@@ -226,11 +228,18 @@ struct AccumulatePadding<ACCUMULATOR,1,1>{
 //*************************************** End Accumulate ****************************************//
 
 
+#ifdef USE_EIGEN
 template <class LEFT, int PACK_SIZE, class RIGHT>
 static inline void plusAssign(Eigen::Array<LEFT,PACK_SIZE,1> & a, const RIGHT & b){
   for (int i=0 ; i< PACK_SIZE ; i++){
     a(i)+=b(i);
   }
+}
+#endif
+
+template <class LEFT, int PACK_SIZE, class RIGHT>
+static inline void plusAssign(Legolas::NativeSimd<LEFT,PACK_SIZE> & a, const RIGHT & b){
+  a += b;
 }
 
 static inline void plusAssign(double & a, const double & b){
