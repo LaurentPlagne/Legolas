@@ -135,7 +135,7 @@ int main() {
 
 Legolas++ is based on the research presented at **ACM SIGPLAN ARRAY 2017**:
 
-> **Portable vectorization and parallelization of C++ multi-dimensional array computations**  
-> Laurent Plagne & Kaveh Bojnourdi  
+> [**Portable vectorization and parallelization of C++ multi-dimensional array computations**](https://dl.acm.org/doi/10.1145/3091966.3091973)  
+> Laurent Plagne & Kavoos Bojnourdi  
 > *Proceedings of the 4th ACM SIGPLAN International Workshop on Libraries, Languages, and Compilers for Array Programming (ARRAY 2017)*, Pages 47–54.  
 > DOI: [10.1145/3091966.3091973](https://doi.org/10.1145/3091966.3091973)
