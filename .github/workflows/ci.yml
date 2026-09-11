@@ -53,34 +53,34 @@ jobs:
 
       - name: Build all targets
         run: |
-          cmake --build build --config Release --parallel 2>&1 | tee build.log || {
-            echo "### ❌ Build Failure Log (${{ matrix.name }})" >> $GITHUB_STEP_SUMMARY
-            echo '```text' >> $GITHUB_STEP_SUMMARY
-            tail -n 120 build.log >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
-          }
+          cmake --build build --config Release --parallel
 
       - name: Run CTest test suite
         run: |
-          ctest --test-dir build --build-config Release --output-on-failure 2>&1 | tee ctest.log || {
-            echo "### ❌ CTest Failure Log (${{ matrix.name }})" >> $GITHUB_STEP_SUMMARY
-            echo '```text' >> $GITHUB_STEP_SUMMARY
-            cat ctest.log >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
-          }
+          ctest --test-dir build --build-config Release --output-on-failure
 
       - name: Run Verification Benchmarks
         run: |
-          echo "=== 1. AI MobileNet Depthwise 2D Convolution ==="
-          find build -name "DepthwiseConv*" -type f -exec {} \; || true
-          echo "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
-          find build -name "AudioBiquad*" -type f -exec {} \; || true
-          echo "=== 3. Tridiagonal Thomas Example ==="
-          find build -name "MultiThomasExample*" -type f -exec {} \; || true
-          echo "=== 4. Fast Thomas (Nx=64) ==="
-          find build -name "MultiThomas*" -type f -not -name "*Example*" -exec {} 64 \; || true
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            echo "=== 1. AI MobileNet Depthwise 2D Convolution ==="
+            find build -name "DepthwiseConv.exe" -exec {} \; || true
+            echo "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
+            find build -name "AudioBiquad.exe" -exec {} \; || true
+            echo "=== 3. Tridiagonal Thomas Example ==="
+            find build -name "MultiThomasExample.exe" -exec {} \; || true
+            echo "=== 4. Fast Thomas (Nx=64) ==="
+            find build -name "MultiThomas.exe" -exec {} 64 \; || true
+          else
+            echo "=== 1. AI MobileNet Depthwise 2D Convolution ==="
+            ./build/examples/DepthwiseConv || true
+            echo "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
+            ./build/examples/AudioBiquad || true
+            echo "=== 3. Tridiagonal Thomas Example ==="
+            ./build/tst/MultiThomasExample/MultiThomasExample || true
+            echo "=== 4. Fast Thomas (Nx=64) ==="
+            ./build/tst/MultiThomas/MultiThomas 64 || true
+          fi
+
 
 
 

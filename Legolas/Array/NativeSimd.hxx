@@ -20,7 +20,7 @@ public:
   static constexpr int PackSize = P;
 
 #if LEGOLAS_HAS_VECTOR_EXTENSIONS
-  using VecType __attribute__((vector_size(sizeof(T) * P))) = T;
+  typedef T VecType __attribute__((vector_size(sizeof(T) * P)));
   VecType data_;
 #else
   T data_[P];

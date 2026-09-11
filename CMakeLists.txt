@@ -38,6 +38,7 @@ else()
   endif()
 
   set ( CMAKE_CXX_FLAGS "-Wall -Wno-deprecated-declarations ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
+  add_definitions(-D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L)
 endif()
 
 find_package(Threads REQUIRED)
