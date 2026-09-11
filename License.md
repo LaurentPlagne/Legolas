@@ -1,6 +1,8 @@
-Legolas++ is licensed under the MIT "Expat" License:
+# MIT License
 
-> Copyright (c) 2019-2020: EDF-R&D,TriScale innov
+Legolas++ is licensed under the permissive MIT "Expat" License:
+
+> **Copyright (c) 2019-2026: EDF-R&D, TriScale innov**
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
@@ -19,4 +21,3 @@ Legolas++ is licensed under the MIT "Expat" License:
 > LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 > SOFTWARE.
->

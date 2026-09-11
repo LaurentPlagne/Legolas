@@ -1,5 +1,5 @@
 /**
- * project  DESCARTES
+ * project  Legolas
  *
  * @file     MNMatrixVectorProduct.hxx
  *
@@ -9,7 +9,9 @@
  * @par Modifications
  * - author date object
  *   
- * (c) Copyright EDF R&D - CEA 2001-2005 
+ * (c) Copyright EDF R&D - CEA 2001-2005
+ *
+ * SPDX-License-Identifier: MIT 
  */
 #ifndef __LEGOLAS_MNMATRIXVECTORPRODUCT_HXX__
 #define __LEGOLAS_MNMATRIXVECTORPRODUCT_HXX__

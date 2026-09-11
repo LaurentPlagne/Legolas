@@ -1,5 +1,5 @@
 /**
- * project  DESCARTES
+ * project  Legolas
  *
  * @file     StationaryHeatEquationTest.cxx
  *
@@ -10,6 +10,8 @@
  * - author date object
  *   
  * (c) Copyright EDF R&D
+ *
+ * SPDX-License-Identifier: MIT
  */
 # include <cstdlib>
 # include <cmath>

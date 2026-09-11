@@ -1,5 +1,5 @@
 /**
- * project  DESCARTES
+ * project  Legolas
  *
  * @file     ProductCompoundMatrixInversion.hxx
  *
@@ -9,7 +9,9 @@
  * @par Modifications
  * - author date object
  *   
- * (c) Copyright EDF R&D 2009 
+ * (c) Copyright EDF R&D 2009
+ *
+ * SPDX-License-Identifier: MIT 
  */
 #ifndef __LEGOLAS_PRODUCTCOMPOUNDMATRIXINVERSION_HXX__
 #define __LEGOLAS_PRODUCTCOMPOUNDMATRIXINVERSION_HXX__

@@ -1,5 +1,5 @@
 /**
- * project  DESCARTES
+ * project  Legolas
  *
  * @file     ActualMatrixKernel.hxx
  *
@@ -9,7 +9,9 @@
  * @par Modifications
  * - LP - Nettoyage - Novembre 2006
  *   
- * (c) Copyright EDF R&D - CEA 2001-2005 
+ * (c) Copyright EDF R&D - CEA 2001-2005
+ *
+ * SPDX-License-Identifier: MIT 
  */
 #ifndef __LEGOLAS_ACTUALMATRIXKERNEL_HXX__
 #define __LEGOLAS_ACTUALMATRIXKERNEL_HXX__

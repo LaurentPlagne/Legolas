@@ -1,5 +1,5 @@
 /*
- * project  DESCARTES
+ * project  Legolas
  *
  * @file     TinyBandedSymmetricMatrixContainer.hxx
  *
