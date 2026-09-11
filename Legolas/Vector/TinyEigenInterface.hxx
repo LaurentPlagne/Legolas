@@ -1,5 +1,5 @@
 #pragma once
-
+#if defined(USE_EIGEN) && (USE_EIGEN == 1)
 
 #include <Eigen/Core>
 
@@ -55,3 +55,4 @@ namespace Legolas{
 
 
 }
+#endif

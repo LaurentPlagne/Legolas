@@ -1,4 +1,5 @@
 #pragma once
+#if defined(USE_EIGEN) && (USE_EIGEN == 1)
 
 #include <type_traits>
 #include "Legolas/EigenInterface.hxx"
@@ -195,3 +196,4 @@ namespace Legolas{
 
 
 }
+#endif
