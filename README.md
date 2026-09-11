@@ -115,7 +115,7 @@ In real-world applications, engineers rarely solve a single isolated recurrence.
 Instead of struggling to vectorize sequentially along $i$, **Legolas++ interleaves $P$ independent problem instances directly in memory**:
 
 <p align="center">
-  <img src="docs/assets/images/dli_animation.svg" alt="Animated Data Layout Interleaving (DLI) Mechanism" width="100%">
+  <img src="docs/assets/images/dli_animation.svg" alt="Animated Data Layout Interleaving (DLI) Mechanism" width="960" height="640" style="max-width: 100%; height: auto;">
 </p>
 
 *Figure: Data Layout Interleaving (DLI) in Action. Elements at step $i$ across $P=4$ independent problem instances are mapped contiguously into physical memory, transforming strided access into single-instruction aligned SIMD streaming.*

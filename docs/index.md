@@ -46,7 +46,7 @@ target_link_libraries(my_project PRIVATE Legolas)
 ```
 
 <p align="center">
-  <img src="assets/images/dli_animation.svg" alt="Data Layout Interleaving Animation" width="100%">
+  <img src="assets/images/dli_animation.svg" alt="Data Layout Interleaving Animation" width="960" height="640" style="max-width: 100%; height: auto;">
 </p>
 
 *Figure: Data Layout Interleaving (DLI) in Action. Elements at step $i$ across $P=4$ independent systems are interleaved contiguously in memory, enabling direct hardware SIMD vector streaming.*
