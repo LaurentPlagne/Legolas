@@ -7,9 +7,13 @@ target_link_libraries(AudioBiquad Legolas)
 add_executable(VideoPipeline VideoPipeline/VideoPipeline.cxx)
 target_link_libraries(VideoPipeline Legolas)
 
+add_executable(OptionPricing OptionPricing/OptionPricing.cxx)
+target_link_libraries(OptionPricing Legolas)
+
 add_test(NAME DepthwiseConv COMMAND DepthwiseConv)
 add_test(NAME AudioBiquad COMMAND AudioBiquad)
 add_test(NAME VideoPipeline COMMAND VideoPipeline)
+add_test(NAME OptionPricing COMMAND OptionPricing)
 
 if (APPLE)
     add_executable(VideoPipelineMetal VideoPipeline/VideoPipelineMetal.mm)
