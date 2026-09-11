@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 110" width="540" height="110">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&amp;family=JetBrains+Mono:wght@600&amp;display=swap');
+      .brand-title-light { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 40px; fill: #0f172a; letter-spacing: -0.5px; }
+      .brand-plus-light { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 44px; fill: #ee6f40; }
+      .brand-sub-light { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 700; font-size: 10.5px; fill: #0e5e5e; letter-spacing: 2.2px; text-transform: uppercase; }
+      .brand-mono-light { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; fill: #64748b; font-weight: 600; }
+    </style>
+
+    <linearGradient id="bowGradLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#177272" />
+      <stop offset="50%" stop-color="#0e4b4b" />
+      <stop offset="100%" stop-color="#177272" />
+    </linearGradient>
+
+    <linearGradient id="arrowGradLight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ee6f40" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+
+    <linearGradient id="lane0GradLight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#14b8a6" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+
+    <linearGradient id="lane1GradLight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#ee6f40" />
+    </linearGradient>
+
+    <linearGradient id="lane2GradLight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+
+    <linearGradient id="lane3GradLight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+  </defs>
+
+  <!-- EMBLEM: Option 3 Cyber Bow & 4-Lane SIMD Vector Arrow (x=10 to 135) -->
+  <g transform="translate(10, 5)">
+    <!-- Bowstring & Nock Region -->
+    <path d="M 36,12 L 54,50 L 36,88" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="54" cy="50" r="3.5" fill="#ee6f40" />
+
+    <!-- Cyber Recurve Bow (Deep Teal, High-Contrast) -->
+    <!-- Outer Limb Structure -->
+    <path d="M 38,10 C 24,18 14,32 14,50 C 14,68 24,82 38,90 C 34,84 22,70 22,50 C 22,30 34,16 38,10 Z" 
+          fill="url(#bowGradLight)" stroke="#0e4b4b" stroke-width="1.2" />
+    
+    <!-- Bow Limb Tips & Energy Accents -->
+    <path d="M 38,10 L 44,7 L 41,15 Z" fill="#0d9488" />
+    <path d="M 38,90 L 44,93 L 41,85 Z" fill="#0d9488" />
+    <circle cx="22" cy="50" r="4.5" fill="#ee6f40" stroke="#0e4b4b" stroke-width="1.5" />
+
+    <!-- 4 SIMD Vector Lanes (Data Streams firing forward) -->
+    <!-- Lane 0 (Upper SIMD Track) -->
+    <g>
+      <line x1="48" y1="35" x2="88" y2="35" stroke="url(#lane0GradLight)" stroke-width="3" stroke-linecap="round" />
+      <path d="M 88,35 L 98,44" stroke="#0d9488" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3,2" />
+    </g>
+
+    <!-- Lane 1 (Mid-Upper Track) -->
+    <g>
+      <line x1="56" y1="45" x2="100" y2="45" stroke="url(#lane1GradLight)" stroke-width="3.5" stroke-linecap="round" />
+    </g>
+
+    <!-- Lane 2 (Mid-Lower Track) -->
+    <g>
+      <line x1="56" y1="55" x2="100" y2="55" stroke="url(#lane2GradLight)" stroke-width="3.5" stroke-linecap="round" />
+    </g>
+
+    <!-- Lane 3 (Lower SIMD Track) -->
+    <g>
+      <line x1="48" y1="65" x2="88" y2="65" stroke="url(#lane3GradLight)" stroke-width="3" stroke-linecap="round" />
+      <path d="M 88,65 L 98,56" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3,2" />
+    </g>
+
+    <!-- Central Supersonic Vector Arrowhead -->
+    <!-- Main Arrowhead Wings -->
+    <polygon points="124,50 96,36 103,50 96,64" fill="url(#arrowGradLight)" stroke="#c2410c" stroke-width="1" />
+    <!-- Core Diamond Pivot -->
+    <polygon points="120,50 108,46 103,50 108,54" fill="#ffffff" opacity="0.95" />
+    <!-- Pulse Ring -->
+    <circle cx="103" cy="50" r="1.8" fill="#ee6f40" />
+  </g>
+
+  <!-- TYPOGRAPHY & BRANDING (Light Mode: Slate-900 / Teal / Coral) -->
+  <g transform="translate(150, 20)">
+    <!-- Main Title: Legolas++ -->
+    <text x="0" y="44" class="brand-title-light">Legolas<tspan class="brand-plus-light">++</tspan></text>
+    
+    <!-- Subtitle: SIMD Tensor & DLI Engine -->
+    <text x="2" y="66" class="brand-sub-light">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
+
+    <!-- Technical Tagline -->
+    <text x="2" y="80" class="brand-mono-light">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
+  </g>
+</svg>

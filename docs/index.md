@@ -1,7 +1,8 @@
 # Legolas++: Building Blocks for Linear Algebra Solvers
 
 <p align="center">
-  <img src="assets/images/legolas_logo.svg" alt="Legolas++ Logo" width="380" style="margin: 1rem 0;">
+  <img class="logo-light-only" src="assets/images/legolas_logo_light.svg" alt="Legolas++ Logo" width="420" style="margin: 1rem 0;">
+  <img class="logo-dark-only" src="assets/images/legolas_logo_dark.svg" alt="Legolas++ Logo" width="420" style="margin: 1rem 0;">
 </p>
 
 <p align="center">

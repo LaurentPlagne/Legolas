@@ -1,88 +1,167 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 110" width="460" height="110">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 110" width="540" height="110">
   <defs>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&amp;family=JetBrains+Mono:wght@600&amp;display=swap');
-      .brand-title { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 38px; fill: #f8fafc; letter-spacing: -0.5px; }
-      .brand-plus { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 42px; fill: #ee6f40; }
-      .brand-sub { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 600; font-size: 11.5px; fill: #5eead4; letter-spacing: 2px; text-transform: uppercase; }
+      
+      /* DEFAULT: LIGHT MODE (Readable on pure white and light backgrounds) */
+      .brand-title { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 40px; fill: #0f172a; letter-spacing: -0.5px; }
+      .brand-plus { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 44px; fill: #ee6f40; }
+      .brand-sub { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 700; font-size: 10.5px; fill: #0e5e5e; letter-spacing: 2.2px; text-transform: uppercase; }
+      .brand-mono { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; fill: #64748b; font-weight: 600; }
+      .bow-shape { fill: url(#bowGrad); stroke: #0e4b4b; stroke-width: 1.2; }
+      .bow-tip { fill: #0d9488; }
+      .bow-string { stroke: #94a3b8; stroke-width: 2; }
+      .bow-node { fill: #ee6f40; stroke: #0e4b4b; stroke-width: 1.5; }
+      .lane-0 { stroke: url(#lane0Grad); stroke-width: 3; }
+      .lane-0-guide { stroke: #0d9488; stroke-width: 2.2; }
+      .lane-1 { stroke: url(#lane1Grad); stroke-width: 3.5; }
+      .lane-2 { stroke: url(#lane2Grad); stroke-width: 3.5; }
+      .lane-3 { stroke: url(#lane3Grad); stroke-width: 3; }
+      .lane-3-guide { stroke: #047857; stroke-width: 2.2; }
+      .arrow-wings { fill: url(#arrowGrad); stroke: #c2410c; stroke-width: 1; }
+      .arrow-pivot { fill: #ee6f40; }
+
+      /* AUTOMATIC ADAPTATION: DARK MODE (when user/OS prefers dark mode) */
+      @media (prefers-color-scheme: dark) {
+        .brand-title { fill: #f8fafc; }
+        .brand-sub { fill: #5eead4; }
+        .brand-mono { fill: #94a3b8; }
+        .bow-shape { fill: url(#bowGradDark); stroke: #5eead4; stroke-width: 1.2; }
+        .bow-tip { fill: #5eead4; }
+        .bow-string { stroke: #475569; }
+        .bow-node { fill: #ee6f40; stroke: #5eead4; }
+        .lane-0 { stroke: url(#lane0GradDark); }
+        .lane-0-guide { stroke: #5eead4; }
+        .lane-1 { stroke: url(#lane1GradDark); }
+        .lane-2 { stroke: url(#lane2GradDark); }
+        .lane-3 { stroke: url(#lane3GradDark); }
+        .lane-3-guide { stroke: #34d399; }
+        .arrow-wings { fill: url(#arrowGradDark); stroke: #f28b63; }
+        .arrow-pivot { fill: #5eead4; }
+      }
     </style>
 
-    <linearGradient id="logoTeal" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#229999" />
+    <!-- Gradients for Light Mode -->
+    <linearGradient id="bowGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#177272" />
+      <stop offset="50%" stop-color="#0e4b4b" />
       <stop offset="100%" stop-color="#177272" />
     </linearGradient>
 
-    <linearGradient id="logoCoral" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="arrowGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ee6f40" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+
+    <linearGradient id="lane0Grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#14b8a6" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+
+    <linearGradient id="lane1Grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#ee6f40" />
+    </linearGradient>
+
+    <linearGradient id="lane2Grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+
+    <linearGradient id="lane3Grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+
+    <!-- Gradients for Dark Mode -->
+    <linearGradient id="bowGradDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#28a3a3" />
+      <stop offset="50%" stop-color="#177272" />
+      <stop offset="100%" stop-color="#229999" />
+    </linearGradient>
+
+    <linearGradient id="arrowGradDark" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#f28b63" />
       <stop offset="100%" stop-color="#ee6f40" />
     </linearGradient>
 
-    <linearGradient id="logoArrow" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0%" stop-color="#ee6f40" />
-      <stop offset="50%" stop-color="#f59e0b" />
-      <stop offset="100%" stop-color="#5eead4" />
+    <linearGradient id="lane0GradDark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5eead4" />
+      <stop offset="100%" stop-color="#2dd4bf" />
     </linearGradient>
 
-    <filter id="logoGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="3" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
+    <linearGradient id="lane1GradDark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fed7aa" />
+      <stop offset="100%" stop-color="#fb923c" />
+    </linearGradient>
+
+    <linearGradient id="lane2GradDark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fdba74" />
+      <stop offset="100%" stop-color="#f97316" />
+    </linearGradient>
+
+    <linearGradient id="lane3GradDark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6ee7b7" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
   </defs>
 
-  <!-- ICON EMBLEM (Left: x=10 to 95) -->
-  <g transform="translate(12, 10)">
-    <!-- Elven Bow Arch (Teal) -->
-    <path d="M 22,8 Q 5,45 22,82 Q 35,45 22,8" fill="none" stroke="url(#logoTeal)" stroke-width="4.5" stroke-linecap="round" />
-    <path d="M 22,8 L 48,45 L 22,82" fill="none" stroke="#253549" stroke-width="1.5" stroke-dasharray="3,3" />
+  <!-- EMBLEM: Option 3 Cyber Bow & 4-Lane SIMD Vector Arrow -->
+  <g transform="translate(10, 5)">
+    <!-- Bowstring & Nock Region -->
+    <path d="M 36,12 L 54,50 L 36,88" fill="none" class="bow-string" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="54" cy="50" r="3.5" fill="#ee6f40" />
 
-    <!-- Isometric Interlocking Tensor Cubes (Lego / Tensor Packing) -->
-    <!-- Cube 1 (Base, Deep Teal) -->
-    <g transform="translate(32, 42)">
-      <!-- Top Face -->
-      <polygon points="14,0 28,7 14,14 0,7" fill="#229999" />
-      <!-- Left Face -->
-      <polygon points="0,7 14,14 14,28 0,21" fill="#177272" />
-      <!-- Right Face -->
-      <polygon points="14,14 28,7 28,21 14,28" fill="#0e4b4b" />
+    <!-- Cyber Recurve Bow -->
+    <path d="M 38,10 C 24,18 14,32 14,50 C 14,68 24,82 38,90 C 34,84 22,70 22,50 C 22,30 34,16 38,10 Z" 
+          class="bow-shape" />
+    
+    <!-- Bow Limb Tips & Energy Accents -->
+    <path d="M 38,10 L 44,7 L 41,15 Z" class="bow-tip" />
+    <path d="M 38,90 L 44,93 L 41,85 Z" class="bow-tip" />
+    <circle cx="22" cy="50" r="4.5" class="bow-node" />
+
+    <!-- 4 SIMD Vector Lanes (Data Streams firing forward) -->
+    <!-- Lane 0 (Upper SIMD Track) -->
+    <g>
+      <line x1="48" y1="35" x2="88" y2="35" class="lane-0" stroke-linecap="round" />
+      <path d="M 88,35 L 98,44" class="lane-0-guide" stroke-linecap="round" stroke-dasharray="3,2" />
     </g>
 
-    <!-- Cube 2 (Top Left, Coral Accent) -->
-    <g transform="translate(18, 28)">
-      <polygon points="14,0 28,7 14,14 0,7" fill="#f28b63" />
-      <polygon points="0,7 14,14 14,28 0,21" fill="#ee6f40" />
-      <polygon points="14,14 28,7 28,21 14,28" fill="#c2410c" />
+    <!-- Lane 1 (Mid-Upper Track) -->
+    <g>
+      <line x1="56" y1="45" x2="100" y2="45" class="lane-1" stroke-linecap="round" />
     </g>
 
-    <!-- Cube 3 (Right, Mint Accent) -->
-    <g transform="translate(46, 28)">
-      <polygon points="14,0 28,7 14,14 0,7" fill="#5eead4" />
-      <polygon points="0,7 14,14 14,28 0,21" fill="#14b8a6" />
-      <polygon points="14,14 28,7 28,21 14,28" fill="#0f766e" />
+    <!-- Lane 2 (Mid-Lower Track) -->
+    <g>
+      <line x1="56" y1="55" x2="100" y2="55" class="lane-2" stroke-linecap="round" />
     </g>
 
-    <!-- Swift SIMD Vector Arrow (Diagonal 4-lane stream crossing the tensor) -->
-    <!-- 4 Vector Stream Tails -->
-    <line x1="8" y1="80" x2="28" y2="60" stroke="#ee6f40" stroke-width="1.8" opacity="0.6" />
-    <line x1="14" y1="84" x2="34" y2="64" stroke="#f28b63" stroke-width="1.8" opacity="0.8" />
-    <line x1="20" y1="88" x2="40" y2="68" stroke="#5eead4" stroke-width="1.8" opacity="0.9" />
-    <line x1="26" y1="92" x2="46" y2="72" stroke="#229999" stroke-width="1.8" />
+    <!-- Lane 3 (Lower SIMD Track) -->
+    <g>
+      <line x1="48" y1="65" x2="88" y2="65" class="lane-3" stroke-linecap="round" />
+      <path d="M 88,65 L 98,56" class="lane-3-guide" stroke-linecap="round" stroke-dasharray="3,2" />
+    </g>
 
-    <!-- Main Piercing Arrow Shaft -->
-    <line x1="18" y1="72" x2="72" y2="18" stroke="url(#logoArrow)" stroke-width="4.5" stroke-linecap="round" filter="url(#logoGlow)" />
-    <!-- Arrow Head -->
-    <polygon points="78,12 60,18 72,30" fill="#5eead4" filter="url(#logoGlow)" />
+    <!-- Central Supersonic Vector Arrowhead -->
+    <!-- Main Arrowhead Wings -->
+    <polygon points="124,50 96,36 103,50 96,64" class="arrow-wings" />
+    <!-- Core Diamond Pivot -->
+    <polygon points="120,50 108,46 103,50 108,54" fill="#ffffff" opacity="0.95" />
+    <!-- Pulse Ring -->
+    <circle cx="103" cy="50" r="1.8" class="arrow-pivot" />
   </g>
 
-  <!-- TYPOGRAPHY (Right: x=115 to 450) -->
-  <g transform="translate(112, 0)">
-    <!-- Main Name -->
-    <text x="0" y="62" class="brand-title">
-      LEGOLAS<tspan class="brand-plus">++</tspan>
-    </text>
+  <!-- TYPOGRAPHY & BRANDING -->
+  <g transform="translate(150, 20)">
+    <!-- Main Title: Legolas++ -->
+    <text x="0" y="44" class="brand-title">Legolas<tspan class="brand-plus">++</tspan></text>
+    
+    <!-- Subtitle: SIMD Tensor & DLI Engine -->
+    <text x="2" y="66" class="brand-sub">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
 
-    <!-- Subtitle / Tagline -->
-    <text x="2" y="86" class="brand-sub">
-      TENSOR SIMD ENGINE · TRISCALE INNOV
-    </text>
+    <!-- Technical Tagline -->
+    <text x="2" y="80" class="brand-mono">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
   </g>
 </svg>

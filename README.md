@@ -1,7 +1,11 @@
 # Legolas++: Building Blocks for Linear Algebra Solvers
 
 <p align="center">
-  <img src="docs/assets/images/legolas_logo.svg" alt="Legolas++ Tensor SIMD Engine Logo" width="380">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/images/legolas_logo_dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/images/legolas_logo_light.svg">
+    <img src="docs/assets/images/legolas_logo.svg" alt="Legolas++ Tensor SIMD Engine Logo" width="440">
+  </picture>
 </p>
 
 [![Header-Only](https://img.shields.io/badge/Architecture-100%25%20Header--Only-brightgreen.svg)]()
