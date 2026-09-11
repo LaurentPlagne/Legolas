@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 380" width="880" height="380">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap');
+      text { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      
+      @keyframes pulseGreeks {
+        0%, 100% { filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.4)); stroke: #34d399; }
+        50% { filter: drop-shadow(0 0 14px rgba(52, 211, 153, 0.8)); stroke: #6ee7b7; }
+      }
+      .greeks-pulse { animation: pulseGreeks 3s infinite ease-in-out; }
+    </style>
+
+    <linearGradient id="finBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f1722" />
+      <stop offset="100%" stop-color="#182230" />
+    </linearGradient>
+
+    <linearGradient id="simdGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#177272" />
+      <stop offset="100%" stop-color="#ee6f40" />
+    </linearGradient>
+
+    <linearGradient id="flowArrow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#177272" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+  </defs>
+
+  <!-- Container Base -->
+  <rect width="880" height="380" rx="14" fill="url(#finBg)" stroke="#253549" stroke-width="2" />
+
+  <!-- Top Header Bar -->
+  <g transform="translate(30, 24)">
+    <rect width="820" height="42" rx="8" fill="#16202e" stroke="#253549" />
+    <circle cx="22" cy="21" r="5" fill="#ee6f40" />
+    <circle cx="38" cy="21" r="5" fill="#177272" />
+    <circle cx="54" cy="21" r="5" fill="#34d399" />
+    <text x="75" y="26" fill="#f8fafc" font-size="13" font-weight="700" letter-spacing="0.5">
+      QUANTITATIVE FINANCE — BLACK-SCHOLES PDE &amp; GREEKS AUTO-VECTORIZED VIA DLI
+    </text>
+    <rect x="665" y="10" width="145" height="22" rx="11" fill="#177272" fill-opacity="0.3" stroke="#177272" />
+    <text x="737" y="25" fill="#5eead4" font-size="10.5" font-weight="700" text-anchor="middle">493,239 OPTS/S (8 CORES)</text>
+  </g>
+
+  <!-- Main Architecture Flow -->
+  <g transform="translate(30, 85)">
+    <!-- 1. Derivatives Portfolio Contracts (x=0) -->
+    <g transform="translate(0, 0)">
+      <rect width="210" height="250" rx="10" fill="#131d2b" stroke="#177272" stroke-width="1.5" />
+      <rect width="210" height="28" rx="10" fill="#177272" fill-opacity="0.3" />
+      <text x="105" y="19" fill="#5eead4" font-size="11" font-weight="700" text-anchor="middle">
+        Derivatives Portfolio (16,384)
+      </text>
+
+      <!-- 4 Stacked Option Contracts -->
+      <g transform="translate(18, 45)">
+        <!-- Option 3 -->
+        <rect x="24" y="0" width="146" height="52" rx="6" fill="#6b21a8" fill-opacity="0.35" stroke="#c084fc" stroke-dasharray="3,3" />
+        <text x="97" y="20" fill="#c084fc" font-size="10" font-weight="600" text-anchor="middle">Option 3: K=$120, σ=42%</text>
+        <text x="97" y="38" fill="#a855f7" font-size="9" class="mono" text-anchor="middle">τ=1.0y, Call</text>
+
+        <!-- Option 2 -->
+        <rect x="16" y="22" width="146" height="52" rx="6" fill="#d97706" fill-opacity="0.35" stroke="#fbbf24" stroke-dasharray="3,3" />
+        <text x="89" y="42" fill="#fbbf24" font-size="10" font-weight="600" text-anchor="middle">Option 2: K=$105, σ=28%</text>
+        <text x="89" y="60" fill="#f59e0b" font-size="9" class="mono" text-anchor="middle">τ=1.0y, Call</text>
+
+        <!-- Option 1 -->
+        <rect x="8" y="44" width="146" height="52" rx="6" fill="#0284c7" fill-opacity="0.35" stroke="#38bdf8" stroke-dasharray="3,3" />
+        <text x="81" y="64" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">Option 1: K=$95, σ=22%</text>
+        <text x="81" y="82" fill="#0284c7" font-size="9" class="mono" text-anchor="middle">τ=1.0y, Call</text>
+
+        <!-- Option 0 (Front) -->
+        <rect x="0" y="66" width="146" height="52" rx="6" fill="#177272" fill-opacity="0.45" stroke="#34d399" stroke-width="1.5" />
+        <text x="73" y="86" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle">Option 0: K=$80, σ=18%</text>
+        <text x="73" y="104" fill="#5eead4" font-size="9.5" class="mono" text-anchor="middle">τ=1.0y, ATM Spot S=$100</text>
+      </g>
+
+      <g transform="translate(15, 195)">
+        <rect width="180" height="42" rx="6" fill="#0b121b" stroke="#253549" />
+        <text x="90" y="18" fill="#94a3b8" font-size="9.5" text-anchor="middle">QuantLib Scalar Baseline:</text>
+        <text x="90" y="32" fill="#f87171" font-size="10" font-weight="700" text-anchor="middle">1 Contract at a time (Serial)</text>
+      </g>
+    </g>
+
+    <!-- Arrow 1 -> 2: DLI Packing -->
+    <g transform="translate(218, 115)">
+      <path d="M 0,10 L 22,10" stroke="url(#flowArrow)" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+      <polygon points="26,10 18,6 18,14" fill="#34d399" />
+      <text x="13" y="-2" fill="#5eead4" font-size="8.5" font-weight="700" text-anchor="middle">DLI PACK</text>
+      <text x="13" y="24" fill="#94a3b8" font-size="8" text-anchor="middle">P=4 / 8</text>
+    </g>
+
+    <!-- 2. Black-Scholes PDE & Legolas DLI SIMD Engine (x=248) -->
+    <g transform="translate(248, 0)">
+      <rect width="320" height="250" rx="10" fill="#131d2b" stroke="#ee6f40" stroke-width="1.5" />
+      <rect width="320" height="28" rx="10" fill="#ee6f40" fill-opacity="0.25" />
+      <text x="160" y="19" fill="#fb923c" font-size="11" font-weight="700" text-anchor="middle">
+        Legolas DLI Solver (Crank-Nicolson)
+      </text>
+
+      <!-- Black-Scholes PDE Formula Header -->
+      <g transform="translate(15, 38)">
+        <rect width="290" height="38" rx="6" fill="#0b121b" stroke="#253549" />
+        <text x="145" y="17" fill="#cbd5e1" font-size="9.5" text-anchor="middle">
+          ∂V/∂t + ½σ²S²(∂²V/∂S²) + rS(∂V/∂S) - rV = 0
+        </text>
+        <text x="145" y="31" fill="#34d399" font-size="8.5" class="mono" text-anchor="middle">
+          Implicit System: A · V^{n+1} = B · V^n (Tridiagonal)
+        </text>
+      </g>
+
+      <!-- Interleaved SIMD Register Bank -->
+      <g transform="translate(15, 86)">
+        <rect width="290" height="82" rx="6" fill="#0f1724" stroke="#177272" stroke-dasharray="2,2" />
+        <text x="14" y="18" fill="#5eead4" font-size="9" font-weight="700">Contiguous SIMD Interleaved Layout (S_i across 4 Options):</text>
+        
+        <!-- Vector Register lanes -->
+        <g transform="translate(14, 26)">
+          <rect x="0" y="0" width="62" height="26" rx="4" fill="#177272" fill-opacity="0.8" stroke="#5eead4" />
+          <text x="31" y="16" fill="#ffffff" font-size="9.5" font-weight="700" text-anchor="middle">Opt 0 [i]</text>
+
+          <rect x="66" y="0" width="62" height="26" rx="4" fill="#0284c7" fill-opacity="0.8" stroke="#38bdf8" />
+          <text x="97" y="16" fill="#ffffff" font-size="9.5" font-weight="700" text-anchor="middle">Opt 1 [i]</text>
+
+          <rect x="132" y="0" width="62" height="26" rx="4" fill="#d97706" fill-opacity="0.8" stroke="#fbbf24" />
+          <text x="163" y="16" fill="#ffffff" font-size="9.5" font-weight="700" text-anchor="middle">Opt 2 [i]</text>
+
+          <rect x="198" y="0" width="62" height="26" rx="4" fill="#6b21a8" fill-opacity="0.8" stroke="#c084fc" />
+          <text x="229" y="16" fill="#ffffff" font-size="9.5" font-weight="700" text-anchor="middle">Opt 3 [i]</text>
+        </g>
+        <text x="145" y="68" fill="#94a3b8" font-size="8.5" text-anchor="middle">
+          Thomas Sweep: 1 Hardware FMA executes 4 options at once
+        </text>
+      </g>
+
+      <!-- Multi-Core parmap execution -->
+      <g transform="translate(15, 178)">
+        <rect width="290" height="58" rx="6" fill="#0b121b" stroke="#ee6f40" stroke-width="1.2" class="greeks-pulse" />
+        <text x="145" y="18" fill="#fb923c" font-size="10" font-weight="700" text-anchor="middle">
+          Legolas::parmap Work-Stealing
+        </text>
+        <text x="145" y="34" fill="#f8fafc" font-size="10" font-weight="600" text-anchor="middle">
+          8 Cores: 819,200 Tridiagonal Solves in 33.2 ms
+        </text>
+        <text x="145" y="48" fill="#34d399" font-size="9" class="mono" text-anchor="middle">
+          100% Core Occupancy · 0 Memory Reordering
+        </text>
+      </g>
+    </g>
+
+    <!-- Arrow 2 -> 3: Output Greeks -->
+    <g transform="translate(576, 115)">
+      <path d="M 0,10 L 22,10" stroke="url(#flowArrow)" stroke-width="3" fill="none" />
+      <polygon points="26,10 18,6 18,14" fill="#34d399" />
+      <text x="13" y="-2" fill="#34d399" font-size="8.5" font-weight="700" text-anchor="middle">GREEKS</text>
+      <text x="13" y="24" fill="#94a3b8" font-size="8" text-anchor="middle">Output</text>
+    </g>
+
+    <!-- 3. Real-Time Risk & Sensitivities (x=610) -->
+    <g transform="translate(610, 0)">
+      <rect width="210" height="250" rx="10" fill="#131d2b" stroke="#34d399" stroke-width="1.5" />
+      <rect width="210" height="28" rx="10" fill="#34d399" fill-opacity="0.25" />
+      <text x="105" y="19" fill="#34d399" font-size="11" font-weight="700" text-anchor="middle">
+        Real-Time Greeks &amp; Pricing
+      </text>
+
+      <g transform="translate(15, 42)">
+        <!-- Value V -->
+        <rect width="180" height="42" rx="6" fill="#0b121b" stroke="#177272" />
+        <text x="12" y="18" fill="#5eead4" font-size="9.5" font-weight="700">Fair Value V(S)</text>
+        <text x="168" y="18" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="end">&lt; 1.25e-3 err</text>
+        <text x="12" y="32" fill="#94a3b8" font-size="8.5">Crank-Nicolson 2nd Order Accurate</text>
+
+        <!-- Delta -->
+        <rect y="50" width="180" height="42" rx="6" fill="#0b121b" stroke="#177272" />
+        <text x="12" y="68" fill="#5eead4" font-size="9.5" font-weight="700">Delta (Δ) = ∂V/∂S</text>
+        <text x="168" y="68" fill="#fb923c" font-size="9.5" font-weight="700" text-anchor="end">Live Hedge</text>
+        <text x="12" y="82" fill="#94a3b8" font-size="8.5">Instantaneous Hedge Ratio</text>
+
+        <!-- Gamma -->
+        <rect y="100" width="180" height="42" rx="6" fill="#0b121b" stroke="#177272" />
+        <text x="12" y="118" fill="#5eead4" font-size="9.5" font-weight="700">Gamma (Γ) = ∂²V/∂S²</text>
+        <text x="168" y="118" fill="#a855f7" font-size="9.5" font-weight="700" text-anchor="end">Convexity</text>
+        <text x="12" y="132" fill="#94a3b8" font-size="8.5">Nonlinear Portfolio Curvature</text>
+
+        <!-- Bottom Pill: Speedup -->
+        <g transform="translate(0, 150)">
+          <rect width="180" height="44" rx="6" fill="#16202e" stroke="#34d399" stroke-width="1.2" />
+          <text x="90" y="18" fill="#34d399" font-size="12" font-weight="800" text-anchor="middle">20.60× TOTAL SPEEDUP</text>
+          <text x="90" y="34" fill="#cbd5e1" font-size="9" text-anchor="middle">2.02 µs / Option PDE + Greeks</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom Metric Bar -->
+  <g transform="translate(30, 345)">
+    <text x="0" y="12" fill="#64748b" font-size="10">
+      Benchmark: 16,384 contracts × 128 price points × 50 time steps = 819,200 Thomas tridiagonal solves on Apple M1 Max ARM64.
+    </text>
+  </g>
+</svg>

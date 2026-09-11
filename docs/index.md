@@ -173,7 +173,53 @@
     </div>
   </div>
 
-  <!-- SHOWCASE 4: Scientific Computing (Placed at the end of the list) -->
+  <!-- SHOWCASE 4: Quantitative Finance & Risk -->
+  <div class="showcase-card">
+    <div>
+      <div class="showcase-header">
+        <span class="showcase-domain">Quantitative Finance &amp; Risk</span>
+        <span class="showcase-badge-hot">20.60× Speedup</span>
+      </div>
+      <h3 class="showcase-title">📈 Real-Time Option Pricing &amp; Greeks</h3>
+      <p class="showcase-description">
+        Solving 16,384 Black-Scholes PDEs (819,200 tridiagonal systems / 104M equations) via Crank-Nicolson finite differences. Computes fair value, Delta, and Gamma in real-time.
+      </p>
+
+      <!-- Architecture Diagram Preview -->
+      <div style="margin: 0.8rem 0; border-radius: 8px; overflow: hidden; border: 1px solid #283a50;">
+        <img src="assets/images/option_pricing_diagram.svg" alt="Black-Scholes Option Pricing Architecture" width="100%">
+      </div>
+
+      <div class="metric-row">
+        <div class="metric-pill">
+          <span class="metric-value highlight-orange">493,239&nbsp;opts/s</span>
+          <span class="metric-label">Throughput</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-value highlight-green">2.02&nbsp;µs</span>
+          <span class="metric-label">Latency / Option</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-value">20.60×</span>
+          <span class="metric-label">Speedup vs Scalar</span>
+        </div>
+      </div>
+      <div class="energy-box">
+        <div class="energy-box-title">🌱 Banking Data Center Energy Efficiency</div>
+        <div class="energy-box-body">
+          • <strong>Derivatives Portfolio:</strong> Revalues 16,384 options and Greek hedges in <span class="energy-stat">33.2 ms</span> on standard CPU.<br>
+          • <strong>Low Power:</strong> Replaces 300 W GPU servers with pure CPU execution consuming <span class="energy-stat">&lt; 25 W</span>.<br>
+          • <strong>Green Impact:</strong> Cuts derivatives compute energy by <span class="energy-stat">91.6%</span> for real-time Basel III / FRTB risk.
+        </div>
+      </div>
+    </div>
+    <div class="showcase-footer">
+      <a class="showcase-link" href="tutorials/option-pricing/">Explore Quantitative Finance Showcase →</a>
+      <span class="source-tag">examples/OptionPricing</span>
+    </div>
+  </div>
+
+  <!-- SHOWCASE 5: Scientific Computing (Placed strictly at the end of the list) -->
   <div class="showcase-card">
     <div>
       <div class="showcase-header">

@@ -73,6 +73,7 @@ nav:
       - Real-Time Video Pipeline (CPU & Metal): tutorials/video-pipeline.md
       - Real-Time Audio DSP (64 Tracks): tutorials/audio-biquad.md
       - AI & Edge Vision (Depthwise Conv): tutorials/depthwise-conv.md
+      - Quantitative Finance (Black-Scholes & Greeks): tutorials/option-pricing.md
       - Scientific Computing (Thomas / ADI): tutorials/tridiagonal-thomas.md
   - Core Concepts:
       - The Recurrence Barrier: core-concepts/recurrence-barrier.md
