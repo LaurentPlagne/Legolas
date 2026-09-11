@@ -56,7 +56,7 @@ struct MyAlgorithm {
 ```
 
 - `begin`, `end`: The range of outer problem instances assigned to this thread.
-- `in`, `out`: The array views (either packed views of type `Eigen::Array<T, P, 1>` or scalar views for the remainder loop).
+- `in`, `out`: The array views (either packed views of type `Legolas::NativeSimd<T, P>` or scalar views for the remainder loop).
 - The functor must be `const` and thread-safe (instances in $[begin, end)$ must be independent).
 
 ---
@@ -69,11 +69,11 @@ When using the native Work-Stealing scheduler:
 By default, Legolas++ sizes its worker thread pool to match `std::thread::hardware_concurrency()` (all available physical performance cores).
 
 ### Environment Variable
-You can override the number of worker threads without recompiling by setting the `SPN_THREAD_NUMBER` environment variable:
+You can override the number of worker threads without recompiling by setting the `LEGOLAS_NUM_THREADS` (or standard `OMP_NUM_THREADS`) environment variable:
 
 ```bash
 # Force Legolas++ to use exactly 4 threads:
-export SPN_THREAD_NUMBER=4
+export LEGOLAS_NUM_THREADS=4
 ./my_program
 ```
 

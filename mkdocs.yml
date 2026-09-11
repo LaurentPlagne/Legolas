@@ -72,7 +72,6 @@ nav:
   - Benchmarks:
       - Apple Silicon (M1 Max ARM64): benchmarks/apple-silicon-m1.md
       - Cross-Platform & Cloud: benchmarks/cross-platform.md
-      - Backend Comparison: benchmarks/backend-comparison.md
   - API Reference:
       - Legolas::Array: api/array.md
       - Parallel Algorithms (map / parmap): api/algorithms.md

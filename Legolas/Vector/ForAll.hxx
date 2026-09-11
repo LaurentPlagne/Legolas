@@ -65,18 +65,6 @@ namespace Legolas{
   };
 
 
-  // template <class L, class ASSIGN_MODE, class REAL_TYPE>
-  // class ScalarAssignRangeFunctor{
-  //   L & left_;
-  //   REAL_TYPE value_;
-  // public:
-  //   UnaryRangeFunctor(L & left, const REAL_TYPE & value):left_(left),value_(value){}
-    
-  //   inline void operator()(size_t begin, size_t length) const {
-  //     ASSIGN_MODE::applyOnViewsWithScalar(left_.eigenVectorView(begin,length),value_);
-  //   }
-  // };
-
   
   template <class SCALAR>
   class ScalarAdapter{

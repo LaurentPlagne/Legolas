@@ -11,8 +11,7 @@
  * Frameworks like oneDNN, TVM, and ONNX Runtime use blocked layouts: nChw4c (NEON) / nChw8c (AVX).
  * With Legolas++ Data Layout Interleaving (DLI), this layout is native:
  * Legolas::Array<float, 2, PACK_SIZE, 2> groups P channels contiguously at every spatial position!
- *
- * The exact same generic 2D stencil loop executes on SIMD vectors (Eigen::Array<float, P, 1>),
+ * The exact same generic 2D stencil loop executes on SIMD vectors (Legolas::NativeSimd<float, P>),
  * computing P channels simultaneously using native NEON fmla.4s instructions.
  */
 

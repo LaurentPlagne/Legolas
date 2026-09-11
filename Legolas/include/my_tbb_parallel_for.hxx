@@ -15,22 +15,22 @@
 
 //#define USING_TBB 0
 
-inline int spn_thread_number( void ){
+inline int legolas_thread_number( void ){
   /*
-   * la fonction spn_thread_number rï¿½cupï¿½re dans l'environnement la valeur
-   * positionnant le paramï¿½tre shell SPN_THREAD_NUMBER (s'il a ï¿½tï¿½ positionnï¿½)
-   * pour configurer l'utilisation des TBB.
+   * Récupère dans l'environnement le nombre de threads souhaité
+   * via LEGOLAS_NUM_THREADS (ou OMP_NUM_THREADS).
    */
-  int result=-1; /* valeur par dï¿½fuat si SPN_THREAD_NUMBER n'est positionnï¿½ */
-  char * pSTN=0;
-  pSTN = getenv ("SPN_THREAD_NUMBER");
-  if (pSTN!=NULL){
-    //      printf ("The current path is: %s",pPath);
-    result=atoi(pSTN);
-    MESSAGE("SPN_THREAD_NUMBER="<<result);
+  int result=-1;
+  const char * pSTN = std::getenv("LEGOLAS_NUM_THREADS");
+  if (pSTN == nullptr) {
+    pSTN = std::getenv("OMP_NUM_THREADS");
+  }
+  if (pSTN != nullptr){
+    result = std::atoi(pSTN);
+    MESSAGE("LEGOLAS_NUM_THREADS=" << result);
   }
   else{
-    MESSAGE("SPN_THREAD_NUMBER est non positionnï¿½ (-> nthreads==nprocs).");
+    MESSAGE("LEGOLAS_NUM_THREADS non positionné (-> nthreads==nprocs).");
   }
 
   return result;

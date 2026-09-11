@@ -174,12 +174,7 @@ namespace Legolas{
 
     Shape shape_;
     bool owner_;
-    //    std::vector< RealType,Eigen::aligned_allocator<RealType> > data_;
-    //std::vector< RealType > data_;
     typedef Legolas::allocator<RealType> Allocator;
-
-    //typedef tbb::cache_aligned_allocator<RealType> Allocator;
-    //typedef Eigen::aligned_allocator<RealType>  Allocator;
     //    typedef std::vector<RealType,tbb::cache_aligned_allocator<RealType> >Data;
     //    Data data_;
     RealType * dataPtr_;
@@ -204,7 +199,6 @@ namespace Legolas{
       //      data_.resize(shape_.dataSize_);
       //      dataPtr_=&data_[0];
       Allocator allocator;
-      //      Eigen::aligned_allocator<RealType> allocator;
       dataPtr_=allocator.allocate(shape_.dataSize_);
 #ifdef ZEROINIT
       this->fill(RealType(0.0));
@@ -284,7 +278,6 @@ namespace Legolas{
       if (dataPtr_==0){
         shape_=s;
         owner_=true;
-        //	Eigen::aligned_allocator<RealType> allocator;
         Allocator allocator;
         dataPtr_=allocator.allocate(shape_.dataSize_);
 #ifdef ZEROINIT

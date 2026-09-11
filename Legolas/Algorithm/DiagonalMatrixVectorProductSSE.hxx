@@ -43,7 +43,6 @@ namespace Legolas{
 	const Legolas::Vector<RealType> & diag=A.getRef().diagonal();
 	ASSIGN_MODE::apply(Y,diag*X);
 
-	//	ASSIGN_MODE::applyOnViews(Y.eigenVectorView(),diag.eigenVectorView()*X.eigenVectorView());
 
 	// const int nrows=A.nrows();	
 	// for (int i=0 ; i < nrows ; ++i){

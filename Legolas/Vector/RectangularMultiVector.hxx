@@ -87,19 +87,6 @@ namespace Legolas{
 
 
 
-// #ifdef LEGOLAS_USE_EIGEN
-//   const int packSize_=4;
-//   typedef Eigen::Array<float, packSize_, 1> BlockArray;
-
-//   template <>
-//   inline BlockArray convertToScalar<BlockArray>(const double & value){return BlockArray::Constant(value) ; }
-
-
-//   inline double dot(const BlockArray & right, const BlockArray & left){
-//     return right.matrix().dot(left.matrix());
-//   }
-
-// #endif
 
 
   template <class DERIVED_LEFT, class DERIVED_RIGHT>
@@ -139,7 +126,6 @@ namespace Legolas{
       // INFOS("firstIndex="<<firstIndex);
       // INFOS("length="<<length);
 
-      //      sum_+=Legolas::sequential_dot(left_.eigenVectorView(firstIndex,length).matrix().dot(right_.eigenVectorView(firstIndex,length).matrix());
       sum_+=Legolas::sequential_dot(firstIndex,length,left_,right_);
 
       //      for( size_t i=b; i!=e; ++i ){
@@ -186,7 +172,6 @@ namespace Legolas{
 
     if (smallBlockBegin<l.flatSize()){
       const size_t smallBlockLength=l.flatSize()-smallBlockBegin;
-      //      result+=l.eigenVectorView(smallBlockBegin,smallBlockLength).matrix().dot(r.eigenVectorView(smallBlockBegin,smallBlockLength).matrix());
       result+=Legolas::sequential_dot(smallBlockBegin,smallBlockLength,l,r);
     }
 
@@ -239,10 +224,10 @@ namespace Legolas{
   //  inline double dot(const VirtualVector & l,const VirtualVector & r){ return l.dot(r);}
 
 
-  /** \brief Classe principale d'implémentation des vecteurs Legolas++
+  /** \brief Classe principale d'implÃ©mentation des vecteurs Legolas++
 
-      Cette classe correspond à la classe principale d'implémentation des vecteurs Legolas++. Les autres classes du
-      répertoire Legolas/Vector implémentent des sous-parties de cette classe.
+      Cette classe correspond Ã  la classe principale d'implÃ©mentation des vecteurs Legolas++. Les autres classes du
+      rÃ©pertoire Legolas/Vector implÃ©mentent des sous-parties de cette classe.
 
       \ingroup VectorGroup
   */
@@ -358,7 +343,6 @@ namespace Legolas{
 	//	INFOS("ICI");
 	this->initialize(source.shape_,realDataPtr_,flatSize_);
 	ForAllElements::apply(BinaryRangeFunctorFactory<EqualAssign>::apply(*this,source),0,flatSize_);
-	//	this->eigenVectorView()=source.eigenVectorView();
 	//	Assign<EqualAssign,RealType>::apply(flatSize_,source.realDataPtr_,realDataPtr_);
 	//	BL::copy(flatSize_,source.realDataPtr_,realDataPtr_);
       }
@@ -613,7 +597,6 @@ namespace Legolas{
 	assertSameShapes(shape_,source.shape_);
 
 	ForAllElements::apply(BinaryRangeFunctorFactory<EqualAssign>::apply(*this,source),0,flatSize_);
-	//	this->eigenVectorView()=source.eigenVectorView();
 	//Assign<EqualAssign,RealType>::apply(flatSize_,source.realDataPtr_,realDataPtr_);
       }
       else{
@@ -644,10 +627,7 @@ namespace Legolas{
     RectangularMultiVector & operator = (const BaseVector<DERIVED> & right){
       const DERIVED & r=right.getCVR();
       assertSameShapes(this->shape(),r.shape());
-      //      eigenVectorView(r);
-      //      this->eigenVectorView()=eigenVectorView(r);
       ForAllElements::apply(BinaryRangeFunctorFactory<EqualAssign>::apply(*this,r),0,flatSize_);
-      //      this->eigenVectorView()=r.eigenVectorView();
       return *this;
     }
 
@@ -656,10 +636,7 @@ namespace Legolas{
     RectangularMultiVector & operator += (const BaseVector<DERIVED> & right){
       const DERIVED & r=right.getCVR();
       assertSameShapes(this->shape(),r.shape());
-      //      eigenVectorView(r);
-      //      this->eigenVectorView()+=eigenVectorView(r);
       ForAllElements::apply(BinaryRangeFunctorFactory<PlusAssign>::apply(*this,r),0,flatSize_);
-      //this->eigenVectorView()+=r.eigenVectorView();
       return *this;
     }
 
@@ -669,8 +646,6 @@ namespace Legolas{
       const DERIVED & r=right.getCVR();
       assertSameShapes(this->shape(),r.shape());
       ForAllElements::apply(BinaryRangeFunctorFactory<MinusAssign>::apply(*this,r),0,flatSize_);
-      //      this->eigenVectorView()-=eigenVectorView(r);
-      //      this->eigenVectorView()-=r.eigenVectorView();
       return *this;
     }
 
@@ -979,7 +954,7 @@ namespace Legolas{
     inline void scaleAndPlusAssign(double scaleFactor, double factor, const VirtualVector & source){
       RectangularMultiVector & left=static_cast<RectangularMultiVector &>(*this);
       const RectangularMultiVector & right=static_cast<const RectangularMultiVector &>(source);
-      //      INFOS("FIXME§!!!!!!!!!!!!!!!!!!!!!!!");
+      //      INFOS("FIXMEÂ§!!!!!!!!!!!!!!!!!!!!!!!");
       left=scaleFactor*left+factor*right;
     }
 

@@ -12,13 +12,13 @@
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
-      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f  -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Debug" />
-      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
-      <configuration PROFILE_NAME="RelWithDebInfo" CONFIG_NAME="RelWithDebInfo" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f  -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=RelWithDebinfo" />
-      <configuration PROFILE_NAME="clang-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="clang" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f  -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
-      <configuration PROFILE_NAME="clang9-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="clang9" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f  -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
-      <configuration PROFILE_NAME="Intel_Release" CONFIG_NAME="Release" TOOLCHAIN_NAME="intel2020" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
-      <configuration PROFILE_NAME="g++8" CONFIG_NAME="Release" TOOLCHAIN_NAME="g++8" GENERATION_OPTIONS="-DEIGEN3_INCLUDE_DIR=/home/lolo/Public/eigen-eigen-67e894c6cd8f -DCMAKE_PREFIX_PATH=/home/lolo/Public/tbb-2020.0 -DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DCMAKE_BUILD_TYPE=Debug" />
+      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" GENERATION_OPTIONS="-DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="RelWithDebInfo" CONFIG_NAME="RelWithDebInfo" GENERATION_OPTIONS="-DCMAKE_BUILD_TYPE=RelWithDebInfo" />
+      <configuration PROFILE_NAME="clang-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="clang" GENERATION_OPTIONS="-DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="clang9-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="clang9" GENERATION_OPTIONS="-DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="Intel_Release" CONFIG_NAME="Release" TOOLCHAIN_NAME="intel2020" GENERATION_OPTIONS="-DCMAKE_BUILD_TYPE=Release" />
+      <configuration PROFILE_NAME="g++8" CONFIG_NAME="Release" TOOLCHAIN_NAME="g++8" GENERATION_OPTIONS="-DCMAKE_BUILD_TYPE=Release" />
     </configurations>
   </component>
   <component name="ChangeListManager">

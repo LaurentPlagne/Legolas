@@ -65,9 +65,7 @@ How does Legolas++ present this interleaved layout to user code without making t
 
 When an array `Legolas::Array<float, 2, P, 2>` is passed to an algorithm via `Legolas::map` or `Legolas::parmap`:
 1. Legolas++ calls `.getPackedView()` on the tensor.
-2. The packed view has rank 2, but its effective outer dimension is $M / P$, and its element scalar type is reinterpreted directly as a SIMD vector pack:
-   - **Zero-Dependency Native Backend** (default): `Legolas::NativeSimd<float, P>` (using GCC/Clang vector extensions `__attribute__((vector_size(P * sizeof(float))))`).
-   - **Eigen Backend** (optional): `Eigen::Array<float, P, 1>`.
+2. The packed view has rank 2, but its effective outer dimension is $M / P$, and its element scalar type is reinterpreted directly as a SIMD vector pack `Legolas::NativeSimd<float, P>` (using GCC/Clang vector extensions `__attribute__((vector_size(P * sizeof(float))))` or MSVC emulation).
 3. In user code, the exact same mathematical solver runs unchanged:
    ```cpp
    auto row = A[j];

@@ -55,12 +55,12 @@ target_link_libraries(my_project PRIVATE Legolas)
 
 ## How Legolas++ Compares
 
-| Feature | Compilers (GCC/Clang) | Classical Linear Algebra (Eigen, Armadillo) | Deep Learning Frameworks (PyTorch, oneDNN) | **Legolas++** |
+| Feature | Compilers (GCC/Clang) | Traditional Linear Algebra (BLAS, Armadillo) | Deep Learning Frameworks (PyTorch, oneDNN) | **Legolas++** |
 | :--- | :---: | :---: | :---: | :---: |
 | **Vectorize Recurrences ($X_i = f(X_{i-1})$)** | ❌ Fails (scalar $1\times$) | ❌ Scalar loops ($1\times$) | ❌ Custom handwritten kernels | :white_check_mark: **Automatic SIMD ($4\times - 16\times$)** |
 | **Write Once, Vectorize Everywhere** | ❌ Manual intrinsics needed | ⚠️ Limited to non-recursive ops | ❌ Separate CPU/GPU implementations | :white_check_mark: **Single generic scalar syntax** |
 | **Data Layout Interleaving (DLI)** | ❌ Manual memory transforms | ❌ Fixed row/col major | ⚠️ Heavy tensor reshape overhead | :white_check_mark: **Native in the tensor type** |
-| **External Dependencies** | None | Eigen / BLAS | Heavy (LibTorch, Python, MKL) | :white_check_mark: **Zero (Pure C++14)** |
+| **External Dependencies** | None | BLAS / LAPACK | Heavy (LibTorch, Python, MKL) | :white_check_mark: **Zero (Pure C++14)** |
 | **Integration Model** | N/A | Variable | Multi-GB binaries | :white_check_mark: **100% Header-Only** |
 
 ---

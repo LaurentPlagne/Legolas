@@ -44,9 +44,9 @@ cd Legolas
 ```
 
 The script automatically:
-1. Installs build dependencies (`cmake`, `ninja`, `gcc`, `clang`, `libtbb-dev`, `libeigen3-dev`).
+1. Configures standard build tools (`cmake`, `ninja`, modern C++14 compiler).
 2. Detects available vector instruction sets (`avx512f`, `avx2`, `neon`, `sve`).
-3. Compiles the 4 backend configurations (TBB vs. WorkStealing, Eigen vs. NativeSIMD).
+3. Compiles the native zero-dependency benchmarks (`Legolas::NativeSimd` and Work-Stealing scheduler).
 4. Executes the full `MultiThomas` benchmark resolution sweep ($N_x \in [8, 512]$) and thread scaling benchmarks.
 5. Produces publication-grade SVG/PNG plots and interactive HTML reports.
 
@@ -57,16 +57,14 @@ The script automatically:
 Continuous integration is automated on every commit and pull request via [`.github/workflows/ci.yml`](file:///.github/workflows/ci.yml).
 
 The CI matrix verifies compilation and runs the complete test suite across:
-* **macOS 14 ARM64** (Apple Silicon runner)
-* **Ubuntu 24.04 x86_64** (Linux runner)
-* All combinations of `USE_TBB=[ON, OFF]` and `USE_EIGEN=[ON, OFF]`
+* **macOS 14 ARM64** (Apple Silicon Clang runner)
+* **Ubuntu 24.04 x86_64** (Linux GCC 14 runner)
+* **Windows x86_64** (Microsoft Visual C++ MSVC runner)
 
 ```yaml
 strategy:
   matrix:
-    os: [ubuntu-latest, macos-14]
-    use_tbb: [ON, OFF]
-    use_eigen: [ON, OFF]
+    os: [ubuntu-latest, macos-14, windows-latest]
 ```
 
-Every build validates 100% test passage across the 5 test suites (`MultiThomasExample`, `StaticArrays`, `MultiPrec`, `DepthwiseConv`, `AudioBiquad`).
+Every build validates 100% test passage across all test suites (`MultiThomasExample`, `StaticArrays`, `MultiPrec`, `DepthwiseConv`, `AudioBiquad`).

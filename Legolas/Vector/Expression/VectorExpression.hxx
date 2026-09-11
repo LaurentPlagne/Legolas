@@ -225,12 +225,6 @@ namespace Legolas{
   };
 
 
-  // template <class LEFT, class BINARY_OP, class RIGHT>
-  // inline auto eigenVectorView( const VectorExpression<LEFT,BINARY_OP,RIGHT> & cve ) -> decltype(BINARY_OP::autoApply(eigenVectorView(cve.left()),
-  // 														     eigenVectorView(cve.right())))
-  // {
-  //   return BINARY_OP::autoApply(eigenVectorView(cve.left()),eigenVectorView(cve.right()));
-  // }
 
 }
 

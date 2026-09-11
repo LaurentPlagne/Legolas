@@ -68,8 +68,6 @@ namespace Legolas{
 	//	INFOS("A.nrows()="<<A.nrows());
 	//	throw std::runtime_error("");
 
-	//	my_tbb::task_scheduler_init init(spn_thread_number()); 
-	//	INFOS("tbb_version="<<TBB_runtime_interface_version());
 
 	//	INFOS("ENTERING DiagonalMatrixVectorProduct");
 
@@ -84,8 +82,6 @@ namespace Legolas{
 
 	  //	  INFOS("A.nrows()="<<A.nrows());
 
-	  //	  my_tbb::task_scheduler_init init(SPN_THREAD_NUMBER);
-	  //	  my_tbb::task_scheduler_init init(spn_thread_number()); 
 
 
 	  typedef MultFunctor<MATRIX,VECTOR,VECTOR_INOUT> MF;
@@ -199,7 +195,6 @@ namespace Legolas{
 	}
 	else{
 
-	  //	  my_tbb::task_scheduler_init init(spn_thread_number()); 
 
 	  //	  VECTOR_INOUT Ybis(Y);
 	  

@@ -86,7 +86,7 @@ Array& operator*=(RealType scalar);
 ### SIMD Vector Views
 
 ```cpp
-// Returns a packed view where elements are mapped to Eigen::Array<SCALAR_TYPE, PACK_SIZE, 1>
+// Returns a packed view where elements are mapped to Legolas::NativeSimd<SCALAR_TYPE, PACK_SIZE>
 PackedArrayView getPackedView();
 const PackedArrayView getPackedView() const;
 

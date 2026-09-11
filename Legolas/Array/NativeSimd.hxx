@@ -57,7 +57,7 @@ public:
 
   static constexpr size_t size() { return P; }
 
-  // Static builders (Eigen compatibility)
+  // Static builders
   static inline NativeSimd Constant(T val) {
     return NativeSimd(val);
   }

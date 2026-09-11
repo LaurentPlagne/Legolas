@@ -81,8 +81,6 @@ namespace Legolas{
       
 	if ( &(Y.getRef())==&(X.getRef()) ){ INFOS("Aliasing Problem !!!") ; throw std::runtime_error("Aliasing Problem !!!"); }
 
-	//	my_tbb::task_scheduler_init init(SPN_THREAD_NUMBER);
-	//	my_tbb::task_scheduler_init init(spn_thread_number()); 
 
 	LineFunctor<ASSIGN_MODE,MATRIX,VECTOR,VECTOR_INOUT> lf(A,X,Y);
 
