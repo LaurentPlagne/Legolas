@@ -47,15 +47,15 @@
 
       <div class="metric-row">
         <div class="metric-pill">
-          <span class="metric-value highlight-orange">8,442 FPS</span>
+          <span class="metric-value highlight-orange">8,442&nbsp;FPS</span>
           <span class="metric-label">CPU (8 Cores)</span>
         </div>
         <div class="metric-pill">
-          <span class="metric-value highlight-green">17,264 FPS</span>
+          <span class="metric-value highlight-green">17,264&nbsp;FPS</span>
           <span class="metric-label">Metal GPU (32 Cores)</span>
         </div>
         <div class="metric-pill">
-          <span class="metric-value">15.91 GPix/s</span>
+          <span class="metric-value">15.91&nbsp;GPix/s</span>
           <span class="metric-label">Throughput</span>
         </div>
       </div>
@@ -99,11 +99,11 @@
 
       <div class="metric-row">
         <div class="metric-pill">
-          <span class="metric-value highlight-orange">5,832 MS/s</span>
+          <span class="metric-value highlight-orange">5,832&nbsp;MS/s</span>
           <span class="metric-label">Throughput</span>
         </div>
         <div class="metric-pill">
-          <span class="metric-value highlight-green">&lt; 0.001%</span>
+          <span class="metric-value highlight-green">&lt;&nbsp;0.001%</span>
           <span class="metric-label">CPU Utilization</span>
         </div>
         <div class="metric-pill">
@@ -145,11 +145,11 @@
 
       <div class="metric-row">
         <div class="metric-pill">
-          <span class="metric-value highlight-orange">212.3 GFlops</span>
+          <span class="metric-value highlight-orange">212.3&nbsp;GFlops</span>
           <span class="metric-label">CPU Throughput</span>
         </div>
         <div class="metric-pill">
-          <span class="metric-value highlight-green">0.0 µs</span>
+          <span class="metric-value highlight-green">0.0&nbsp;µs</span>
           <span class="metric-label">PCIe Transfer Lag</span>
         </div>
         <div class="metric-pill">
@@ -191,7 +191,7 @@
 
       <div class="metric-row">
         <div class="metric-pill">
-          <span class="metric-value highlight-orange">69.40 GFlops</span>
+          <span class="metric-value highlight-orange">69.40&nbsp;GFlops</span>
           <span class="metric-label">Peak Compute</span>
         </div>
         <div class="metric-pill">
