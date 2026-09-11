@@ -73,11 +73,14 @@ else (EIGEN3_INCLUDE_DIR)
   find_package(Eigen3 ${Eigen3_FIND_VERSION} NO_MODULE QUIET)
 
   if(NOT EIGEN3_INCLUDE_DIR)
-    find_path(EIGEN3_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library
+    find_path(EIGEN3_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library Eigen/Core
         HINTS
         ENV EIGEN3_ROOT 
         ENV EIGEN3_ROOT_DIR
         PATHS
+        /opt/homebrew/include
+        /usr/include
+        /usr/local/include
         ${CMAKE_INSTALL_PREFIX}/include
         ${KDE4_INCLUDE_DIR}
         PATH_SUFFIXES eigen3 eigen

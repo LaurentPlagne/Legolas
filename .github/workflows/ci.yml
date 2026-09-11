@@ -52,8 +52,14 @@ jobs:
 
       - name: Configure CMake
         run: |
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            PREFIX_PATH="/opt/homebrew"
+          else
+            PREFIX_PATH="/usr"
+          fi
           cmake -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" \
             -DUSE_TBB=${{ matrix.use_tbb }} \
             -DUSE_EIGEN=${{ matrix.use_eigen }}
 
