@@ -7,7 +7,7 @@ Modern CPU microarchitectures feature wide vector units:
 
 In theory, SIMD execution can deliver between $4\times$ and $16\times$ raw arithmetic throughput compared to scalar code.
 
-In practice, however, many algorithms in engineering, finance, and AI fail to vectorize. The primary obstacle is the **loop-carried data dependency**.
+In practice, however, many algorithms in engineering, physics, and AI fail to vectorize. The primary obstacle is the **loop-carried data dependency**.
 
 ---
 
@@ -55,7 +55,7 @@ Even aggressive compiler pragmas like `#pragma omp simd` or `#pragma GCC ivdep` 
 | :--- | :--- | :--- |
 | **PDEs & Physics** | Alternating Direction Implicit (ADI), Crank-Nicolson | Tridiagonal / Pentadiagonal systems along mesh lines |
 | **Digital Signal Processing** | IIR Biquad Equalizers, Crossovers, Audio FX | Temporal feedback $y[n] = f(y[n-1], y[n-2])$ |
-| **Quantitative Finance** | Black-Scholes PDE, Dupire local volatility | Implicit time-stepping matrices |
+| **Geophysics & Wave Modeling** | Acoustic & Elastic Wave Equations | Implicit spatial sweeps along grid dimensions |
 | **Deep Learning** | Selective State Spaces (Mamba, S4, Linear RNNs) | Causal hidden state updates $h_t = A h_{t-1} + B x_t$ |
 | **Computer Vision** | Depthwise Separable Convolutions | Channel-independent spatial filtering with short loops |
 

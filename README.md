@@ -94,7 +94,7 @@ int main() {
 
 ## 1. The Recurrence Barrier: Why Compilers Give Up
 
-Many essential algorithms in scientific simulation, digital signal processing, quantitative finance, and deep learning feature **strict loop-carried data dependencies** where iteration $i$ requires the output of iteration $i-1$:
+Many essential algorithms in scientific simulation, digital signal processing, edge AI, and deep learning feature **strict loop-carried data dependencies** where iteration $i$ requires the output of iteration $i-1$:
 
 ```cpp
 // Tridiagonal elimination (Thomas forward sweep), recursive IIR filters, Gauss-Seidel:
@@ -116,7 +116,6 @@ In real-world applications, engineers rarely solve a single isolated recurrence.
 * **Scientific Computing & PDEs**: Thousands of 1D tridiagonal systems across 2D/3D ADI grids, heat diffusion, or fluid flow.
 * **Real-Time Audio DSP**: Filtering 32, 64, or 128 audio channels concurrently with recursive IIR/Biquad filters.
 * **Edge AI & Computer Vision**: Depthwise Separable Convolutions across channels (MobileNet, ConvNeXt).
-* **Quantitative Finance**: Calibrating PDE option pricing models across thousands of strikes and maturities.
 
 ### Transposing Data at the Memory Level
 
