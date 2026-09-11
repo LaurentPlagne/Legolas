@@ -8,8 +8,8 @@ repo_url: https://github.com/laurentplagne/Legolas
 theme:
   name: material
   custom_dir: overrides
-  logo: assets/images/legolas_icon.svg
-  favicon: assets/images/legolas_icon.svg
+  logo: assets/images/legolas_icon_v2.svg
+  favicon: assets/images/legolas_icon_v2.svg
   language: en
   palette:
     - scheme: slate
