@@ -169,8 +169,8 @@ int main(int argc, char* argv[]) {
         // -----------------------------------------------------------
         id<MTLDevice> device = MTLCreateSystemDefaultDevice();
         if (!device) {
-            std::cerr << "Error: No Metal device available." << std::endl;
-            return 1;
+            std::cout << "Notice: No Metal GPU device available in this environment (e.g. headless CI VM). Skipping Metal benchmark." << std::endl;
+            return 0;
         }
 
         std::cout << "Hardware:" << std::endl;
