@@ -6,7 +6,7 @@
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-informational.svg)](https://laurentplagne.github.io/Legolas/)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20ARM64%20%7C%20Linux%20x86_64%20%7C%20Windows%20MSVC-success.svg)]()
 [![Build & Test](https://img.shields.io/badge/CTest-100%25%20Passing%20(5%2F5)-brightgreen.svg)]()
-[![License](https://img.shields.io/badge/License-GPL%20v2-lightgrey.svg)](License.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](License.md)
 
 *High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization of Recurrences via Data Layout Interleaving (DLI).*
 
@@ -309,4 +309,4 @@ Legolas++ is based on research presented at ACM SIGPLAN ARRAY:
 
 ## 9. License
 
-This project is distributed under the terms of the GNU General Public License v2 (GPL-2.0). See [License.md](License.md) for details.
+This project is distributed under the terms of the MIT "Expat" License (Copyright (c) 2019-2020 EDF-R&D, TriScale innov). See [License.md](License.md) for details.
