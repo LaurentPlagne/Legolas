@@ -51,8 +51,26 @@ Test project .../Legolas/build
 ---
 
 ## Integrating Legolas++ into Your Project
+ 
+### Method 1: CMake FetchContent (Zero-Friction, Recommended)
 
-### Method 1: Modern CMake Target (Recommended)
+Add Legolas++ to your `CMakeLists.txt` without cloning or downloading anything manually:
+
+```cmake
+include(FetchContent)
+
+FetchContent_Declare(
+  Legolas
+  GIT_REPOSITORY https://github.com/LaurentPlagne/Legolas.git
+  GIT_TAG        master
+)
+FetchContent_MakeAvailable(Legolas)
+
+add_executable(my_solver main.cpp)
+target_link_libraries(my_solver PRIVATE Legolas)
+```
+
+### Method 2: CMake add_subdirectory (Local / Git Submodule)
 
 Add Legolas as a subdirectory and link the `INTERFACE` target:
 

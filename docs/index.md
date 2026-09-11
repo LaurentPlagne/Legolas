@@ -34,14 +34,34 @@ Standard compilers systematically fall back to scalar execution on recurrences, 
 - :zap: **Write Once, Vectorize Everywhere**: A single template implementation works for both scalar types and hardware SIMD vectors (`Legolas::NativeSimd<T, P>`).
 - :twisted_right_wards_arrows: **Two-Level Decoupled Parallelism**: 
     1. **Data-Level (SIMD)**: Automatic via Data Layout Interleaving.
-    2. **Thread-Level (Multi-Core)**: Built-in, header-only lock-minimized **Work-Stealing** loop scheduler.
-- :apple: **Cross-Platform**: Tuned for Apple Silicon ARM64 (NEON), Linux x86_64 (AVX2 / AVX-512), and Windows MSVC.
+    2. **Thread-Level (Multi-Core)**: Built-in, header-only zero-allocation parallel loop scheduler.
+- :apple: **Cross-Platform**: Validated on Apple Silicon ARM64 (NEON), Linux x86_64 (AVX2 / AVX-512), and Windows MSVC.
+
+```cmake
+# Add to your CMakeLists.txt in 4 lines:
+include(FetchContent)
+FetchContent_Declare(Legolas GIT_REPOSITORY https://github.com/LaurentPlagne/Legolas.git GIT_TAG master)
+FetchContent_MakeAvailable(Legolas)
+target_link_libraries(my_project PRIVATE Legolas)
+```
 
 <p align="center">
   <img src="assets/images/dli_interleaving_mapping.png" alt="Data Layout Interleaving Memory Mapping" width="700">
 </p>
 
 *Figure: Data Layout Interleaving (DLI). Elements at step $i$ across $P=4$ independent systems are interleaved contiguously in memory, enabling direct hardware SIMD vector loads.*
+
+---
+
+## How Legolas++ Compares
+
+| Feature | Compilers (GCC/Clang) | Classical Linear Algebra (Eigen, Armadillo) | Deep Learning Frameworks (PyTorch, oneDNN) | **Legolas++** |
+| :--- | :---: | :---: | :---: | :---: |
+| **Vectorize Recurrences ($X_i = f(X_{i-1})$)** | ❌ Fails (scalar $1\times$) | ❌ Scalar loops ($1\times$) | ❌ Custom handwritten kernels | :white_check_mark: **Automatic SIMD ($4\times - 16\times$)** |
+| **Write Once, Vectorize Everywhere** | ❌ Manual intrinsics needed | ⚠️ Limited to non-recursive ops | ❌ Separate CPU/GPU implementations | :white_check_mark: **Single generic scalar syntax** |
+| **Data Layout Interleaving (DLI)** | ❌ Manual memory transforms | ❌ Fixed row/col major | ⚠️ Heavy tensor reshape overhead | :white_check_mark: **Native in the tensor type** |
+| **External Dependencies** | None | Eigen / BLAS | Heavy (LibTorch, Python, MKL) | :white_check_mark: **Zero (Pure C++14)** |
+| **Integration Model** | N/A | Variable | Multi-GB binaries | :white_check_mark: **100% Header-Only** |
 
 ---
 

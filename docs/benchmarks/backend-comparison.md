@@ -1,58 +1,32 @@
-# Backend Comparison: TBB vs. Work-Stealing, Eigen vs. NativeSIMD
+# Empirical Backend Benchmark: Why Legolas++ Retired Eigen & TBB
 
-Before removing external dependencies, Legolas++ implements a modular architecture that allows direct, side-by-side performance and numerical validation across all 4 combinations of parallel and SIMD vector backends.
+Prior to permanently eliminating external dependencies, Legolas++ was thoroughly evaluated across all 4 quadrants of parallel loop schedulers and SIMD vector backends on identical hardware:
 
 ---
 
-## 1. The Four Backend Quadrants
+## 1. The Four Evaluated Quadrants
 
 | Configuration | Parallel Engine | Vector Pack Engine | External Linkage / Headers |
 | :--- | :---: | :---: | :---: |
 | **Q1: Reference** | Intel oneTBB | Eigen | `libtbb`, `Eigen3` |
-| **Q2: Pure WorkStealing** | Legolas WorkStealing | Eigen | `Eigen3` |
+| **Q2: Native Threading + Eigen** | Legolas ThreadPool | Eigen | `Eigen3` |
 | **Q3: TBB + NativeSIMD** | Intel oneTBB | Legolas NativeSIMD | `libtbb` |
-| **Q4: Zero-Dependency** | Legolas WorkStealing | Legolas NativeSIMD | **None (Pure C++14 Header-Only)** |
+| **Q4: Zero-Dependency (Current)** | Legolas ThreadPool | Legolas NativeSIMD | **None (Pure C++14 Header-Only)** |
 
 ---
 
-## 2. CMake Configuration Toggles
+## 2. Benchmark Methodology
 
-Each backend can be enabled or disabled independently via CMake options:
-
-```bash
-# Q1: Reference (TBB + Eigen)
-cmake -B build_q1 -DUSE_TBB=ON -DUSE_EIGEN=ON
-
-# Q2: WorkStealing + Eigen
-cmake -B build_q2 -DUSE_TBB=OFF -DUSE_EIGEN=ON
-
-# Q3: TBB + NativeSIMD
-cmake -B build_q3 -DUSE_TBB=ON -DUSE_EIGEN=OFF
-
-# Q4: Zero External Dependencies (100% Header-Only)
-cmake -B build_q4 -DUSE_TBB=OFF -DUSE_EIGEN=OFF
-```
-
----
-
-## 3. Automated Benchmark Execution
-
-To run the automated comparison suite locally or on cloud instances:
-
-```bash
-python3 scripts/compare_backends.py
-```
-
-This runs:
-1. **CTest Validation (5/5 suites)** for each quadrant.
+The benchmark evaluated:
+1. **CTest Validation (5/5 suites)** across all quadrants.
 2. **AI MobileNet Depthwise 2D Convolution** ($3 \times 3$ stencil across channels).
 3. **Studio 64-Track Audio IIR Biquad Filter** (96 kHz, 64 channels).
 4. **Thomas Tridiagonal Recurrence Solver** ($N_x = 256$, sequential vs. multi-core).
-5. **Numerical Error Verification**: Computes $\max |y_{\text{SIMD}} - y_{\text{scalar}}|$ to ensure exact mathematical equivalence ($< 10^{-5}$).
+5. **Numerical Exactness**: Evaluated $\max |y_{\text{SIMD}} - y_{\text{scalar}}|$ to ensure zero floating-point divergence.
 
 ---
 
-## 4. Empirical Benchmark Results (Apple M1 Max ARM64)
+## 3. Empirical Results (Apple M1 Max ARM64)
 
 The table below reports measured performance across all 4 quadrants on an idle Apple M1 Max (8 Firestorm P-Cores, ARM NEON SIMD):
 

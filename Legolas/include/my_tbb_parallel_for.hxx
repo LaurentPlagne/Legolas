@@ -38,16 +38,18 @@ inline int spn_thread_number( void ){
 
 
 
+#include "StaticScheduler.hxx"
 #include "WorkStealing.hxx"
 
 namespace no_tbb{
 
-  using Legolas::WorkStealing::task_scheduler_init;
-  using Legolas::WorkStealing::parallel_for;
-  using Legolas::WorkStealing::blocked_range;
-  using Legolas::WorkStealing::auto_partitioner;
-  using Legolas::WorkStealing::simple_partitioner;
-  using Legolas::WorkStealing::split;
+  using Legolas::StaticScheduler::task_scheduler_init;
+  using Legolas::StaticScheduler::parallel_for;
+  using Legolas::StaticScheduler::blocked_range;
+  using Legolas::StaticScheduler::auto_partitioner;
+  using Legolas::StaticScheduler::simple_partitioner;
+  using Legolas::StaticScheduler::static_partitioner;
+  using Legolas::StaticScheduler::split;
 
   template <class Range, class Functor>
   void parallel_reduce(const Range & range, Functor & functor,int part=0){
@@ -55,7 +57,6 @@ namespace no_tbb{
   }
 
   typedef int affinity_partitioner;
-  typedef int static_partitioner;
 
 
   template <class T>
