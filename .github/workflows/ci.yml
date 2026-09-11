@@ -75,10 +75,26 @@ jobs:
 
       - name: Run CTest test suite
         run: |
-          ctest --test-dir build --output-on-failure
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            export DYLD_LIBRARY_PATH="${PWD}/build/Legolas:${DYLD_LIBRARY_PATH}"
+          else
+            export LD_LIBRARY_PATH="${PWD}/build/Legolas:${LD_LIBRARY_PATH}"
+          fi
+          ctest --test-dir build --output-on-failure 2>&1 | tee ctest.log || {
+            echo "### ❌ CTest Failure Log (${{ matrix.os }} | TBB=${{ matrix.use_tbb }} | Eigen=${{ matrix.use_eigen }})" >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
+            cat ctest.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
 
       - name: Run Verification Benchmarks
         run: |
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            export DYLD_LIBRARY_PATH="${PWD}/build/Legolas:${DYLD_LIBRARY_PATH}"
+          else
+            export LD_LIBRARY_PATH="${PWD}/build/Legolas:${LD_LIBRARY_PATH}"
+          fi
           echo "=== 1. AI MobileNet Depthwise 2D Convolution ==="
           ./build/examples/DepthwiseConv
           echo "=== 2. Real-Time 64-Track Audio IIR Biquad ==="
