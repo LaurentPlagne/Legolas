@@ -17,6 +17,23 @@
 
 ---
 
+## 🚀 1 Single Scalar Code $\longrightarrow$ A Multitude of Hardware Targets
+
+Write your core numerical algorithm **once** using standard, readable scalar C++ math. Legolas++ automatically maps and executes it at peak hardware efficiency across SIMD vector execution units, multi-core CPU threads, and dedicated GPUs:
+
+<p align="center" style="margin: 1.5rem 0;">
+  <img src="assets/images/legolas_write_once_targets.svg" alt="Write Once in Scalar C++, Target Any Hardware (CPU SIMD, Multi-Core, GPU Vulkan/Metal)" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.25);">
+</p>
+
+* **Single Natural Scalar Code**: Written with standard sequential math ($Y_i = A \cdot X_i + B \cdot Y_{i-1}$) with zero intrinsics and zero compiler pragmas.
+* **Legolas++ DLI Engine**: Transforms your memory layout via Data Layout Interleaving (DLI), turning impossible loop-carried recurrences into contiguous vector streams.
+* **A Multitude of Hardware Targets**:
+    * ⚡ **CPU SIMD Vectorized**: Full vector register width utilization on **ARM NEON** (4s), **x86 AVX2** (8s), and **x86 AVX-512** (16s) at 100% hardware line-rate.
+    * 🚀 **Multi-Core Parallel**: Built-in thread pools and work-stealing scheduler scaling across 4 to 128+ CPU cores, with SIMD active on every thread.
+    * 🔥 **GPU Acceleration**: Optional header-only **[Vulkan Compute](getting-started/install.md#gpu-acceleration-optional-vulkan-compute-backend-linux-windows)** backend for Linux and Windows, and native **[Apple Metal](getting-started/install.md#gpu-acceleration-native-apple-metal-backend-macos)** backend for macOS.
+
+---
+
 ## 🎯 When to Use Legolas++: The Core Problem
 
 **The Universal Scenario:**  
@@ -33,10 +50,6 @@ You need to apply an **intrinsically sequential algorithm** (recurrence relation
 2. **Natural Scalar Notation**: You write your core algorithm **once**, as a simple sequential loop in standard scalar math.
 3. **Hardware Vectorization by Construction**: Through **Data Layout Interleaving (DLI)**, vectorization is structural in memory and guaranteed—no reliance on fragile compiler heuristics.
 4. **Zero-Overhead Portability**: Pure header-only C++14 running with peak efficiency across Apple Silicon (NEON), Linux (x86_64 AVX2 / AVX-512), and Windows MSVC.
-
-<p align="center" style="margin: 2rem 0;">
-  <img src="assets/images/legolas_write_once_targets.svg" alt="Write Once in Scalar C++, Target Any Hardware (CPU SIMD, Multi-Core, GPU Vulkan/Metal)" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.25);">
-</p>
 
 ### 🌐 An Ubiquitous Pattern Across Science & Industry
 

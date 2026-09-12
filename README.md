@@ -18,49 +18,80 @@
 
 *High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization of Recurrences via Data Layout Interleaving (DLI).*
 
-> 💡 **Why SIMD is the Core Innovation of Legolas++**  
-> While multi-threading (multi-core thread scheduling) is a widely available and commoditized feature in modern computing, **hardware SIMD vectorization across linear recurrences has historically remained an intractable barrier**.
-> 
-> Standard optimizing compilers (Clang, GCC, MSVC, Intel oneAPI) **systematically fail** to auto-vectorize loops with loop-carried dependencies (e.g. tridiagonal solvers, recursive IIR filters, ADI sweeps). 
-> 
-> **Legolas++ breaks this recurrence barrier at the CPU register level**. Using **Data Layout Interleaving (DLI)**, Legolas++ reorganizes memory across problem instances so that the exact same generic scalar loop maps directly to full-width hardware vector registers (**ARM NEON**, **x86 AVX2 / AVX-512**) without writing a single line of intrinsics or inline assembly.
+---
 
-> 📦 **100% Header-Only & Zero-Dependency Architecture**  
-> Legolas++ is a pure C++14 template library:
-> * **No compiled binary libraries**: No `.a`, `.so`, `.dylib`, or `.dll` files are built or required.
-> * **Zero external dependencies**: Requires only a standard C++14 compiler and standard threads. No external dependencies, no third-party libraries.
-> * **Zero-Friction CMake Integration**: Drop in via `FetchContent` or `#include <Legolas/Array/Array.hxx>`.
+## 🚀 1 Single Scalar Code $\longrightarrow$ A Multitude of Hardware Targets
 
-```cmake
-# Add to your CMakeLists.txt in 4 lines:
-include(FetchContent)
-FetchContent_Declare(Legolas GIT_REPOSITORY https://github.com/LaurentPlagne/Legolas.git GIT_TAG master)
-FetchContent_MakeAvailable(Legolas)
-target_link_libraries(my_project PRIVATE Legolas)
-```
+Write your core numerical algorithm **once** using standard, readable scalar C++ math. Legolas++ automatically maps and executes it at peak hardware efficiency across SIMD vector execution units, multi-core CPU threads, and dedicated GPUs:
+
+<p align="center" style="margin: 1.5rem 0;">
+  <img src="docs/assets/images/legolas_write_once_targets.svg" alt="Write Once in Scalar C++, Target Any Hardware (CPU SIMD, Multi-Core, GPU Vulkan/Metal)" width="100%">
+</p>
+
+* **Single Natural Scalar Code**: Written with standard loops and scalar arithmetic ($Y_i = A \cdot X_i + B \cdot Y_{i-1}$). **Zero assembly intrinsics, zero compiler pragmas, zero vendor lock-in.**
+* **Legolas++ DLI Engine**: Transforms your problem layout in memory via **Data Layout Interleaving (DLI)**, turning impossible loop-carried recurrences into contiguous vector streams.
+* **A Multitude of Hardware Targets**:
+  * ⚡ **CPU SIMD Vectorized**: Full vector width utilization on **ARM NEON** (4 floats / 128-bit), **x86 AVX2** (8 floats / 256-bit), and **x86 AVX-512** (16 floats / 512-bit) at 100% hardware line-rate.
+  * 🚀 **Multi-Core Parallel**: Built-in, zero-dependency `StaticThreadPool` and work-stealing scheduler scaling across 4 to 128+ CPU cores, with vector SIMD active on every thread.
+  * 🔥 **GPU Acceleration**: Optional header-only **Vulkan Compute** backend for Linux and Windows, and native **Apple Metal** backend for macOS with unified memory.
 
 ---
 
 ## 🎯 When to Use Legolas++: The Core Problem
 
-**The Universal Scenario:**  
+### The Universal Scenario
 You need to apply an **intrinsically sequential algorithm** (recurrence relation, recursive filter, time-stepping scheme, tridiagonal solver $y_n = f(y_{n-1}, x_n)$) to a **massive batch of independent problem instances of the same size** (thousands of 1D grid lines, dozens of audio tracks, video streams, or neural network channels).
 
-**The Classic Dilemma:**
+### The Classic Dilemma
 
 * **Standard Multi-Threading (OpenMP / Threads)**: Parallelizes across CPU cores, but within each core, **compilers cannot vectorize across sequential dependencies**. Hardware SIMD execution units (AVX2, AVX-512, NEON) sit idle—wasting **75% to 93% of the CPU's theoretical compute capacity**.
-* **Manual SIMD Intrinsics (`_mm256_...`, NEON)**: Attempting to vectorize manually across instances requires writing hundreds of lines of assembly-like intrinsics. The code becomes unreadable, non-portable, and a nightmare to maintain.
+* **Manual SIMD Intrinsics (`_mm256_...`, NEON)**: Attempting to vectorize manually across instances requires writing hundreds of lines of assembly-like intrinsics. The code becomes unreadable, non-portable, and a maintenance nightmare.
 
-**The Legolas++ Solution:**
+### The Legolas++ Solution
 
 1. **100% Machine Utilization**: Fully utilizes all CPU cores *and* 100% of SIMD vector register widths simultaneously.
 2. **Natural Scalar Notation**: You write your core algorithm **once**, as a simple sequential loop in standard scalar math.
 3. **Hardware Vectorization by Construction**: Through **Data Layout Interleaving (DLI)**, vectorization is structural in memory and guaranteed—no reliance on fragile compiler heuristics.
 4. **Zero-Overhead Portability**: Pure header-only C++14 running with peak efficiency across Apple Silicon (NEON), Linux (x86_64 AVX2 / AVX-512), and Windows MSVC.
 
+### 💡 Why SIMD is the Core Innovation of Legolas++
+
+While multi-threading (multi-core thread scheduling) is a widely available and commoditized feature in modern computing, **hardware SIMD vectorization across linear recurrences has historically remained an intractable barrier**.
+
+Standard optimizing compilers (Clang, GCC, MSVC, Intel oneAPI) **systematically fail** to auto-vectorize loops with loop-carried dependencies (e.g. tridiagonal solvers, recursive IIR filters, ADI sweeps). 
+
+**Legolas++ breaks this recurrence barrier at the CPU register level**. Using **Data Layout Interleaving (DLI)**, Legolas++ reorganizes memory across problem instances so that the exact same generic scalar loop maps directly to full-width hardware vector registers (**ARM NEON**, **x86 AVX2 / AVX-512**) without writing a single line of intrinsics or inline assembly.
+
+### 1. The Recurrence Barrier: Why Compilers Give Up
+
+Many essential algorithms in scientific simulation, digital signal processing, edge AI, and deep learning feature **strict loop-carried data dependencies** where iteration $i$ requires the output of iteration $i-1$:
+
+```cpp
+// Tridiagonal elimination (Thomas forward sweep), recursive IIR filters, Gauss-Seidel:
+for (int i = 1; i < N; ++i) {
+    X[i] = (B[i] - L[i] * X[i-1]) * invD[i]; // Strict recurrence: RAW hazard!
+}
+```
+
+Because of this sequential dependency chain:
+$$X[0] \longrightarrow X[1] \longrightarrow X[2] \longrightarrow X[3] \longrightarrow \dots \longrightarrow X[N-1]$$
+
+Every optimizing compiler falls back to **scalar execution**, leaving up to **90% of the CPU's vector compute capacity completely idle**.
+
+### 2. The Breakthrough: SIMD via Data Layout Interleaving (DLI)
+
+In real-world applications, engineers rarely solve a single isolated recurrence. Instead, they process **ensembles of independent problem instances**:
+* **Scientific Computing & PDEs**: Thousands of 1D tridiagonal systems across 2D/3D ADI grids, heat diffusion, or fluid flow.
+* **Real-Time Audio DSP**: Filtering 32, 64, or 128 audio channels concurrently with recursive IIR/Biquad filters.
+* **Edge AI & Computer Vision**: Depthwise Separable Convolutions across channels (MobileNet, ConvNeXt).
+
+Instead of struggling to vectorize sequentially along $i$, **Legolas++ interleaves $P$ independent problem instances directly in memory**:
+
 <p align="center">
-  <img src="docs/assets/images/legolas_write_once_targets.svg" alt="Write Once in Scalar C++, Target Any Hardware (CPU SIMD, Multi-Core, GPU Vulkan/Metal)" width="100%">
+  <img src="docs/assets/images/dli_animation.svg" alt="Animated Data Layout Interleaving (DLI) Mechanism" width="960" height="640" style="max-width: 100%; height: auto;">
 </p>
+
+*Figure: Data Layout Interleaving (DLI) in Action. Elements at step $i$ across $P=4$ independent problem instances are mapped contiguously into physical memory, transforming strided access into single-instruction aligned SIMD streaming.*
 
 ### 🌐 An Ubiquitous Pattern Across Science & Industry
 
@@ -76,7 +107,9 @@ This computing pattern appears everywhere across high-performance engineering. L
 
 ---
 
-## ⚡ 30-Second Quick Example
+## ⚡ Examples & Showcases
+
+### 30-Second Quick Example
 
 Write your numerical solver **once** using natural scalar notation; Legolas++ auto-vectorizes it in hardware SIMD and scales across CPU cores simultaneously:
 
@@ -113,9 +146,46 @@ int main() {
 }
 ```
 
----
+### 🏆 Industrial Showcases & Energy Efficiency (Green Computing)
 
-## 📊 How Legolas++ Compares to Existing Solutions
+High-performance computing is fundamentally an **energy efficiency challenge**. On mobile platforms, drones, and data centers, **unvectorized scalar loops waste energy** by leaving SIMD hardware idle while drawing baseline power. Through **Data Layout Interleaving (DLI)**, Legolas++ achieves peak arithmetic density, reducing energy consumption per operation by up to **87%**:
+
+| Application | Domain | Scale | Performance (Apple M1 Max) | Speedup | Energy & Power Footprint | Showcase |
+| :--- | :--- | :--- | :--- | :---: | :--- | :---: |
+| **Video Pipeline (CPU)** | Vision & Broadcast | 32 HD 720p streams | **8,442 FPS** (7.78 GPix/s) | **5.34×** | **3.55 µJ / frame** (0.259 GPix/W) | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/video-pipeline/) |
+| **Video Pipeline (Metal GPU)** | Vision & Broadcast | 32 HD 720p streams | **17,264 FPS** (15.91 GPix/s) | **57.1×** | **2.43 µJ / frame** (0.379 GPix/W) · **87.2% energy saved** | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/video-pipeline/) |
+| **Audio IIR Biquad** | Audio DSP & Acoustics | 64 parallel channels | **5,832 MSamples/sec** | **14.7×** | **5.14 nJ / sample** (< 0.05 W total draw) | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/audio-biquad/) |
+| **Depthwise 2D Conv** | Edge AI (MobileNet) | 512 channels, $3\times3$ | **212.3 GFlops** (8 Cores) | **5.83×** | **7.08 GFlops/Watt** · **82.8% energy saved** | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/depthwise-conv/) |
+| **MultiThomas Solver** | Scientific Computing | 262,144 systems, 134M unknowns | **69.40 GFlops** (8 Cores) | **33.1×** | **2.31 GFlops/Watt** (33× more math per Joule) | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/tridiagonal-thomas/) |
+
+#### Real-Time Multi-Stream Video Pipeline (CPU & Metal GPU)
+*Location: [`examples/VideoPipeline/VideoPipeline.cxx`](examples/VideoPipeline/VideoPipeline.cxx) & [`VideoPipelineMetal.mm`](examples/VideoPipeline/VideoPipelineMetal.mm)*
+* 3×3 spatial Sobel edge detection fused with quadratic temporal motion differencing across 32 concurrent 720p HD feeds.
+* **CPU Line-Rate**: 8,442.1 FPS (7.78 GPixels/s), 3.79 ms latency per 32-frame batch (**5.34× speedup** vs scalar).
+* **Metal GPU Line-Rate**: 17,263.9 FPS (15.91 GPixels/s), 1.85 ms latency (**57.15× speedup** vs scalar, **7.57× vs CPU**).
+* **Energy Impact**: Drops energy per HD frame from 19.0 µJ (scalar) down to **2.43 µJ** on Metal GPU (**87.2% reduction**). A single 40 W laptop sustains **287 concurrent 60 FPS feeds** without thermal throttling.
+
+#### Digital Audio Processing: 64-Track IIR Biquad Filter
+*Location: [`examples/AudioBiquad/AudioBiquad.cxx`](examples/AudioBiquad/AudioBiquad.cxx)*
+* 2nd-order Direct Form II recursive IIR filter ($y[n] = b_0 x[n] + b_1 x[n-1] + b_2 x[n-2] - a_1 y[n-1] - a_2 y[n-2]$).
+* Temporal recurrence vectorized across 64 audio channels using $P=4$ NEON SIMD packing.
+* **Result**: **5,832 Megasamples/sec** (**14.66× speedup**).
+* **Energy Impact**: Filters 64 channels of studio 192 kHz audio using less than **0.05 W** of power (**5.14 nJ per sample**). Replaces multi-kilowatt dedicated hardware DSP racks with pure C++ software.
+
+#### AI & Edge Computer Vision: Depthwise Separable 2D Convolution
+*Location: [`examples/DepthwiseConv/DepthwiseConv.cxx`](examples/DepthwiseConv/DepthwiseConv.cxx)*
+* Core compute primitive of lightweight vision neural networks (MobileNet, ConvNeXt, EfficientNet).
+* Evaluates $3\times3$ spatial filters across 512 channels simultaneously with NEON `fmla.4s` vector instructions.
+* **Result**: **212.3 GFlops** (**5.83× speedup** over scalar).
+* **Energy Impact**: Delivers **7.08 GFlops/Watt** on CPU with **zero PCIe memory copy latency**, cutting inference power consumption by **82.8%** to extend battery life in robotics and drones.
+
+#### Scientific Computing & PDEs: MultiThomas Recurrence
+*Location: [`tst/MultiThomas/MultiThomas.cxx`](tst/MultiThomas/MultiThomas.cxx)*
+* 262,144 tridiagonal systems (134.2 million unknowns) for Alternating Direction Implicit (ADI) heat diffusion and Navier-Stokes sweeps.
+* **Result**: **69.40 GFlops** (**33.05× speedup** over scalar).
+* **Energy Impact**: Delivers **2.31 GFlops/Watt** on tightly coupled recurrences where optimizing compilers drop to 0.07 GFlops/Watt, achieving **33× higher compute density per Joule**.
+
+### 📊 How Legolas++ Compares to Existing Solutions
 
 | Feature | Standard Compilers (GCC/Clang/MSVC) | Traditional Linear Algebra (BLAS, Armadillo, Blaze) | Frameworks (PyTorch C++ ATen, oneDNN) | **Legolas++** |
 | :--- | :---: | :---: | :---: | :---: |
@@ -125,154 +195,7 @@ int main() {
 | **External Dependencies** | None | BLAS / LAPACK | Heavy (LibTorch, MKL, Python) | :white_check_mark: **Zero (Pure Standard C++14)** |
 | **Build & Integration Model** | N/A | Variable | Multi-gigabyte binaries | :white_check_mark: **100% Header-Only (`INTERFACE`)** |
 
----
-
-## 1. The Recurrence Barrier: Why Compilers Give Up
-
-Many essential algorithms in scientific simulation, digital signal processing, edge AI, and deep learning feature **strict loop-carried data dependencies** where iteration $i$ requires the output of iteration $i-1$:
-
-```cpp
-// Tridiagonal elimination (Thomas forward sweep), recursive IIR filters, Gauss-Seidel:
-for (int i = 1; i < N; ++i) {
-    X[i] = (B[i] - L[i] * X[i-1]) * invD[i]; // Strict recurrence: RAW hazard!
-}
-```
-
-Because of this sequential dependency chain:
-$$X[0] \longrightarrow X[1] \longrightarrow X[2] \longrightarrow X[3] \longrightarrow \dots \longrightarrow X[N-1]$$
-
-Every optimizing compiler falls back to **scalar execution**, leaving up to **90% of the CPU's vector compute capacity completely idle**.
-
----
-
-## 2. The Breakthrough: SIMD via Data Layout Interleaving (DLI)
-
-In real-world applications, engineers rarely solve a single isolated recurrence. Instead, they process **ensembles of independent problem instances**:
-* **Scientific Computing & PDEs**: Thousands of 1D tridiagonal systems across 2D/3D ADI grids, heat diffusion, or fluid flow.
-* **Real-Time Audio DSP**: Filtering 32, 64, or 128 audio channels concurrently with recursive IIR/Biquad filters.
-* **Edge AI & Computer Vision**: Depthwise Separable Convolutions across channels (MobileNet, ConvNeXt).
-
-### Transposing Data at the Memory Level
-
-Instead of struggling to vectorize sequentially along $i$, **Legolas++ interleaves $P$ independent problem instances directly in memory**:
-
-<p align="center">
-  <img src="docs/assets/images/dli_animation.svg" alt="Animated Data Layout Interleaving (DLI) Mechanism" width="960" height="640" style="max-width: 100%; height: auto;">
-</p>
-
-*Figure: Data Layout Interleaving (DLI) in Action. Elements at step $i$ across $P=4$ independent problem instances are mapped contiguously into physical memory, transforming strided access into single-instruction aligned SIMD streaming.*
-
-### Zero-Overhead Abstraction: Write Once, Vectorize Everywhere
-1. **Declare the tensor**: `Legolas::Array<T, D, P, DP>` defines a tensor of dimension `D` with packing factor `P` along dimension `DP`.
-2. **Zero-cost vector view**: `.getPackedView()` exposes interleaved data directly as native SIMD vector registers (`Legolas::NativeSimd<T, P>`).
-3. **Write natural scalar code**: The numerical solver is written **once** using standard scalar syntax. The same generic function compiles into hardware SIMD instructions (ARM NEON or x86 AVX2/512):
-
-```cpp
-struct ThomasSolver {
-  template <class A2D>
-  void operator()(int begin, int end, A2D D, A2D U, A2D L, A2D B, A2D X) const {
-    using Scalar = typename A2D::RealType;
-    Scalar one(1.0), s, sm1;
-
-    for (int j = begin; j < end; ++j) {
-      s = D[j][0];
-      sm1 = one / s;
-      X[j][0] = B[j][0] * sm1;
-
-      // Forward sweep: executes on scalar floats OR vector NEON/AVX registers!
-      for (int i = 1; i < X[j].size(); ++i) {
-        s = D[j][i] - L[j][i] * (U[j][i-1] * sm1);
-        X[j][i] = (B[j][i] - L[j][i] * X[j][i-1]);
-        sm1 = one / s;
-        X[j][i] *= sm1;
-      }
-      // Backward substitution...
-    }
-  }
-};
-```
-
----
-
-## 3. Benchmarks on Apple Silicon (M1 Max ARM64)
-
-The benchmark evaluates the Thomas tridiagonal algorithm across $N_y = N_x^2$ systems of size $N_x \in [8, 512]$ (up to 262,144 systems, 134M unknowns):
-
-| Configuration | Pack Size ($P$) | Execution Mode | Peak Throughput | Speedup vs Scalar |
-| :--- | :---: | :---: | :---: | :---: |
-| **Scalar Baseline** | $P=1$ | Sequential (1 Core) | **2.10 GFlops** | 1.0x (Baseline) |
-| **Legolas NEON SIMD** | $P=4$ | Sequential (1 Core) | **6.50 GFlops** | **3.10x** |
-| **Legolas NEON Unrolled** | $P=8$ | Sequential (1 Core) | **9.97 GFlops** | **4.75x** |
-| **Scalar Multi-Thread** | $P=1$ | Parallel (8 Cores) | **18.43 GFlops** | **8.78x** |
-| **Legolas NEON Multi-Thread** | $P=4$ | Parallel (8 Cores) | **52.40 GFlops** | **24.95x** |
-| **Legolas Hybrid SIMD + Work-Stealing** | $P=8$ | Parallel (8 Cores) | **69.40 GFlops** | **33.05x** |
-
-> **Key takeaway**: SIMD vectorization alone yields a **4.75x speedup** on a single core for an algorithm traditionally considered unvectorizable. When combined with native work-stealing, Legolas++ achieves an overall **33x speedup** on Apple Silicon M1 Max (**69.4 GFlops** sustained).
-
-### Performance Curves
-
-#### 1. Throughput Scaling ($N_x = 8 \dots 512$)
-![Throughput Scaling (Apple M1 Max ARM64)](Thomas_comparison.png)
-
-*High-resolution vector format: [Thomas_comparison.svg](Thomas_comparison.svg) | Interactive web report: [`tst/MultiThomas/benchmarks_report.html`](tst/MultiThomas/benchmarks_report.html)*
-
-#### 2. Multi-Core Scaling (1 to 8 Threads on Apple M1 Max)
-![Multi-Core Speedup Scaling](Thomas_speedup.png)
-
-*High-resolution vector format: [Thomas_speedup.svg](Thomas_speedup.svg)*
-
-```
-Multi-Core Speedup (Apple M1 Max Firestorm P-Cores, P=8 NEON):
-1 Thread:  9.58 GFlops (1.00x)
-2 Threads: 19.04 GFlops (1.99x) -> 99.4% parallel efficiency
-4 Threads: 37.59 GFlops (3.92x) -> 98.1% parallel efficiency
-8 Threads: 69.15 GFlops (7.22x)
-```
-
----
-
-## 4. Industrial Showcases & Energy Efficiency (Green Computing)
-
-High-performance computing is fundamentally an **energy efficiency challenge**. On mobile platforms, drones, and data centers, **unvectorized scalar loops waste energy** by leaving SIMD hardware idle while drawing baseline power. Through **Data Layout Interleaving (DLI)**, Legolas++ achieves peak arithmetic density, reducing energy consumption per operation by up to **87%**:
-
-| Application | Domain | Scale | Performance (Apple M1 Max) | Speedup | Energy & Power Footprint | Showcase |
-| :--- | :--- | :--- | :--- | :---: | :--- | :---: |
-| **Video Pipeline (CPU)** | Vision & Broadcast | 32 HD 720p streams | **8,442 FPS** (7.78 GPix/s) | **5.34×** | **3.55 µJ / frame** (0.259 GPix/W) | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/video-pipeline/) |
-| **Video Pipeline (Metal GPU)** | Vision & Broadcast | 32 HD 720p streams | **17,264 FPS** (15.91 GPix/s) | **57.1×** | **2.43 µJ / frame** (0.379 GPix/W) · **87.2% energy saved** | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/video-pipeline/) |
-| **Audio IIR Biquad** | Audio DSP & Acoustics | 64 parallel channels | **5,832 MSamples/sec** | **14.7×** | **5.14 nJ / sample** (&lt; 0.05 W total draw) | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/audio-biquad/) |
-| **Depthwise 2D Conv** | Edge AI (MobileNet) | 512 channels, $3\times3$ | **212.3 GFlops** (8 Cores) | **5.83×** | **7.08 GFlops/Watt** · **82.8% energy saved** | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/depthwise-conv.md) |
-| **MultiThomas Solver** | Scientific Computing | 262,144 systems, 134M unknowns | **69.40 GFlops** (8 Cores) | **33.1×** | **2.31 GFlops/Watt** (33× more math per Joule) | [Tutorial](https://laurentplagne.github.io/Legolas/tutorials/tridiagonal-thomas/) |
-
-### 4.1 Real-Time Multi-Stream Video Pipeline (CPU & Metal GPU)
-*Location: [`examples/VideoPipeline/VideoPipeline.cxx`](examples/VideoPipeline/VideoPipeline.cxx) & [`VideoPipelineMetal.mm`](examples/VideoPipeline/VideoPipelineMetal.mm)*
-* 3×3 spatial Sobel edge detection fused with quadratic temporal motion differencing across 32 concurrent 720p HD feeds.
-* **CPU Line-Rate**: 8,442.1 FPS (7.78 GPixels/s), 3.79 ms latency per 32-frame batch (**5.34× speedup** vs scalar).
-* **Metal GPU Line-Rate**: 17,263.9 FPS (15.91 GPixels/s), 1.85 ms latency (**57.15× speedup** vs scalar, **7.57× vs CPU**).
-* **Energy Impact**: Drops energy per HD frame from 19.0 µJ (scalar) down to **2.43 µJ** on Metal GPU (**87.2% reduction**). A single 40 W laptop sustains **287 concurrent 60 FPS feeds** without thermal throttling.
-
-### 4.2 Digital Audio Processing: 64-Track IIR Biquad Filter
-*Location: [`examples/AudioBiquad/AudioBiquad.cxx`](examples/AudioBiquad/AudioBiquad.cxx)*
-* 2nd-order Direct Form II recursive IIR filter ($y[n] = b_0 x[n] + b_1 x[n-1] + b_2 x[n-2] - a_1 y[n-1] - a_2 y[n-2]$).
-* Temporal recurrence vectorized across 64 audio channels using $P=4$ NEON SIMD packing.
-* **Result**: **5,832 Megasamples/sec** (**14.66× speedup**).
-* **Energy Impact**: Filters 64 channels of studio 192 kHz audio using less than **0.05 W** of power (**5.14 nJ per sample**). Replaces multi-kilowatt dedicated hardware DSP racks with pure C++ software.
-
-### 4.3 AI & Edge Computer Vision: Depthwise Separable 2D Convolution
-*Location: [`examples/DepthwiseConv/DepthwiseConv.cxx`](examples/DepthwiseConv/DepthwiseConv.cxx)*
-* Core compute primitive of lightweight vision neural networks (MobileNet, ConvNeXt, EfficientNet).
-* Evaluates $3\times3$ spatial filters across 512 channels simultaneously with NEON `fmla.4s` vector instructions.
-* **Result**: **212.3 GFlops** (**5.83× speedup** over scalar).
-* **Energy Impact**: Delivers **7.08 GFlops/Watt** on CPU with **zero PCIe memory copy latency**, cutting inference power consumption by **82.8%** to extend battery life in robotics and drones.
-
-### 4.4 Scientific Computing & PDEs: MultiThomas Recurrence
-*Location: [`tst/MultiThomas/MultiThomas.cxx`](tst/MultiThomas/MultiThomas.cxx)*
-* 262,144 tridiagonal systems (134.2 million unknowns) for Alternating Direction Implicit (ADI) heat diffusion and Navier-Stokes sweeps.
-* **Result**: **69.40 GFlops** (**33.05× speedup** over scalar).
-* **Energy Impact**: Delivers **2.31 GFlops/Watt** on tightly coupled recurrences where optimizing compilers drop to 0.07 GFlops/Watt, achieving **33× higher compute density per Joule**.
-
----
-
-## 5. Two-Level Decoupled Parallel Architecture
+### Two-Level Decoupled Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -292,7 +215,9 @@ High-performance computing is fundamentally an **energy efficiency challenge**. 
 
 ---
 
-## 6. Quickstart & Build Instructions
+## 🛠️ Installation & Integration
+
+Legolas++ is designed with a strict **100% header-only and zero-dependency** philosophy. No binary libraries (`.a`, `.so`, `.dylib`, `.dll`) need to be compiled or linked.
 
 ### Prerequisites
 * Standard C++14 compliant compiler:
@@ -301,50 +226,112 @@ High-performance computing is fundamentally an **energy efficiency challenge**. 
   - LLVM Clang $\ge 8$
   - Microsoft Visual C++ (MSVC) $\ge 2017$
 * CMake $\ge 3.5$
-* **Zero external dependencies required**
+* **Zero external dependencies required** (native standard threads and SIMD wrappers)
 
-### Build and Test
-```bash
-# Configure
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+### Quick Integration (CMake FetchContent)
 
-# Build all targets
-cmake --build build -j
+Add Legolas++ to your `CMakeLists.txt` in 4 lines:
 
-# Run the test suite
-ctest --test-dir build --output-on-failure
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+  Legolas
+  GIT_REPOSITORY https://github.com/LaurentPlagne/Legolas.git
+  GIT_TAG        master
+)
+FetchContent_MakeAvailable(Legolas)
+
+add_executable(my_solver main.cpp)
+target_link_libraries(my_solver PRIVATE Legolas)
 ```
 
-### Integrate into Your Project (CMake Interface Target)
-Because Legolas++ is 100% header-only:
+Alternatively, if using Git submodules or a local clone:
 ```cmake
-# In your CMakeLists.txt:
 add_subdirectory(path/to/Legolas)
 target_link_libraries(my_solver PRIVATE Legolas)
 ```
-Or simply add the include directory to your compiler include path:
+
+Or simply add the include directory to your compiler invocation:
 ```bash
-c++ -O3 -std=c++14 -I/path/to/Legolas/Legolas/.. -I/path/to/Legolas/Legolas/include my_solver.cpp -o my_solver
+c++ -O3 -std=c++14 -I/path/to/Legolas -I/path/to/Legolas/Legolas/include main.cpp -o my_solver
 ```
 
-### Run Showcases
+### Standard Build & Testing
+
 ```bash
-# Real-Time Multi-Stream Video Pipeline showcase (8,400+ FPS in 720p HD):
-./build/examples/VideoPipeline
+# Configure Release build
+cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-# AI Depthwise 2D Convolution showcase:
-./build/examples/DepthwiseConv
+# Compile tests and benchmarks
+cmake --build build -j
 
-# Multi-channel Audio IIR Biquad showcase:
-./build/examples/AudioBiquad
-
-# MultiThomas Tridiagonal benchmark:
-./build/tst/MultiThomasExample/MultiThomasExample
+# Run the automated test suite (100% passing)
+ctest --test-dir build --output-on-failure
 ```
 
 ---
 
-## 7. Documentation Website
+## 🔥 GPU Acceleration: Optional Vulkan Compute Backend (Linux & Windows)
+
+Starting with version 2.1, Legolas++ includes an optional, fully self-contained **Vulkan compute backend** designed for Linux and Windows platforms (macOS utilizes the native Apple Metal backend).
+
+### Architectural Highlights
+
+* **Zero Link-Time Dependencies**: The Vulkan loader is dynamically opened at runtime via `dlopen` (Linux) or `LoadLibrary` (Windows) through `vkGetInstanceProcAddr` (`VK_NO_PROTOTYPES`). The backend links only `${CMAKE_DL_LIBS}`. No Vulkan SDK or import libraries are needed at link time.
+* **In-Tree Versioned SPIR-V**: Compute shaders are precompiled and versioned directly inside the repository (`Legolas/Vulkan/spv/*.hxx`) as `const uint32_t[]` arrays. **Neither `glslc` nor any shader compiler SDK is required to build or run.**
+* **Transparent CPU Fallback**: If no Vulkan-capable GPU or driver is present on the system, `Legolas::Vulkan::Context::available()` evaluates to `false`, and execution falls back cleanly to the CPU path.
+* **GPU Mapping of Data Layout Interleaving (DLI)**:
+  * A GPU thread naturally replaces a CPU SIMD lane.
+  * Transposing the problem ensemble to an `[step][system]` (Structure of Arrays / SoA) layout guarantees **100% memory coalescing** across GPU warps/wavefronts.
+  * For tridiagonal recurrences, each GPU thread processes **4 systems simultaneously via `vec4`**, reducing address calculations, exposing instruction-level parallelism (ILP), and boosting compute throughput by **4.8×** over scalar thread mappings.
+
+### Benchmark Results (NVIDIA GeForce RTX 2060 SUPER)
+
+Workloads measured against single-core scalar, single-core AVX2 DLI, and a 12-thread CPU baseline (AMD Ryzen 5 3600):
+
+| Workload | GPU Kernel Time | Speedup vs Scalar | Speedup vs 12-Thread CPU | Verdict |
+| :--- | :---: | :---: | :---: | :---: |
+| **VideoPipeline** (32×720p Sobel + Temporal) | **0.98 ms** | **57.3×** | **18.0×** | 🚀 Peak line-rate (32,659 FPS) |
+| **DepthwiseConv** (128ch, 3×3 MobileNet) | **0.044 ms** | **12.8×** | **4.9×** | 🚀 628 GFlops sustained |
+| **MultiThomas** ($N_x=512$, 262,144 systems) | **13.8 ms** | **58.0×** | **9.1×** | 🚀 **127 GFlops** sustained |
+| **AudioBiquad** (64ch × 960k samples, blocked scan) | **9.9 ms** | **15.7×** | **2.8×** | 🚀 6,176 MSamples/s |
+| **Reductions** (`squaredNorm`, `dot`, 16.7M floats) | **0.20–0.32 ms** | — | **39–62×** | 🚀 Bandwidth saturated |
+
+> ⚠️ **Key Takeaway: Resident Data vs. Discrete PCIe Transfers**  
+> On discrete GPUs, single-shot isolated executions are bounded by the PCIe bus transfer rate (~4.5 GB/s). The GPU backend delivers massive speedups when **data stays resident in VRAM** (iterative PDE solvers, multi-pass rendering/video pipelines, or audio streaming), or on **Unified Memory Architectures (UMA)** such as Apple Silicon or integrated APUs where zero-copy host-visible buffers are used (`Context::isUnifiedMemory()`).
+
+### How to Build & Run the Vulkan Benchmarks
+
+Enabling the Vulkan backend is opt-in via CMake:
+
+```bash
+# 1. Configure with Vulkan enabled (requires vulkan headers on Linux/Windows)
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DLEGOLAS_ENABLE_VULKAN=ON
+
+# 2. Build the benchmark suite and tests
+cmake --build build -j
+
+# 3. Run all tests (including Vulkan verification)
+ctest --test-dir build --output-on-failure
+
+# 4. Run the comprehensive Vulkan benchmark suite:
+./build/examples/VulkanBench                # Full suite
+./build/examples/VulkanBench --skip-heavy    # Fast smoke test
+```
+
+For complete implementation notes, architectural details, and regression logs, see [vulkan.md](vulkan.md).
+
+---
+
+## 🍎 Native Apple Metal Backend (macOS)
+
+On macOS systems, Legolas++ leverages native **Apple Metal compute** (`examples/VideoPipeline/VideoPipelineMetal.mm`). Thanks to Apple Silicon's **Unified Memory Architecture (UMA)**, the CPU and GPU share the same physical memory space:
+* **Zero PCIe Transfer Bottleneck**: Frames and tensors are written directly into shared buffers (`MTLResourceStorageModeShared`), eliminating upload and download overhead.
+* **Peak End-to-End Speedup**: Achieves **17,264 FPS** on 32 concurrent 720p streams (**57.15× speedup** over scalar CPU, **7.57× faster than 8-core CPU**), consuming only **2.43 µJ per frame**.
+
+---
+
+## 📖 Documentation Website
 
 Comprehensive tutorials, mathematical proofs, architecture guides, and API reference are available on the official documentation website:
 
@@ -359,7 +346,7 @@ mkdocs serve
 
 ---
 
-## 8. Academic Background
+## 📜 Academic Background
 
 Legolas++ is based on research presented at ACM SIGPLAN ARRAY:
 
@@ -370,6 +357,6 @@ Legolas++ is based on research presented at ACM SIGPLAN ARRAY:
 
 ---
 
-## 9. License
+## 📄 License
 
 This project is distributed under the terms of the MIT "Expat" License (Copyright (c) 2019-2026 EDF-R&D, TriScale innov). See [License.md](License.md) for details.
