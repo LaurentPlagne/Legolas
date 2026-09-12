@@ -34,7 +34,7 @@ template <class V1L, class V1R>
 void convert(const V1L & v1l, V1R & v1r){
   assert(v1l.size()==v1r.size());
   using RealType=typename V1R::RealType;
-  for (size_t i=0 ; i<v1r.size() ; i++){
+  for (int i=0 ; i<v1r.size() ; i++){
     v1r[i]=RealType(v1l[i]);
   }
 }

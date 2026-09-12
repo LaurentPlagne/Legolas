@@ -9,20 +9,16 @@
 #include <chrono>
 #include "UTILITES.hxx"
 #include "StaticScheduler.hxx"
-#include "WorkStealing.hxx"
 
 inline int legolas_thread_number( void ){
   /*
    * Récupère dans l'environnement le nombre de threads souhaité
    * via LEGOLAS_NUM_THREADS (ou OMP_NUM_THREADS en repli standard).
+   * -1 signifie "non positionné" (-> nthreads==nprocs).
+   * Le pool de threads lit lui-même ces variables au premier dispatch.
    */
-  int result=-1;
-  const char * pSTN = std::getenv("LEGOLAS_NUM_THREADS");
-  if (pSTN == nullptr) {
-    pSTN = std::getenv("OMP_NUM_THREADS");
-  }
-  if (pSTN != nullptr){
-    result = std::atoi(pSTN);
+  int result=Legolas::StaticScheduler::num_threads_from_env();
+  if (result >= 1){
     MESSAGE("LEGOLAS_NUM_THREADS=" << result);
   }
   else{

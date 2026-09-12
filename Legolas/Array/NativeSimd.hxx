@@ -7,12 +7,18 @@
 
 namespace Legolas {
 
-// GCC has known bugs when applying __attribute__((vector_size)) to dependent template types.
-// Clang supports vector extensions cleanly on template parameters; GCC & MSVC use the unrolled array representation.
-#if defined(__clang__)
-#define LEGOLAS_HAS_VECTOR_EXTENSIONS 1
-#else
-#define LEGOLAS_HAS_VECTOR_EXTENSIONS 0
+// GCC < 9 has known bugs when applying __attribute__((vector_size)) to dependent
+// template types. Clang and GCC >= 9 support it cleanly; MSVC uses the unrolled
+// array representation. Users can force the fallback with
+// -DLEGOLAS_HAS_VECTOR_EXTENSIONS=0.
+#if !defined(LEGOLAS_HAS_VECTOR_EXTENSIONS)
+#  if defined(__clang__)
+#    define LEGOLAS_HAS_VECTOR_EXTENSIONS 1
+#  elif defined(__GNUC__) && (__GNUC__ >= 9)
+#    define LEGOLAS_HAS_VECTOR_EXTENSIONS 1
+#  else
+#    define LEGOLAS_HAS_VECTOR_EXTENSIONS 0
+#  endif
 #endif
 
 template <typename T, int P>
@@ -36,10 +42,9 @@ public:
 
   inline NativeSimd(T scalar) {
 #if LEGOLAS_HAS_VECTOR_EXTENSIONS
-    // Vector broadcast
-    for (int i = 0; i < P; ++i) {
-      data_[i] = scalar;
-    }
+    // Vector broadcast. Element-wise writes to a vector type trigger GCC's
+    // spurious -Wmaybe-uninitialized; vector arithmetic folds to vbroadcastss.
+    data_ = VecType() + scalar;
 #else
     for (int i = 0; i < P; ++i) {
       data_[i] = scalar;
@@ -48,6 +53,9 @@ public:
   }
 
 #if LEGOLAS_HAS_VECTOR_EXTENSIONS
+  // Constructor template: GCC rejects a non-template NativeSimd(VecType)
+  // overload because VecType is dependent on T at template definition time.
+  template <typename U = T>
   inline NativeSimd(VecType vec) : data_(vec) {}
 #endif
 

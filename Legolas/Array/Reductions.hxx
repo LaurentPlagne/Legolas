@@ -27,27 +27,28 @@ struct Accumulate<ACCUMULATOR,packLevel,packLevel>{
     const DERIVED & a=ba.getArrayRef();
     //Partie Vectorisee
     auto ap=a.getPackedView();
-    //typename DERIVED::PackedRealType packedAccumulator;
     typename DERIVED::PackedDoubleType packedAccumulator;
     ACCUMULATOR::neutralize(packedAccumulator);
 
-    const size_t aps=ap.size()-1;
+    const size_t aps=ap.size();
+    if (aps==0) return; // empty array: nothing to accumulate
 
-    for (size_t ip=0 ; ip<aps; ip++){
-      typename DERIVED::PackedDoubleType paci;
-      ACCUMULATOR::neutralize(paci);
-      Accumulate<ACCUMULATOR,1,packLevel-1>::apply(ap[ip],paci);
-      ACCUMULATOR::apply(paci,packedAccumulator);
+    // Number of packs entirely contained in the logical size. The last pack
+    // may be partial (padding) and is then handled by the scalar remainder.
+    const size_t fullPacks=a.size()/DERIVED::packSize;
+    const size_t vectorPacks=(fullPacks<aps) ? fullPacks : aps;
+
+    for (size_t ip=0 ; ip<vectorPacks; ip++){
+      Accumulate<ACCUMULATOR,1,packLevel-1>::apply(ap[ip],packedAccumulator);
     }
 
     //Accumulation du pack resultant dans un scalaire
     for (int comp=0 ; comp<DERIVED::packSize ; comp++){
-      ACCUMULATOR::apply(packedAccumulator(comp),accumulator);
+      ACCUMULATOR::apply(packedAccumulator[comp],accumulator);
     }
 
-
     //Accumulation du reste (on ne passe pas dans le padding)
-    for (size_t i=(ap.size()-1)*DERIVED::packSize ; i<a.size() ; i++){
+    for (size_t i=vectorPacks*DERIVED::packSize ; i<a.size() ; i++){
       SCALAR_TYPE aci;
       ACCUMULATOR::neutralize(aci);
       Accumulate<ACCUMULATOR,packLevel,packLevel-1>::apply(a[i],aci);
@@ -161,7 +162,7 @@ struct AccumulatePadding<ACCUMULATOR,packLevel,packLevel>{
 
       //Accumulation du pack resultant dans un scalaire
       for (int comp=lsy ; comp<DERIVED::packSize ; comp++){
-        ACCUMULATOR::apply(packedAccumulator(comp),accumulator);
+        ACCUMULATOR::apply(packedAccumulator[comp],accumulator);
       }
     }
   }
@@ -330,13 +331,17 @@ inline double dotAssumeZeroPadding(const BaseArray<DERIVED> & baLeft, const Base
   
   const int lvsize=lv.size();
 
-  double result = 0.0;
+  // Accumulate a full vector across the whole loop, then perform a single
+  // horizontal reduction. Doing a horizontal sum at every iteration (as the
+  // original code did) serializes the reduction and defeats SIMD.
+  typename DERIVED::PackedRealType psum(0.0);
   for (int i=0; i<lvsize ; i++){
-    typename DERIVED::PackedRealType psum(0.0);
     psum += lv[i] * rv[i];
-    for (int j=0; j<psum.size() ; j++){
-      result += psum(j);
-    }
+  }
+
+  double result = 0.0;
+  for (int j=0; j<psum.size() ; j++){
+    result += psum[j];
   }
   
   return result;

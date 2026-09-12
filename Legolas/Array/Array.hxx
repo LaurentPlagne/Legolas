@@ -5,6 +5,7 @@
 #include <cstring>
 #include <algorithm>
 #include <stdexcept>
+#include <type_traits>
 #include "Legolas/Allocator.hxx"
 #include "Legolas/Array/ArrayShape.hxx"
 #include "stringConvert.hxx"
@@ -156,6 +157,12 @@ namespace Legolas{
   class Array : public BaseArray< Array<SCALAR_TYPE,LEVEL,PACK_SIZE,PACK_LEVEL> >{
 
   public:
+    // The raw aligned allocator used by Array never constructs nor destroys
+    // elements: RealType must therefore be trivially copyable (memcpy/memset
+    // based assignment and bulk copies are used throughout).
+    static_assert(std::is_trivially_copyable<SCALAR_TYPE>::value,
+                  "Legolas::Array<RealType> requires a trivially copyable RealType");
+
     typedef SCALAR_TYPE RealType;
     typedef ArrayShape<PACK_SIZE,PACK_LEVEL,LEVEL> Shape;
     typedef const ArrayShape<PACK_SIZE,PACK_LEVEL,LEVEL> & ConstShapeRef;
@@ -184,7 +191,16 @@ namespace Legolas{
     {
     }
 
-    Array( Array && ) = default;
+    // Ownership transfer: the moved-from array must not keep owning the buffer,
+    // otherwise both destructors would free the same allocation (double free).
+    Array( Array && other ) noexcept:
+      shape_(other.shape_),
+      owner_(other.owner_),
+      dataPtr_(other.dataPtr_)
+    {
+      other.owner_=false;
+      other.dataPtr_=0;
+    }
 
 
     static inline void dataInitialize(const Shape & s, RealType * dataPtr, Array & a){
@@ -333,6 +349,11 @@ namespace Legolas{
 
 
     void allFill(RealType value){
+      if (this->flatSize() < Legolas::StaticScheduler::parallel_threshold_from_env()){
+        std::fill(this->dataPtr_, this->dataPtr_ + this->flatSize(), value);
+        return;
+      }
+
       const size_t chunkSize=4*1000;
       const size_t nChunks=this->flatSize()/chunkSize;
 
@@ -386,6 +407,11 @@ namespace Legolas{
     Array & operator= (const Array & right){
       if (this->dataPtr_!=right.dataPtr_){
         assert(this->shape_==right.shape_);
+        if (this->flatSize() < Legolas::StaticScheduler::parallel_threshold_from_env()){
+          std::memcpy(this->dataPtr_, right.dataPtr_, this->flatSize() * sizeof(RealType));
+          return *this;
+        }
+
         const size_t chunkSize=4000;
         const size_t nChunks=this->flatSize()/chunkSize;
         const int parallelChunks=std::max((int(nChunks)-1),0);
@@ -416,6 +442,11 @@ namespace Legolas{
     template <class DERIVED>
     Array & operator= (const ParallelArray<DERIVED> & right){
       assert(this->shape()==right.getArray().shape());
+
+      if (this->flatSize() < Legolas::StaticScheduler::parallel_threshold_from_env()){
+        std::memcpy(this->dataPtr_, right.getArray().dataPtr_, this->flatSize() * sizeof(RealType));
+        return *this;
+      }
 
       const size_t chunkSize=4*1000;
       const size_t nChunks=this->flatSize()/chunkSize;

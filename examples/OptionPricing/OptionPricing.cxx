@@ -264,9 +264,17 @@ int main(int argc, char* argv[]) {
     std::cout << "    Throughput:     " << std::fixed << std::setprecision(0) << opts_per_sec_scalar << " options/sec" << std::endl;
 
     // -------------------------------------------------------------------------
-    // 2. Legolas++ SIMD Single-Thread (PACK_SIZE = 4, ARM NEON / AVX2)
+    // 2. Legolas++ SIMD Single-Thread (hardware width: NEON/SSE=4, AVX2=8,
+    //    AVX-512=16)
     // -------------------------------------------------------------------------
-    using SimdArray = Legolas::Array<float, 2, 4, 2>;
+#if defined(__AVX512F__)
+    const int PACK_SIZE = 16;
+#elif defined(__AVX2__)
+    const int PACK_SIZE = 8;
+#else
+    const int PACK_SIZE = 4;
+#endif
+    using SimdArray = Legolas::Array<float, 2, PACK_SIZE, 2>;
     SimdArray V_simd(NUM_OPTIONS, N);
     SimdArray D_simd(NUM_OPTIONS, N);
     SimdArray U_simd(NUM_OPTIONS, N);
@@ -302,7 +310,7 @@ int main(int argc, char* argv[]) {
     double opts_per_sec_simd = double(NUM_OPTIONS) / (time_simd_ms * 1e-3);
     double speedup_simd = time_scalar_ms / time_simd_ms;
 
-    std::cout << "\n[2] Legolas++ DLI SIMD (P=4, Single Core):" << std::endl;
+    std::cout << "\n[2] Legolas++ DLI SIMD (P=" << PACK_SIZE << ", Single Core):" << std::endl;
     std::cout << "    Execution Time: " << std::fixed << std::setprecision(2) << time_simd_ms << " ms" << std::endl;
     std::cout << "    Throughput:     " << std::fixed << std::setprecision(0) << opts_per_sec_simd << " options/sec" << std::endl;
     std::cout << "    Speedup:        " << std::fixed << std::setprecision(2) << speedup_simd << "x vs Scalar Baseline" << std::endl;
@@ -404,10 +412,10 @@ int main(int argc, char* argv[]) {
     std::cout << "  Scalar Baseline (P=1)       | " << std::setw(9) << std::fixed << std::setprecision(2) << time_scalar_ms
               << " | " << std::setw(7) << "1.00x"
               << "  | " << std::setw(15) << std::fixed << std::setprecision(0) << opts_per_sec_scalar << std::endl;
-    std::cout << "  Legolas DLI SIMD (P=4)      | " << std::setw(9) << std::fixed << std::setprecision(2) << time_simd_ms
+    std::cout << "  Legolas DLI SIMD (P=" << PACK_SIZE << ")     | " << std::setw(9) << std::fixed << std::setprecision(2) << time_simd_ms
               << " | " << std::setw(7) << std::fixed << std::setprecision(2) << speedup_simd << "x"
               << "  | " << std::setw(15) << std::fixed << std::setprecision(0) << opts_per_sec_simd << std::endl;
-    std::cout << "  Legolas DLI Multi-Core (P=4)| " << std::setw(9) << std::fixed << std::setprecision(2) << time_par_ms
+    std::cout << "  Legolas DLI Multi-Core (P=" << PACK_SIZE << ")| " << std::setw(9) << std::fixed << std::setprecision(2) << time_par_ms
               << " | " << std::setw(7) << std::fixed << std::setprecision(2) << speedup_par << "x"
               << "  | " << std::setw(15) << std::fixed << std::setprecision(0) << opts_per_sec_par << std::endl;
     std::cout << "================================================================================\n" << std::endl;

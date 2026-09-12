@@ -5,7 +5,6 @@ project (LEGOLAS
   LANGUAGES CXX
 )
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MACOSX_RPATH ON)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -17,27 +16,66 @@ set ( CMAKE_MODULE_PATH
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Opt-in build knobs. The defaults keep release builds fast while avoiding
+# the previous pitfalls: Debug was silently compiled with -O3, vectorization
+# reports were always emitted and -march=native was always forced.
+option(LEGOLAS_NATIVE_OPTIMIZATION
+  "Tune the build for the host CPU (-march=native / -mtune=native)" ON)
+option(LEGOLAS_VECTORIZATION_REPORT
+  "Emit compiler vectorization reports (noisy, slows down compilation)" OFF)
+option(LEGOLAS_VERBOSE_MAKEFILE
+  "Enable verbose makefiles" OFF)
+
+if (LEGOLAS_VERBOSE_MAKEFILE)
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+endif()
+
+# Release optimization level. Generator expressions keep Debug builds
+# debuggable (no -O3) with both single- and multi-config generators.
+set(LEGOLAS_RELEASE_OPT_FLAG $<$<NOT:$<CONFIG:Debug>>:-O3>)
+
 if (MSVC)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  set(CMAKE_CXX_FLAGS "/O2 /W3 /EHsc /D_USE_MATH_DEFINES ${CMAKE_CXX_FLAGS}")
+  add_compile_options(/W3 /EHsc)
+  add_compile_options($<$<NOT:$<CONFIG:Debug>>:/O2>)
   add_definitions(-D_USE_MATH_DEFINES)
 else()
-  set ( LEGOLAS_CXX_Debug_FLAGS   "-g3")
-  set ( LEGOLAS_CXX_Release_FLAGS "-g")
+  add_compile_options(-Wall -Wno-deprecated-declarations)
 
   if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    if (CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64")
-      set ( CMAKE_CXX_FLAGS " -O3 -mtune=native -Rpass-analysis=loop-vectorize -fno-slp-vectorize -Rpass=loop-vectorize ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
-    else()
-      set ( CMAKE_CXX_FLAGS " -O3 -mtune=native -march=native -Rpass-analysis=loop-vectorize -fno-slp-vectorize -Rpass=loop-vectorize ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
+    add_compile_options(${LEGOLAS_RELEASE_OPT_FLAG})
+    add_compile_options(-fno-slp-vectorize)
+    if (LEGOLAS_NATIVE_OPTIMIZATION)
+      add_compile_options($<$<NOT:$<CONFIG:Debug>>:-mtune=native>)
+      if (NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64")
+        add_compile_options($<$<NOT:$<CONFIG:Debug>>:-march=native>)
+      endif()
+    endif()
+    if (LEGOLAS_VECTORIZATION_REPORT)
+      add_compile_options(-Rpass-analysis=loop-vectorize -Rpass=loop-vectorize)
     endif()
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set ( CMAKE_CXX_FLAGS " -O3 -mtune=native -march=native  -fopt-info-vec-all -funroll-loops -ftree-vectorize ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
+    add_compile_options(${LEGOLAS_RELEASE_OPT_FLAG})
+    add_compile_options($<$<NOT:$<CONFIG:Debug>>:-funroll-loops>
+                        $<$<NOT:$<CONFIG:Debug>>:-ftree-vectorize>)
+    if (LEGOLAS_NATIVE_OPTIMIZATION)
+      add_compile_options($<$<NOT:$<CONFIG:Debug>>:-mtune=native>
+                          $<$<NOT:$<CONFIG:Debug>>:-march=native>)
+    endif()
+    if (LEGOLAS_VECTORIZATION_REPORT)
+      add_compile_options(-fopt-info-vec-all)
+    endif()
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-    set ( CMAKE_CXX_FLAGS " -O3  -fno-alias -mavx2 -xHost -qopt-report=5  ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
+    add_compile_options(${LEGOLAS_RELEASE_OPT_FLAG} -fno-alias)
+    if (LEGOLAS_NATIVE_OPTIMIZATION)
+      add_compile_options($<$<NOT:$<CONFIG:Debug>>:-mavx2>
+                          $<$<NOT:$<CONFIG:Debug>>:-xHost>)
+    endif()
+    if (LEGOLAS_VECTORIZATION_REPORT)
+      add_compile_options(-qopt-report=5)
+    endif()
   endif()
 
-  set ( CMAKE_CXX_FLAGS "-Wall -Wno-deprecated-declarations ${LEGOLAS_CXX_${CMAKE_BUILD_TYPE}_FLAGS} ${CMAKE_CXX_FLAGS}" )
   add_definitions(-D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L)
 endif()
 

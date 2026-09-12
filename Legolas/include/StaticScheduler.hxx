@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <chrono>
 
 #if defined(__x86_64__) || defined(_M_X64)
@@ -25,6 +26,45 @@ namespace Legolas {
 namespace StaticScheduler {
 
 struct split {};
+
+// Number of worker threads requested through the environment
+// (LEGOLAS_NUM_THREADS, falling back to OMP_NUM_THREADS).
+// Returns -1 when nothing is set.
+inline int num_threads_from_env() {
+  const char * pSTN = std::getenv("LEGOLAS_NUM_THREADS");
+  if (pSTN == nullptr) {
+    pSTN = std::getenv("OMP_NUM_THREADS");
+  }
+  if (pSTN == nullptr) return -1;
+  const int result = std::atoi(pSTN);
+  return (result >= 1) ? result : -1;
+}
+
+// Number of spin-wait iterations before a worker/caller goes to sleep.
+// Can be tuned with LEGOLAS_SPIN_COUNT (0 forces immediate sleeping).
+inline int spin_count_from_env() {
+  const char * p = std::getenv("LEGOLAS_SPIN_COUNT");
+  if (p == nullptr) return 4000;
+  const int result = std::atoi(p);
+  return (result >= 0) ? result : 4000;
+}
+
+// Minimum amount of cheap, independent items below which bulk operations
+// (Array fill/assign, chunked loops) stay sequential. Expressed in scalar
+// elements; can be tuned with LEGOLAS_PARALLEL_THRESHOLD.
+inline std::size_t parallel_threshold_from_env() {
+  const char * p = std::getenv("LEGOLAS_PARALLEL_THRESHOLD");
+  if (p == nullptr) return 32768;
+  const long result = std::atol(p);
+  return (result >= 0) ? static_cast<std::size_t>(result) : 32768u;
+}
+
+// True while the calling thread executes a scheduler task. Used to avoid
+// nested dispatch (the pool shares one current work item at a time).
+inline bool & in_parallel_region() {
+  static thread_local bool value = false;
+  return value;
+}
 
 template <typename Value>
 class blocked_range {
@@ -135,6 +175,11 @@ public:
       return;
     }
 
+    // Serialize parallel regions issued concurrently by distinct user
+    // threads. Re-entrant calls from pool workers never reach this point
+    // (see parallel_for).
+    std::lock_guard<std::mutex> dispatch_lock(dispatch_mutex_);
+
     const int bg_workers = num_threads_ - 1;
     remaining_workers_.store(bg_workers, std::memory_order_relaxed);
     current_work_.store(work, std::memory_order_release);
@@ -149,12 +194,16 @@ public:
     }
 
     // Calling thread acts as worker 0
-    work->execute(0);
+    {
+      in_parallel_region() = true;
+      work->execute(0);
+      in_parallel_region() = false;
+    }
 
     // Wait for all background workers: hybrid spin-then-sleep
     int spins = 0;
     while (remaining_workers_.load(std::memory_order_acquire) > 0) {
-      if (++spins < 4000) {
+      if (++spins < spin_count_) {
         LEGOLAS_CPU_PAUSE();
       } else {
         std::unique_lock<std::mutex> lock(done_mutex_);
@@ -168,8 +217,12 @@ public:
 private:
   StaticThreadPool()
       : num_threads_(0), stop_(false), generation_(0),
-        remaining_workers_(0), sleeping_workers_(0), current_work_(nullptr) {
-    int default_n = static_cast<int>(std::thread::hardware_concurrency());
+        remaining_workers_(0), sleeping_workers_(0), current_work_(nullptr),
+        spin_count_(spin_count_from_env()) {
+    int default_n = num_threads_from_env();
+    if (default_n < 1) {
+      default_n = static_cast<int>(std::thread::hardware_concurrency());
+    }
     if (default_n < 1) default_n = 1;
     setNumThreads(default_n);
   }
@@ -201,7 +254,7 @@ private:
       // 1. Fast spin-wait for new work
       int spins = 0;
       bool got_work = false;
-      while (spins < 4000) {
+      while (spins < spin_count_) {
         uint64_t gen = generation_.load(std::memory_order_acquire);
         if (gen > local_gen) {
           local_gen = gen;
@@ -230,7 +283,9 @@ private:
       // 3. Execute work
       IWork* work = current_work_.load(std::memory_order_acquire);
       if (work) {
+        in_parallel_region() = true;
         work->execute(thread_id);
+        in_parallel_region() = false;
       }
 
       // 4. Signal completion
@@ -248,7 +303,9 @@ private:
   std::atomic<int> remaining_workers_;
   std::atomic<int> sleeping_workers_;
   std::atomic<IWork*> current_work_;
+  int spin_count_;
 
+  std::mutex dispatch_mutex_;
   std::mutex cv_mutex_;
   std::condition_variable cv_;
 
@@ -276,6 +333,14 @@ struct task_scheduler_init {
 template <typename Range, typename Body, typename Partitioner = auto_partitioner>
 inline void parallel_for(const Range& range, const Body& body, Partitioner = Partitioner()) {
   if (range.empty()) return;
+
+  // Nested parallel region (issued from inside a scheduler task): execute
+  // inline. The pool only tracks a single current work item, so dispatching
+  // recursively would corrupt the scheduler state.
+  if (in_parallel_region()) {
+    body(range);
+    return;
+  }
 
   auto& pool = StaticThreadPool::instance();
   const int nthreads = pool.getNumThreads();

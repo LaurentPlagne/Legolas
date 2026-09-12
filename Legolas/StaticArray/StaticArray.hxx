@@ -1,5 +1,16 @@
 #pragma once
 #include <array>
+
+// Portable "ignore vector dependencies" hint. Emitting the vendor specific
+// pragmas unconditionally triggered -Wunknown-pragmas on every compiler.
+#if defined(__clang__)
+#  define LEGOLAS_IVDEP _Pragma("clang loop vectorize(enable)")
+#elif defined(__GNUC__)
+#  define LEGOLAS_IVDEP _Pragma("GCC ivdep")
+#else
+#  define LEGOLAS_IVDEP
+#endif
+
 namespace Legolas {
 
 //    template<class T, int S,
@@ -30,7 +41,7 @@ namespace Legolas {
     struct RecursiveFunctions{
         static inline void copy(L & l , const R & r){
           l[I]=r[I];
-          RecursiveFunctions<L,R,S,I+1>::load(l,r);
+          RecursiveFunctions<L,R,S,I+1>::copy(l,r);
         }
 //        static inline void store(const std::array<T,S> & a , L & l){
 //          p[I]=lI];
@@ -74,8 +85,7 @@ namespace Legolas {
         StaticArray(){}
 
         StaticArray(T value){
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) (*this)[i]=value;
         }
 
@@ -86,9 +96,7 @@ namespace Legolas {
 //#pragma clang loop vectorize(enable)
 //          for (size_t i = 0; i < S; i++) result[i] = other[i];
 //          std::array<T,S> result;
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
-#pragma vector aligned
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) a_[i] = other[i];
 //          a_=result;
         }
@@ -98,11 +106,9 @@ namespace Legolas {
         StaticArray(const StaticBaseArray<DERIVED> & rhs){
           const DERIVED & r=rhs.getArrayRef();
            T result[S];
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) result[i]=r[i];
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) a_[i]=result[i];
         }
 
@@ -119,8 +125,7 @@ namespace Legolas {
         template <class DERIVED>
         StaticArray & operator = (const StaticBaseArray<DERIVED> & rhs) {
           const DERIVED & r=rhs.getArrayRef();
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) a_[i]=r[i];
 //          std::array<T,S> result;
 //          for (size_t i = 0; i < S; i++) result[i]=r[i];
@@ -132,7 +137,6 @@ namespace Legolas {
         template <class DERIVED>
         StaticArray & operator += (const StaticBaseArray<DERIVED> & rhs) {
           const DERIVED & r=rhs.getArrayRef();
-          using Element=typename DERIVED::Element;
 
 //          const Element a0=a_[0]+r[0];
 //          const Element a1=a_[1]+r[1];
@@ -155,13 +159,9 @@ namespace Legolas {
 //          for (size_t i = 0; i < S; i++) a_[i]+=r[i];
 //          T result[S];
           std::array<T,S> result;
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) result[i]=a_[i]+r[i];
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
-#pragma ivdep
-#pragma assume(a_ % 64 == 0)
+LEGOLAS_IVDEP
 
           for (size_t i = 0; i < S; i++) a_[i]=result[i];
 //          a_=result;
@@ -173,11 +173,9 @@ namespace Legolas {
         StaticArray & operator -= (const StaticBaseArray<DERIVED> & rhs) {
           const DERIVED & r=rhs.getArrayRef();
           T result[S];
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) result[i]=a_[i]-r[i];
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) a_[i]=result[i];
 //          std::array<T,S> result(a_);
 //          for (size_t i = 0; i < S; i++) result[i]-=r[i];
@@ -191,11 +189,9 @@ namespace Legolas {
           const DERIVED & r=rhs.getArrayRef();
           T result[S];
 
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) result[i]=a_[i]*r[i];
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) a_[i]=result[i];
           return *this;
         }
@@ -205,11 +201,9 @@ namespace Legolas {
           const DERIVED & r=rhs.getArrayRef();
           T result[S];
 
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) result[i]=a_[i]/r[i];
-#pragma GCC ivdep
-#pragma clang loop vectorize(enable)
+LEGOLAS_IVDEP
           for (size_t i = 0; i < S; i++) a_[i]=result[i];
           return *this;
         }

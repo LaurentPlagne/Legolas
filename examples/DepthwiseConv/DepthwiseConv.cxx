@@ -110,9 +110,16 @@ int main(int argc, char* argv[]) {
     std::cout << "    Speed:  " << gflops_scalar << " GFlops" << std::endl;
 
     // ---------------------------------------------------------------
-    // 2. Legolas NEON SIMD (PACK_SIZE = 4, ARM64 NEON native float32x4)
+    // 2. Legolas SIMD (hardware width: NEON/SSE=4, AVX2=8, AVX-512=16)
     // ---------------------------------------------------------------
-    using NeonArray = Legolas::Array<float, 2, 4, 2>;
+#if defined(__AVX512F__)
+    const int PACK_SIZE = 16;
+#elif defined(__AVX2__)
+    const int PACK_SIZE = 8;
+#else
+    const int PACK_SIZE = 4;
+#endif
+    using NeonArray = Legolas::Array<float, 2, PACK_SIZE, 2>;
     NeonArray in_neon(C, S);
     NeonArray out_neon(C, S);
     in_neon.fill(1.0f);
@@ -130,7 +137,7 @@ int main(int argc, char* argv[]) {
     double gflops_neon = (18.0 * (H - 2) * (W - 2) * C) / (time_neon_ms * 1e6);
     double speedup_neon = time_scalar_ms / time_neon_ms;
 
-    std::cout << "\n[2] Legolas NEON SIMD (P=4, DLI nChw4c):" << std::endl;
+    std::cout << "\n[2] Legolas SIMD (P=" << PACK_SIZE << ", DLI nChw" << PACK_SIZE << "c):" << std::endl;
     std::cout << "    Time:    " << time_neon_ms << " ms" << std::endl;
     std::cout << "    Speed:   " << gflops_neon << " GFlops" << std::endl;
     std::cout << "    Speedup: " << speedup_neon << "x vs Scalar Baseline" << std::endl;

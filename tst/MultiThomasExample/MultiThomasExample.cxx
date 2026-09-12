@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <chrono>
 #include "UTILITES.hxx"
 #include "Legolas/Array/Array.hxx"
@@ -71,10 +72,18 @@ int main( int argc,  char *argv[] )
   D2D.fill(2.0);
 
   //Apply the ThomasSolver algorithm to all js.
-  auto start_time = std::chrono::high_resolution_clock::now();
+  //Warmup: page-in the allocations and let the thread pool spin up.
   Legolas::map(ThomasSolver(),D2D,U2D,L2D,B2D,X2D);
-  auto end_time = std::chrono::high_resolution_clock::now();
-  const double microsec=std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+
+  const int nsample=5;
+  double microsec=std::numeric_limits<double>::max();
+  for (int s=0 ; s<nsample ; s++){
+    auto start_time = std::chrono::high_resolution_clock::now();
+    Legolas::map(ThomasSolver(),D2D,U2D,L2D,B2D,X2D);
+    auto end_time = std::chrono::high_resolution_clock::now();
+    const double t=std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+    if (t<microsec) microsec=t;
+  }
   std::cout << "Time="<<microsec<<" us for solving ny="<<ny<<" Tridiagonal Sytems of size nx="<<nx<<std::endl;
   // Replace map with parmap to get a multi-threaded version
 //  Legolas::parmap(ThomasSolver(),D2D,U2D,L2D,B2D,X2D);

@@ -51,7 +51,6 @@ struct Sum3 {
 
       size_t npack=n/S;
 
-#pragma unroll
       for (size_t ip = 0; ip < npack; ip ++) {
         as[ip]+=bs[ip]+cs[ip];
       }
@@ -78,8 +77,6 @@ struct Axpy1 {
       size_t npack=n/S;
       const T val=3.0;
 
-#pragma clang loop vectorize(disable)
-#pragma unroll
       for (size_t ip = 0; ip < npack; ip ++) {
         as[ip]+=bs[ip]*val;
       }
@@ -106,7 +103,6 @@ struct Axpy2 {
       size_t npack=n/S;
       const T val=3.0;
 
-#pragma clang loop vectorize(disable)
       for (size_t ip = 0; ip < npack; ip ++) {
         as[ip]+=val*bs[ip];
       }

@@ -12,6 +12,8 @@
  */
 
 #include <cstdlib>
+#include <new>
+#include <fstream>
 #include "bitmap_image.hpp"
 #include "UTILITES.hxx"
 #include "Legolas/Array/Array.hxx"
@@ -369,10 +371,21 @@ inline void savePerf(const std::vector<int> & sizes,
 template <class AlgoBench>
 void goBench(void){
 //    std::vector<int> sizes=makeSizes();
-    std::vector<int> sizes={10,20,40,80,160,320,640,1280};
+    // Sizes above 320 made each of the two 4D arrays exceed several GB
+    // (256 images * 3 channels * nx^2 * 4 bytes) and crashed the process.
+    std::vector<int> sizes={10,20,40,80,160,320};
     const int nbPoints=sizes.size();
     std::vector<double> perfs(nbPoints);
-    for (int i=nbPoints-1 ; i>=0 ; i--) perfs[i]=AlgoBench::evalGflops(sizes[i]);
+    for (int i=nbPoints-1 ; i>=0 ; i--) {
+      try {
+        perfs[i]=AlgoBench::evalGflops(sizes[i]);
+      }
+      catch (const std::bad_alloc &) {
+        std::cerr << "[ImageFilter] allocation failed for nx=" << sizes[i]
+                  << ", skipping" << std::endl;
+        perfs[i]=0.0;
+      }
+    }
     std::string filename(AlgoBench::name());
     filename+=".dat";
     savePerf(sizes,perfs,filename);
@@ -396,8 +409,22 @@ int main(int argc, char** argv) {
     goBench< ConvolutionBench<Legolas::Array<RealType,4,4,4>, ParMap > >();
     goBench< ConvolutionBench<Legolas::Array<RealType,4,8,4>, ParMap > >();
 
+    // The image demo requires lena.bmp in the working directory. The binary
+    // used to crash when started from another directory (empty image).
     std::string file_name("lena.bmp");
+    {
+        std::ifstream probe(file_name.c_str());
+        if (!probe.good()) {
+            file_name = "tst/ImageFilter/lena.bmp";
+        }
+    }
     bitmap_image image(file_name);
+
+    if (image.width() == 0 || image.height() == 0) {
+        std::cerr << "[ImageFilter] lena.bmp not found: skipping the image demo "
+                  << "(benchmarks above are complete)" << std::endl;
+        return 0;
+    }
 
     const int nx = image.width();
     const int ny = image.height();
