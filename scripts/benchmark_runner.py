@@ -309,6 +309,13 @@ def aggregate_reports(json_files, out_md):
         dc_vals.append(f"**{val:.1f} GFlops**" if val > 0 else "—")
     lines.append("| **DepthwiseConv (128ch)** | Throughput | " + " | ".join(dc_vals) + " |")
 
+    # OptionPricing
+    op_vals = []
+    for d in datasets:
+        val = d.get("benchmarks", {}).get("OptionPricing", {}).get("parallel_ops", 0.0)
+        op_vals.append(f"**{val:,.0f} opt/s**" if val > 0 else "—")
+    lines.append("| **OptionPricing** (16k options) | Throughput | " + " | ".join(op_vals) + " |")
+
     content = "\n".join(lines)
     if out_md:
         with open(out_md, "w") as f:
@@ -316,20 +323,49 @@ def aggregate_reports(json_files, out_md):
         print(f"[✓] Saved aggregated report to: {out_md}")
     return content
 
+def update_doc_file(doc_path, table_md):
+    if not os.path.exists(doc_path):
+        print(f"[!] Warning: doc file {doc_path} does not exist.")
+        return
+    with open(doc_path, "r") as f:
+        doc_content = f.read()
+
+    start_tag = "<!-- BEGIN_BENCHMARK_RESULTS -->"
+    end_tag = "<!-- END_BENCHMARK_RESULTS -->"
+
+    if start_tag in doc_content and end_tag in doc_content:
+        # Strip header from table_md if needed, keep clean table
+        lines = [line for line in table_md.splitlines() if line.startswith("|")]
+        clean_table = "\n".join(lines)
+        pattern = re.compile(f"{re.escape(start_tag)}.*?{re.escape(end_tag)}", re.DOTALL)
+        new_block = f"{start_tag}\n{clean_table}\n{end_tag}"
+        updated_doc = pattern.sub(new_block, doc_content)
+        with open(doc_path, "w") as f:
+            f.write(updated_doc)
+        print(f"[✓] Successfully updated benchmark table in: {doc_path}")
+    else:
+        print(f"[!] Warning: Tags {start_tag} / {end_tag} not found in {doc_path}")
+
 def main():
     if "--aggregate" in sys.argv:
         idx = sys.argv.index("--aggregate")
         files = []
         out_md = None
+        update_doc = None
         i = idx + 1
         while i < len(sys.argv):
             if sys.argv[i] == "--markdown" and i + 1 < len(sys.argv):
                 out_md = sys.argv[i + 1]
                 i += 2
+            elif sys.argv[i] == "--update-doc" and i + 1 < len(sys.argv):
+                update_doc = sys.argv[i + 1]
+                i += 2
             else:
                 files.append(sys.argv[i])
                 i += 1
         summary = aggregate_reports(files, out_md)
+        if update_doc:
+            update_doc_file(update_doc, summary)
         print("\n" + summary)
         return
 
