@@ -34,8 +34,6 @@ The machine balance point $I_{\text{knee}} = \frac{P_{\text{peak}}}{B_{\text{pea
 
 Below is the analytical model and hardware efficiency breakdown for every Legolas++ benchmark:
 
-<div class="table-responsive" markdown="1">
-
 | Workload | Arithmetic Intensity ($I = W/Q$) | Limiting Regime | Measured Performance | Peak Hardware Efficiency |
 | :--- | :---: | :---: | :---: | :---: |
 | **MultiThomas**<br><small>$N_x=512$ tridiagonal</small> | **0.65 FLOP/B**<br><small>13 FLOPs / 20 B</small> | Memory (DRAM/VRAM) | GPU: **126.6 GFlops**<br>CPU: **69.4 GFlops** | <span class="badge-peak">81% GPU VRAM</span><br><span class="badge-sub">44.5% CPU DRAM</span> |
@@ -44,8 +42,6 @@ Below is the analytical model and hardware efficiency breakdown for every Legola
 | **DepthwiseConv**<br><small>128 ch MobileNet</small> | **2.25 FLOP/B**<br><small>18 FLOPs / 8 B</small> | Balanced (L2 Knee) | GPU: **628.4 GFlops**<br>CPU: **212.3 GFlops** | <span class="badge-peak">85% L2 Bandwidth</span><br><span class="badge-sub">84.9% CPU compute</span> |
 | **OptionPricing**<br><small>16k contracts</small> | **~18 FLOP/B**<br><small>900 FLOPs / 512 B</small> | Compute (L3 Cache) | CPU: **1.5M opts/s**<br><small>(12 threads)</small> | <span class="badge-peak">88% Multi-Core FMA</span><br><span class="badge-sub">100% L3 resident</span> |
 | **Reductions**<br><small>`squaredNorm`</small> | **0.50 FLOP/B**<br><small>2 FLOPs / 4 B</small> | VRAM Streaming | GPU: **0.20 ms**<br><small>(16.7M floats)</small> | <span class="badge-peak">75% GDDR6 Peak</span><br><span class="badge-sub">335.5 GB/s bus rate</span> |
-
-</div>
 
 ---
 
@@ -102,8 +98,10 @@ Below is the analytical model and hardware efficiency breakdown for every Legola
 
 * **Computational Work**:
   * Direct Form II second-order section:
-    $$w[n] = x[n] - a_1 w[n-1] - a_2 w[n-2]$$
-    $$y[n] = b_0 w[n] + b_1 w[n-1] + b_2 w[n-2]$$
+    $$\begin{aligned}
+    w[n] &= x[n] - a_1 w[n-1] - a_2 w[n-2] \\
+    y[n] &= b_0 w[n] + b_1 w[n-1] + b_2 w[n-2]
+    \end{aligned}$$
   * Arithmetic operations: 5 multiplies + 4 additions (using fused multiply-adds) = $W = 8 \text{ FLOPs/sample}$.
 * **Memory Traffic**:
   * Read input $x[n]$: 4 Bytes.

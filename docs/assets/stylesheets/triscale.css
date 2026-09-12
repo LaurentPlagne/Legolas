@@ -402,17 +402,41 @@
   width: 100% !important;
   font-size: 0.82rem !important;
   border-collapse: collapse;
-  margin: 1.2rem 0;
+  margin: 0.8rem 0;
 }
 
-.md-typeset__table,
-.table-responsive {
+.md-typeset__table {
   width: 100% !important;
   max-width: 100% !important;
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch;
-  margin: 1.2rem 0;
+  margin: 1rem 0 1.5rem 0;
   border-radius: 8px;
+  border: 1px solid #223447;
+}
+
+/* Eliminate nested scrollbars if inside a custom container */
+.table-responsive {
+  overflow: visible !important;
+}
+
+/* Custom sleek scrollbar for table container */
+.md-typeset__table::-webkit-scrollbar {
+  height: 5px;
+}
+
+.md-typeset__table::-webkit-scrollbar-track {
+  background: #0f1722;
+  border-radius: 3px;
+}
+
+.md-typeset__table::-webkit-scrollbar-thumb {
+  background: #253549;
+  border-radius: 3px;
+}
+
+.md-typeset__table::-webkit-scrollbar-thumb:hover {
+  background: #177272;
 }
 
 .md-typeset table:not([class]) th {
@@ -435,11 +459,23 @@
   line-height: 1.4;
 }
 
+/* Prevent awkward word wrapping in table code & identifiers */
+.md-typeset table:not([class]) code {
+  white-space: nowrap !important;
+  font-size: 0.80rem !important;
+}
+
+.md-typeset table:not([class]) td:first-child,
+.md-typeset table:not([class]) th:first-child {
+  white-space: nowrap !important;
+}
+
 .md-typeset table:not([class]) td small {
   display: block;
   font-size: 0.72rem;
   color: #94a3b8;
   margin-top: 0.15rem;
+  white-space: nowrap;
 }
 
 .badge-peak {
@@ -461,4 +497,5 @@
   margin-top: 0.2rem;
   white-space: nowrap;
 }
+
 

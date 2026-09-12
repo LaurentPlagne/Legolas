@@ -17,8 +17,6 @@ The benchmark evaluates the Thomas elimination algorithm solving $N_y = N_x^2$ t
 
 ### Throughput & Speedup Summary
 
-<div class="table-responsive" markdown="1">
-
 | Configuration | Pack Size ($P$) | Cores | Throughput ($N_x=512$) | Peak Rate | Speedup |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Scalar Sequential** | $P=1$ | 1 Core | 2.10 GFlops | 6.66 GFlops | 1.00x |
@@ -27,8 +25,6 @@ The benchmark evaluates the Thomas elimination algorithm solving $N_y = N_x^2$ t
 | **Scalar Multi-Thread** | $P=1$ | 8 Cores | 16.48 GFlops | 18.43 GFlops | **7.85x** |
 | **Legolas NEON Multi-Thread** | $P=4$ | 8 Cores | 51.72 GFlops | 52.40 GFlops | **24.63x** |
 | **Legolas Hybrid SIMD + Work-Stealing** | $P=8$ | 8 Cores | **69.15 GFlops** | **69.40 GFlops** | **33.05x** |
-
-</div>
 
 ---
 
@@ -39,8 +35,6 @@ Testing multi-core thread scaling from 1 to 8 threads on the Apple M1 Max Firest
 <p align="center">
   <img src="../../assets/images/Thomas_speedup.png" alt="Multi-Core Speedup (Apple M1 Max)" width="800"/>
 </p>
-
-<div class="table-responsive" markdown="1">
 
 | Worker Threads | Measured Throughput | Speedup Factor | Parallel Efficiency |
 | :---: | :---: | :---: | :---: |
@@ -53,13 +47,9 @@ Testing multi-core thread scaling from 1 to 8 threads on the Apple M1 Max Firest
 | **7** | 62.46 GFlops | 6.52x | **93.1%** |
 | **8** | 69.15 GFlops | 7.22x | **90.2%** |
 
-</div>
-
 ---
 
 ## 3. Real-World Showcases Summary
-
-<div class="table-responsive" markdown="1">
 
 | Workload / Domain | Metric | Scalar Baseline | Legolas NEON (M1 Max) | Speedup | Roofline Ceiling |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -68,8 +58,6 @@ Testing multi-core thread scaling from 1 to 8 threads on the Apple M1 Max Firest
 | **Audio IIR Biquad**<br><small>Audio DSP (64 Tracks)</small> | MSamples/s | 397.9 MS/s | **5,832.2 MS/s** | **14.66x** | <span class="badge-peak">100% FMA issue</span> |
 | **Video Pipeline (CPU)**<br><small>Vision / NVR (32 Feeds)</small> | FPS | 1,579.6 FPS | **8,442.1 FPS** | **5.34x** | <span class="badge-sub">Compute & L2 bound</span> |
 | **Video Pipeline (Metal GPU)**<br><small>Vision / NVR (32 Feeds)</small> | FPS | 302.1 FPS | **17,263.9 FPS** | **57.15x** | <span class="badge-peak">79.5% UMA bus</span> |
-
-</div>
 
 ---
 
