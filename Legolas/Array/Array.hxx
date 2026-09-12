@@ -428,6 +428,22 @@ namespace Legolas{
       return *this;
     }
 
+    Array & operator= (Array && other) noexcept {
+      if (this != &other) {
+        if (this->owner_) {
+          Allocator allocator;
+          allocator.deallocate(this->dataPtr_, this->shape_.dataSize_);
+        }
+        this->shape_ = other.shape_;
+        this->owner_ = other.owner_;
+        this->dataPtr_ = other.dataPtr_;
+
+        other.owner_ = false;
+        other.dataPtr_ = nullptr;
+      }
+      return *this;
+    }
+
 
     const Shape & shape( void ) const { return shape_;}
 

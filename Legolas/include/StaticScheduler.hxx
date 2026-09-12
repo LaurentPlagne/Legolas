@@ -53,10 +53,13 @@ inline int spin_count_from_env() {
 // (Array fill/assign, chunked loops) stay sequential. Expressed in scalar
 // elements; can be tuned with LEGOLAS_PARALLEL_THRESHOLD.
 inline std::size_t parallel_threshold_from_env() {
-  const char * p = std::getenv("LEGOLAS_PARALLEL_THRESHOLD");
-  if (p == nullptr) return 32768;
-  const long result = std::atol(p);
-  return (result >= 0) ? static_cast<std::size_t>(result) : 32768u;
+  static const std::size_t val = []() -> std::size_t {
+    const char * p = std::getenv("LEGOLAS_PARALLEL_THRESHOLD");
+    if (p == nullptr) return 32768u;
+    const long result = std::atol(p);
+    return (result >= 0) ? static_cast<std::size_t>(result) : 32768u;
+  }();
+  return val;
 }
 
 // True while the calling thread executes a scheduler task. Used to avoid
@@ -65,6 +68,14 @@ inline bool & in_parallel_region() {
   static thread_local bool value = false;
   return value;
 }
+
+// RAII guard ensuring in_parallel_region is safely restored even if work throws
+struct InParallelRegionGuard {
+  InParallelRegionGuard() { in_parallel_region() = true; }
+  ~InParallelRegionGuard() { in_parallel_region() = false; }
+  InParallelRegionGuard(const InParallelRegionGuard&) = delete;
+  InParallelRegionGuard& operator=(const InParallelRegionGuard&) = delete;
+};
 
 template <typename Value>
 class blocked_range {
@@ -195,9 +206,8 @@ public:
 
     // Calling thread acts as worker 0
     {
-      in_parallel_region() = true;
+      InParallelRegionGuard guard;
       work->execute(0);
-      in_parallel_region() = false;
     }
 
     // Wait for all background workers: hybrid spin-then-sleep
@@ -283,9 +293,8 @@ private:
       // 3. Execute work
       IWork* work = current_work_.load(std::memory_order_acquire);
       if (work) {
-        in_parallel_region() = true;
+        InParallelRegionGuard guard;
         work->execute(thread_id);
-        in_parallel_region() = false;
       }
 
       // 4. Signal completion

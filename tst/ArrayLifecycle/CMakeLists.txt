@@ -1,0 +1,2 @@
+add_executable(ArrayLifecycle ArrayLifecycle.cxx)
+target_link_libraries(ArrayLifecycle Legolas)

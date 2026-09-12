@@ -25,8 +25,12 @@ if (LEGOLAS_INTERFACE_OPTIMIZE)
     target_compile_options(Legolas INTERFACE
       $<$<NOT:$<CONFIG:Debug>>:-O3>
       $<$<CXX_COMPILER_ID:GNU>:$<$<NOT:$<CONFIG:Debug>>:-march=native>>
-      $<$<CXX_COMPILER_ID:Clang>:$<$<NOT:$<CONFIG:Debug>>:-march=native>>
     )
+    if (NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64")
+      target_compile_options(Legolas INTERFACE
+        $<$<CXX_COMPILER_ID:Clang>:$<$<NOT:$<CONFIG:Debug>>:-march=native>>
+      )
+    endif()
   endif()
 endif()
 
