@@ -370,6 +370,13 @@ Legolas++ is based on the research presented at **ACM SIGPLAN ARRAY 2017**:
 > *Proceedings of the 4th ACM SIGPLAN International Workshop on Libraries, Languages, and Compilers for Array Programming (ARRAY 2017)*, Pages 47–54.  
 > DOI: [10.1145/3091966.3091973](https://doi.org/10.1145/3091966.3091973) · Available on [ResearchGate](https://www.researchgate.net/publication/317485219_Portable_vectorization_and_parallelization_of_C_multi-dimensional_array_computations)
 
+The foundational multi-target abstraction and data-structure concepts of Legolas++ originated in the PhD thesis of Wilfried Kirschenmann:
+
+> [**Vers des noyaux de calcul intensif pérennes**](https://theses.hal.science/tel-00844673) (*Towards sustainable high performance compute kernels*)  
+> Wilfried Kirschenmann (directed by Stéphane Vialle, advised by Laurent Plagne)  
+> *PhD Thesis in Computer Science, Université de Lorraine (2012)*, NNT: 2012LORR0203.  
+> Available on [HAL Theses](https://theses.hal.science/tel-00844673) · [theses.fr](https://theses.fr/2012LORR0203)
+
 ---
 
 ## License
