@@ -79,9 +79,9 @@ nav:
       - Data Layout Interleaving (DLI): core-concepts/data-layout-interleaving.md
       - Hybrid SIMD & Work-Stealing: core-concepts/hybrid-parallelism.md
   - Benchmarks:
-      - Roofline Performance Model: benchmarks/roofline-model.md
-      - Apple Silicon (M1 Max ARM64): benchmarks/apple-silicon-m1.md
-      - Cross-Platform & Cloud: benchmarks/cross-platform.md
+      - 📐 Roofline Performance Model: benchmarks/roofline-model.md
+      - 🍏 Apple Silicon (M1 Max ARM64): benchmarks/apple-silicon-m1.md
+      - 🌐 Cross-Platform & Cloud Runs: benchmarks/cross-platform.md
   - API Reference:
       - Legolas::Array: api/array.md
       - Parallel Algorithms (map / parmap): api/algorithms.md

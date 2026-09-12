@@ -2,6 +2,9 @@
 
 This page provides the empirical performance evaluation of Legolas++ on modern ARM64 architecture (**Apple M1 Max**, 8 Firestorm Performance Cores + 2 Icestorm Efficiency Cores, 64 GB Unified Memory, macOS 15).
 
+> 📐 **Physical Hardware Limits & Roofline Modeling**  
+> To understand why Legolas++ reaches these specific numbers and how close they are to the absolute physical limits of the silicon (Apple M1 Max 240–400 GB/s Unified Memory bandwidth and FMA vector issue pipelines), read the dedicated [**Roofline Performance Model & Hardware Efficiency Guide**](roofline-model.md).
+
 ---
 
 ## 1. Tridiagonal Recurrence Benchmark (MultiThomas)
@@ -48,13 +51,13 @@ Testing multi-core thread scaling from 1 to 8 threads on the Apple M1 Max Firest
 
 ## 3. Real-World Showcases Summary
 
-| Benchmark | Domain | Metric | Scalar Baseline | Legolas NEON + WorkStealing | Speedup | Max Error |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **MultiThomas** | Scientific Computing | GFlops | 2.10 GFlops | **69.40 GFlops** | **33.0x** | $0.00$ |
-| **Depthwise 2D Conv** | AI & Vision (MobileNet) | GFlops | 36.40 GFlops | **212.30 GFlops** | **5.83x** | $0.00$ |
-| **Audio IIR Biquad** | Audio DSP (64 Tracks) | MSamples/s | 397.9 MS/s | **5,832.2 MS/s** | **14.66x** | $0.00$ |
-| **Video Pipeline (CPU)** | Vision / NVR (32 Feeds) | FPS | 1,579.6 FPS | **8,442.1 FPS** (7.78 GPix/s) | **5.34x** | $< 10^{-7}$ |
-| **Video Pipeline (Metal GPU)** | Vision / NVR (32 Feeds) | FPS | 302.1 FPS | **17,263.9 FPS** (15.91 GPix/s) | **57.15x** | $< 10^{-7}$ |
+| Benchmark | Domain | Metric | Scalar Baseline | Legolas NEON + WorkStealing | Speedup | Hardware Ceiling (Roofline) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :---: |
+| **MultiThomas** | Scientific Computing | GFlops | 2.10 GFlops | **69.40 GFlops** | **33.0x** | **44.5% of DRAM limit** |
+| **Depthwise 2D Conv** | AI & Vision (MobileNet) | GFlops | 36.40 GFlops | **212.30 GFlops** | **5.83x** | **84.9% of L2/L3 cache bandwidth** |
+| **Audio IIR Biquad** | Audio DSP (64 Tracks) | MSamples/s | 397.9 MS/s | **5,832.2 MS/s** | **14.66x** | **100% of FMA issue slots** |
+| **Video Pipeline (CPU)** | Vision / NVR (32 Feeds) | FPS | 1,579.6 FPS | **8,442.1 FPS** (7.78 GPix/s) | **5.34x** | **Compute & L2 bound** |
+| **Video Pipeline (Metal GPU)** | Vision / NVR (32 Feeds) | FPS | 302.1 FPS | **17,263.9 FPS** (15.91 GPix/s) | **57.15x** | **79.5% of UMA memory bandwidth** |
 
 ---
 

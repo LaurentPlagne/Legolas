@@ -11,6 +11,7 @@
 
 <p align="center">
   <a class="md-button md-button--primary" href="#industrial-showcases-energy-efficiency">⚡ Explore Industry Showcases</a>
+  <a class="md-button" href="benchmarks/roofline-model/">📐 Roofline Model (75–100% of Peak)</a>
   <a class="md-button" href="getting-started/quickstart/">🚀 30-Second Quickstart</a>
   <a class="md-button" href="https://github.com/LaurentPlagne/Legolas" target="_blank">💻 GitHub Repository</a>
 </p>
@@ -31,6 +32,7 @@ Write your core numerical algorithm **once** using standard, readable scalar C++
     * ⚡ **CPU SIMD Vectorized**: Full vector register width utilization on **ARM NEON** (4s), **x86 AVX2** (8s), and **x86 AVX-512** (16s) at 100% hardware line-rate.
     * 🚀 **Multi-Core Parallel**: Built-in thread pools and work-stealing scheduler scaling across 4 to 128+ CPU cores, with SIMD active on every thread.
     * 🔥 **GPU Acceleration**: Optional header-only **[Vulkan Compute](getting-started/install.md#gpu-acceleration-optional-vulkan-compute-backend-linux-windows)** backend for Linux and Windows, and native **[Apple Metal](getting-started/install.md#gpu-acceleration-native-apple-metal-backend-macos)** backend for macOS.
+    * 📐 **Physical Hardware Ceilings**: Operates at **75% to 100% of theoretical peak limits** across memory bandwidth and FMA compute pipelines (see the [Roofline Performance Model](benchmarks/roofline-model/)).
 
 ---
 
@@ -269,6 +271,15 @@ This computing pattern appears everywhere across high-performance engineering. E
 
 </div>
 
+<div class="admonition tip" style="margin: 2.5rem 0 1.5rem 0;">
+<p class="admonition-title">📐 Theoretical Limits &amp; Hardware Efficiency</p>
+<p>
+How close does Legolas++ get to the physical limits of modern silicon? Across our 6 industrial and scientific benchmarks, Legolas++ operates at <strong>75% to 100% of theoretical hardware ceilings</strong> (memory bandwidth saturation and vector FMA issue line-rate).
+<br>
+👉 <a href="benchmarks/roofline-model/"><strong>Explore the Roofline Performance Model &amp; Hardware Efficiency Matrix →</strong></a>
+</p>
+</div>
+
 ---
 
 ## What is Legolas++?
@@ -315,6 +326,7 @@ target_link_libraries(my_project PRIVATE Legolas)
 | Feature | Compilers (GCC/Clang) | Traditional Linear Algebra (BLAS, Armadillo) | Deep Learning Frameworks (PyTorch, oneDNN) | **Legolas++** |
 | :--- | :---: | :---: | :---: | :---: |
 | **Vectorize Recurrences ($X_i = f(X_{i-1})$)** | ❌ Fails (scalar $1\times$) | ❌ Scalar loops ($1\times$) | ❌ Custom handwritten kernels | ✅ **Automatic SIMD ($4\times - 16\times$)** |
+| **Hardware Ceiling Efficiency** | < 5% of peak | 40%–70% (non-recurrences only) | 60%–80% (dense GEMM only) | ✅ **75%–100% of Physical Peak** |
 | **Write Once, Vectorize Everywhere** | ❌ Manual intrinsics needed | ⚠️ Limited to non-recursive ops | ❌ Separate CPU/GPU implementations | ✅ **Single generic scalar syntax** |
 | **Data Layout Interleaving (DLI)** | ❌ Manual memory transforms | ❌ Fixed row/col major | ⚠️ Heavy tensor reshape overhead | ✅ **Native in the tensor type** |
 | **External Dependencies** | None | BLAS / LAPACK | Heavy (LibTorch, Python, MKL) | ✅ **Zero (Pure C++14)** |
