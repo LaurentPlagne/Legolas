@@ -1,0 +1,140 @@
+name: Cross-Platform Performance Benchmarks
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  # ============================================================================
+  # 1. Linux x86_64 Benchmark (AVX2 + Multi-Core)
+  # ============================================================================
+  bench-linux:
+    name: "Benchmark: Linux x86_64 (AVX2)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq build-essential cmake ninja-build python3
+
+      - name: Configure CMake (Release with -march=native)
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-O3 -march=native"
+
+      - name: Build benchmarks
+        run: |
+          cmake --build build -j
+
+      - name: Run automated benchmark suite
+        run: |
+          python3 scripts/benchmark_runner.py build linux_bench.json linux_summary.md
+
+      - name: Run MultiThomas full resolution curve
+        run: |
+          (cd build/tst/MultiThomas && ./MultiThomas) || true
+          python3 tst/MultiThomas/plotPerfModern.py build/tst/MultiThomas || true
+
+      - name: Add summary to job output
+        run: |
+          cat linux_summary.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Linux benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x86-benchmarks
+          path: |
+            linux_bench.json
+            linux_summary.md
+            build/tst/MultiThomas/*.svg
+            build/tst/MultiThomas/*.html
+
+  # ============================================================================
+  # 2. macOS Apple Silicon Benchmark (ARM64 NEON + Metal GPU)
+  # ============================================================================
+  bench-macos:
+    name: "Benchmark: macOS Apple Silicon (NEON + Metal GPU)"
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake (Release with Apple Clang)
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-O3 -march=native"
+
+      - name: Build benchmarks
+        run: |
+          cmake --build build -j
+
+      - name: Run automated benchmark suite (CPU + Metal GPU)
+        run: |
+          python3 scripts/benchmark_runner.py build macos_bench.json macos_summary.md
+
+      - name: Run MultiThomas full resolution curve
+        run: |
+          (cd build/tst/MultiThomas && ./MultiThomas) || true
+          python3 tst/MultiThomas/plotPerfModern.py build/tst/MultiThomas || true
+
+      - name: Add summary to job output
+        run: |
+          cat macos_summary.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload macOS benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64-benchmarks
+          path: |
+            macos_bench.json
+            macos_summary.md
+            build/tst/MultiThomas/*.svg
+            build/tst/MultiThomas/*.html
+
+  # ============================================================================
+  # 3. Aggregation & Multi-Architecture Comparison
+  # ============================================================================
+  aggregate-report:
+    name: "Aggregate Multi-Architecture Comparison"
+    needs: [bench-linux, bench-macos]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-x86-benchmarks
+          path: artifacts/linux
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-arm64-benchmarks
+          path: artifacts/macos
+
+      - name: Generate unified cross-platform comparison
+        run: |
+          python3 scripts/benchmark_runner.py --aggregate \
+            artifacts/linux/linux_bench.json \
+            artifacts/macos/macos_bench.json \
+            --markdown comparison.md
+
+      - name: Publish comparison to GitHub Step Summary
+        run: |
+          cat comparison.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload final comparison report
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-cross-platform-report
+          path: comparison.md
