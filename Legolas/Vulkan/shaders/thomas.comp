@@ -1,0 +1,62 @@
+#version 450
+
+// Tridiagonal Thomas solver for an ensemble of independent systems.
+//
+// The CPU implementation vectorizes across P systems packed into SIMD
+// registers (DLI). On GPU each hardware thread replaces one SIMD lane:
+// a thread solves 4 systems at once using 128-bit vec4 accesses, which
+// amortizes loop/address arithmetic and improves memory-level parallelism.
+// The layout is transposed to [i][j] so neighbouring threads read
+// contiguous addresses.
+//
+// CPU reference (per system):
+//   s = D[0]; sm1 = 1/s; X[0] = B[0]*sm1;
+//   for i=1..N-1:
+//     S[i]   = U[i-1]*sm1;
+//     s      = D[i] - L[i]*S[i];
+//     X[i]   = B[i] - L[i]*X[i-1];
+//     sm1    = 1/s;
+//     X[i]  *= sm1;
+//   for i=N-2..0: X[i] -= S[i+1]*X[i+1];
+//
+// ny must be a multiple of 4. Dispatch: grid = (ceil((ny/4)/256), 1, 1)
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 0) readonly buffer DiagBuffer { vec4 diag[]; };
+layout(std430, binding = 1) readonly buffer UpperBuffer { vec4 upper[]; };
+layout(std430, binding = 2) readonly buffer LowerBuffer { vec4 lower[]; };
+layout(std430, binding = 3) readonly buffer RhsBuffer { vec4 rhs[]; };
+layout(std430, binding = 4) buffer SolBuffer { vec4 sol[]; };
+layout(std430, binding = 5) buffer ScratchBuffer { vec4 scratch[]; };
+
+layout(push_constant) uniform Params {
+    int N;
+    int ny;
+} params;
+
+void main() {
+    const int j = int(gl_GlobalInvocationID.x);
+    const int stride = params.ny >> 2;
+    if (j >= stride) return;
+
+    vec4 sm1 = 1.0 / diag[j];
+    sol[j] = rhs[j] * sm1;
+
+    int off = j;
+    for (int i = 1; i < params.N; ++i) {
+        off += stride;
+        const vec4 sVal = upper[off - stride] * sm1;
+        scratch[off] = sVal;
+        const vec4 s = diag[off] - lower[off] * sVal;
+        sol[off] = rhs[off] - lower[off] * sol[off - stride];
+        sm1 = 1.0 / s;
+        sol[off] *= sm1;
+    }
+
+    int boff = (params.N - 2) * stride + j;
+    for (int i = params.N - 2; i >= 0; --i) {
+        sol[boff] -= scratch[boff + stride] * sol[boff + stride];
+        boff -= stride;
+    }
+}

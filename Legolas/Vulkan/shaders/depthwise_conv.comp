@@ -1,0 +1,49 @@
+#version 450
+
+// Depthwise 3x3 separable convolution (MobileNet-style).
+//
+// Memory layout (mirrors Legolas::Array<float, 2>):
+//   index = channel * (H * W) + row * W + col
+//
+// Dispatch: grid = (W, H, numChannels), local = (16, 16, 1)
+
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+layout(std430, binding = 0) readonly buffer InBuffer  { float inbuf[]; };
+layout(std430, binding = 1) writeonly buffer OutBuffer { float outbuf[]; };
+
+layout(push_constant) uniform Params {
+    int H;
+    int W;
+} params;
+
+void main() {
+    const int col = int(gl_GlobalInvocationID.x);
+    const int row = int(gl_GlobalInvocationID.y);
+    const int chn = int(gl_GlobalInvocationID.z);
+
+    if (col >= params.W || row >= params.H) return;
+
+    const int plane = params.H * params.W;
+    const int off = chn * plane + row * params.W + col;
+
+    if (row < 1 || row >= params.H - 1 || col < 1 || col >= params.W - 1) {
+        outbuf[off] = 0.0f;
+        return;
+    }
+
+    const int rowPrev = chn * plane + (row - 1) * params.W;
+    const int rowCurr = chn * plane + row * params.W;
+    const int rowNext = chn * plane + (row + 1) * params.W;
+
+    const float k0 = 1.0f / 16.0f;
+    const float k1 = 2.0f / 16.0f;
+    const float k2 = 4.0f / 16.0f;
+
+    const float sum =
+        k0 * inbuf[rowPrev + col - 1] + k1 * inbuf[rowPrev + col] + k0 * inbuf[rowPrev + col + 1] +
+        k1 * inbuf[rowCurr + col - 1] + k2 * inbuf[rowCurr + col] + k1 * inbuf[rowCurr + col + 1] +
+        k0 * inbuf[rowNext + col - 1] + k1 * inbuf[rowNext + col] + k0 * inbuf[rowNext + col + 1];
+
+    outbuf[off] = sum;
+}

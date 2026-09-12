@@ -1,0 +1,57 @@
+#version 450
+
+// Biquad IIR blocked-scan, pass 1/3: per-block zero-state response.
+//
+// A 2nd-order IIR filter y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2]
+//                             - a1*y[n-1] - a2*y[n-2]
+// is a linear recurrence. Splitting each channel into K independent blocks,
+// the final state of a block is an affine function of its initial state:
+//
+//     state_out = M^len * state_in + c
+//
+// where c is the zero-state response computed here and M is the 2x2
+// homogeneous transition matrix (input-independent, hence block-independent).
+// Pass 2 propagates the block states; pass 3 re-runs each block with the
+// correct initial state.
+//
+// Layout: input [channel][sample]. Dispatch: grid = (ceil(K/128), C, 1).
+
+layout(local_size_x = 128, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 0) readonly buffer InBuffer { float inbuf[]; };
+layout(std430, binding = 1) writeonly buffer StateBuffer { float cbuf[]; };
+
+layout(push_constant) uniform Params {
+    int N;   // samples per channel
+    int L;   // nominal block length
+    int C;   // channels
+    int K;   // blocks per channel
+    float b0;
+    float b1;
+    float b2;
+    float a1;
+    float a2;
+} params;
+
+void main() {
+    const int k = int(gl_GlobalInvocationID.x);
+    const int c = int(gl_GlobalInvocationID.y);
+    if (k >= params.K || c >= params.C) return;
+
+    const int start = k * params.L;
+    const int end = min(start + params.L, params.N);
+    const int base = c * params.N;
+
+    float x1 = 0.0f, x2 = 0.0f, y1 = 0.0f, y2 = 0.0f;
+    for (int n = start; n < end; ++n) {
+        const float x0 = inbuf[base + n];
+        const float y0 = params.b0 * x0 + params.b1 * x1 + params.b2 * x2
+                       - params.a1 * y1 - params.a2 * y2;
+        x2 = x1; x1 = x0;
+        y2 = y1; y1 = y0;
+    }
+
+    const int idx = (c * params.K + k) * 2;
+    cbuf[idx] = y1;
+    cbuf[idx + 1] = y2;
+}

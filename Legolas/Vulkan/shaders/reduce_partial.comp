@@ -1,0 +1,43 @@
+#version 450
+
+// First reduction pass: each workgroup computes one partial sum.
+// mode 0 -> sum of squares (squaredNorm)
+// mode 1 -> dot product (a . b)
+//
+// Dispatch: grid = (numWorkGroups, 1, 1), local = (256, 1, 1)
+// The number of workgroups must cover the array with a grid-stride loop.
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 0) readonly buffer A { float a[]; };
+layout(std430, binding = 1) readonly buffer B { float b[]; };
+layout(std430, binding = 2) writeonly buffer Partials { float partials[]; };
+
+layout(push_constant) uniform Params {
+    uint n;
+    uint mode;
+} params;
+
+shared float sdata[256];
+
+void main() {
+    const uint tid = gl_LocalInvocationID.x;
+    const uint gid = gl_GlobalInvocationID.x;
+    const uint wg = gl_WorkGroupID.x;
+    const uint stride = gl_NumWorkGroups.x * gl_WorkGroupSize.x;
+
+    float acc = 0.0f;
+    for (uint i = gid; i < params.n; i += stride) {
+        acc += (params.mode == 0u) ? a[i] * a[i] : a[i] * b[i];
+    }
+
+    sdata[tid] = acc;
+    barrier();
+
+    for (uint s = 128u; s > 0u; s >>= 1u) {
+        if (tid < s) sdata[tid] += sdata[tid + s];
+        barrier();
+    }
+
+    if (tid == 0u) partials[wg] = sdata[0];
+}

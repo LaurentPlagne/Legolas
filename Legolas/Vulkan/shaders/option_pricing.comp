@@ -1,0 +1,76 @@
+#version 450
+
+// Black-Scholes Crank-Nicolson option pricing for a whole portfolio.
+//
+// One thread per option. The kernel is persistent: it loops over all
+// backward time steps, so the tridiagonal coefficients (constant in time)
+// stay in the memory hierarchy and no host round-trip is needed.
+//
+// The explicit Crank-Nicolson right-hand side is evaluated in a fully
+// parallel pass (no dependency chain), then the Thomas solve runs on the
+// shorter critical path sm1 -> s -> sm1. Fusing the RHS into the sweep was
+// measured slower on a discrete GPU because it lengthens the serial chain
+// for the 16k-thread grid.
+//
+// Layout: [i][option] (SoA), so that thread j reads contiguous addresses.
+//
+// CPU reference (per option, per time step):
+//   RHS[i] = -L[i]*V[i-1] + (2-D[i])*V[i] - U[i]*V[i+1]   (1 <= i <= N-2)
+//   RHS[0] = V[0]; RHS[N-1] = V[N-1];
+//   Thomas solve on (L, D, U)
+//
+// Dispatch: grid = (ceil(ny / 256), 1, 1), local = (256, 1, 1)
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 0) buffer ValueBuffer { float value[]; };
+layout(std430, binding = 1) readonly buffer DiagBuffer { float diag[]; };
+layout(std430, binding = 2) readonly buffer UpperBuffer { float upper[]; };
+layout(std430, binding = 3) readonly buffer LowerBuffer { float lower[]; };
+layout(std430, binding = 4) buffer RhsBuffer { float rhs[]; };
+layout(std430, binding = 5) buffer ScratchBuffer { float scratch[]; };
+
+layout(push_constant) uniform Params {
+    int N;
+    int Nt;
+    int ny;
+} params;
+
+void main() {
+    const int j = int(gl_GlobalInvocationID.x);
+    const int stride = params.ny;
+    if (j >= stride) return;
+
+    for (int t = 0; t < params.Nt; ++t) {
+        // Explicit Crank-Nicolson right-hand side (fully parallel).
+        for (int i = 1; i < params.N - 1; ++i) {
+            const int off = i * stride + j;
+            rhs[off] = -lower[off] * value[off - stride]
+                     + (2.0f - diag[off]) * value[off]
+                     - upper[off] * value[off + stride];
+        }
+        rhs[j] = value[j];
+        const int last = (params.N - 1) * stride + j;
+        rhs[last] = value[last];
+
+        // Thomas forward sweep
+        float sm1 = 1.0f / diag[j];
+        value[j] = rhs[j] * sm1;
+
+        for (int i = 1; i < params.N; ++i) {
+            const int off = i * stride + j;
+            const float sVal = upper[off - stride] * sm1;
+            scratch[off] = sVal;
+            const float s = diag[off] - lower[off] * sVal;
+            value[off] = rhs[off] - lower[off] * value[off - stride];
+            sm1 = 1.0f / s;
+            value[off] *= sm1;
+        }
+
+        // Thomas backward substitution
+        for (int i = params.N - 2; i >= 0; --i) {
+            const int off = i * stride + j;
+            value[off] -= scratch[off + stride] * value[off + stride];
+        }
+    }
+}

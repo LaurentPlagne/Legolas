@@ -1,0 +1,61 @@
+#version 450
+
+// VideoPipeline: 3x3 Sobel spatial edge detection fused with quadratic
+// temporal motion differencing across concurrent HD streams.
+//
+// Memory layout (mirrors Legolas::Array<float, 2>):
+//   index = stream * (H * W) + row * W + col
+//
+// Dispatch: grid = (W, H, numStreams), local = (16, 16, 1)
+
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+layout(std430, binding = 0) readonly buffer CurrBuffer { float curr[]; };
+layout(std430, binding = 1) readonly buffer PrevBuffer { float prev[]; };
+layout(std430, binding = 2) writeonly buffer OutBuffer  { float outv[]; };
+
+layout(push_constant) uniform Params {
+    int H;
+    int W;
+} params;
+
+void main() {
+    const int col = int(gl_GlobalInvocationID.x);
+    const int row = int(gl_GlobalInvocationID.y);
+    const int str = int(gl_GlobalInvocationID.z);
+
+    if (col >= params.W || row >= params.H) return;
+
+    const int frameOffset = str * params.H * params.W;
+    const int idx = frameOffset + row * params.W + col;
+
+    if (row < 1 || row >= params.H - 1 || col < 1 || col >= params.W - 1) {
+        outv[idx] = 0.0f;
+        return;
+    }
+
+    const int rowPrev = frameOffset + (row - 1) * params.W;
+    const int rowCurr = frameOffset + row * params.W;
+    const int rowNext = frameOffset + (row + 1) * params.W;
+
+    const float p00 = curr[rowPrev + col - 1];
+    const float p01 = curr[rowPrev + col];
+    const float p02 = curr[rowPrev + col + 1];
+    const float p10 = curr[rowCurr + col - 1];
+    const float p11 = curr[rowCurr + col];
+    const float p12 = curr[rowCurr + col + 1];
+    const float p20 = curr[rowNext + col - 1];
+    const float p21 = curr[rowNext + col];
+    const float p22 = curr[rowNext + col + 1];
+
+    const float gx = (p02 + 2.0f * p12 + p22) - (p00 + 2.0f * p10 + p20);
+    const float gy = (p20 + 2.0f * p21 + p22) - (p00 + 2.0f * p01 + p02);
+
+    const float spatialEdge = (gx * gx + gy * gy) * 0.125f;
+
+    const float prevVal = prev[rowCurr + col];
+    const float diff = p11 - prevVal;
+    const float temporalMotion = diff * diff;
+
+    outv[idx] = 0.7f * spatialEdge + 0.3f * temporalMotion;
+}

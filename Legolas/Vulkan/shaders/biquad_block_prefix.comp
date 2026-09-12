@@ -1,0 +1,55 @@
+#version 450
+
+// Biquad IIR blocked-scan, pass 2/3: sequential block-state propagation.
+//
+// For each channel, walk the K blocks in order and accumulate the true
+// initial state of every block:
+//
+//     state_{k+1} = M^{len_k} * state_k + c_k
+//
+// M^L (full blocks) and M^L' (last, possibly shorter block) are computed on
+// the host. One thread per channel; K is a few hundred, so this pass is
+// negligible (microseconds) while keeping the whole scheme exact.
+//
+// Dispatch: grid = (ceil(C/64), 1, 1), local = (64, 1, 1).
+
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 0) readonly buffer CBuffer { float cbuf[]; };
+layout(std430, binding = 1) writeonly buffer StateBuffer { float state[]; };
+
+layout(push_constant) uniform Params {
+    int K;
+    int C;
+    float m00;
+    float m01;
+    float m10;
+    float m11;
+    float l00;
+    float l01;
+    float l10;
+    float l11;
+} params;
+
+void main() {
+    const int c = int(gl_GlobalInvocationID.x);
+    if (c >= params.C) return;
+
+    float y1 = 0.0f, y2 = 0.0f;
+    for (int k = 0; k < params.K; ++k) {
+        const int idx = (c * params.K + k) * 2;
+        state[idx] = y1;
+        state[idx + 1] = y2;
+
+        const bool last = (k == params.K - 1);
+        const float m00 = last ? params.l00 : params.m00;
+        const float m01 = last ? params.l01 : params.m01;
+        const float m10 = last ? params.l10 : params.m10;
+        const float m11 = last ? params.l11 : params.m11;
+
+        const float ny1 = m00 * y1 + m01 * y2 + cbuf[idx];
+        const float ny2 = m10 * y1 + m11 * y2 + cbuf[idx + 1];
+        y1 = ny1;
+        y2 = ny2;
+    }
+}

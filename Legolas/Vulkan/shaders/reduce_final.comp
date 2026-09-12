@@ -1,0 +1,34 @@
+#version 450
+
+// Second reduction pass: reduce the per-workgroup partial sums into one
+// scalar. A single workgroup is enough (partials <= a few thousand).
+//
+// Dispatch: grid = (1, 1, 1), local = (256, 1, 1)
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 0) readonly buffer Partials { float partials[]; };
+layout(std430, binding = 1) writeonly buffer Out { float outv[]; };
+
+layout(push_constant) uniform Params {
+    uint n;
+} params;
+
+shared float sdata[256];
+
+void main() {
+    const uint tid = gl_LocalInvocationID.x;
+
+    float acc = 0.0f;
+    for (uint i = tid; i < params.n; i += 256u) acc += partials[i];
+
+    sdata[tid] = acc;
+    barrier();
+
+    for (uint s = 128u; s > 0u; s >>= 1u) {
+        if (tid < s) sdata[tid] += sdata[tid + s];
+        barrier();
+    }
+
+    if (tid == 0u) outv[0] = sdata[0];
+}
