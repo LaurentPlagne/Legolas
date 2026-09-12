@@ -34,6 +34,10 @@ You need to apply an **intrinsically sequential algorithm** (recurrence relation
 3. **Hardware Vectorization by Construction**: Through **Data Layout Interleaving (DLI)**, vectorization is structural in memory and guaranteed—no reliance on fragile compiler heuristics.
 4. **Zero-Overhead Portability**: Pure header-only C++14 running with peak efficiency across Apple Silicon (NEON), Linux (x86_64 AVX2 / AVX-512), and Windows MSVC.
 
+<p align="center" style="margin: 2rem 0;">
+  <img src="assets/images/legolas_write_once_targets.svg" alt="Write Once in Scalar C++, Target Any Hardware (CPU SIMD, Multi-Core, GPU Vulkan/Metal)" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.25);">
+</p>
+
 ### 🌐 An Ubiquitous Pattern Across Science & Industry
 
 This computing pattern appears everywhere across high-performance engineering. Explore our dedicated tutorials and showcases:

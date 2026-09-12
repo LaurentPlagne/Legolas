@@ -13,7 +13,7 @@
 [![C++ Standard](https://img.shields.io/badge/C%2B%2B-14%2F20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B14)
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-informational.svg)](https://laurentplagne.github.io/Legolas/)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20ARM64%20%7C%20Linux%20x86_64%20%7C%20Windows%20MSVC-success.svg)]()
-[![Build & Test](https://img.shields.io/badge/CTest-100%25%20Passing%20(5%2F5)-brightgreen.svg)]()
+[![Build & Test](https://img.shields.io/badge/CTest-100%25%20Passing%20(9%2F9)-brightgreen.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](License.md)
 
 *High-Performance Modern C++ Tensor Engine for Automatic SIMD Vectorization of Recurrences via Data Layout Interleaving (DLI).*
@@ -57,6 +57,10 @@ You need to apply an **intrinsically sequential algorithm** (recurrence relation
 2. **Natural Scalar Notation**: You write your core algorithm **once**, as a simple sequential loop in standard scalar math.
 3. **Hardware Vectorization by Construction**: Through **Data Layout Interleaving (DLI)**, vectorization is structural in memory and guaranteed—no reliance on fragile compiler heuristics.
 4. **Zero-Overhead Portability**: Pure header-only C++14 running with peak efficiency across Apple Silicon (NEON), Linux (x86_64 AVX2 / AVX-512), and Windows MSVC.
+
+<p align="center">
+  <img src="docs/assets/images/legolas_write_once_targets.svg" alt="Write Once in Scalar C++, Target Any Hardware (CPU SIMD, Multi-Core, GPU Vulkan/Metal)" width="100%">
+</p>
 
 ### 🌐 An Ubiquitous Pattern Across Science & Industry
 
