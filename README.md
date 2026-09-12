@@ -41,6 +41,35 @@ target_link_libraries(my_project PRIVATE Legolas)
 
 ---
 
+## 🎯 What Problem Does Legolas++ Solve?
+
+> **The Universal Scenario:**  
+> You need to apply an **intrinsically sequential algorithm** (recurrence relation, recursive filter, time-stepping scheme, tridiagonal solver $y_n = f(y_{n-1}, x_n)$) to a **massive batch of independent problem instances of the same size** (thousands of 1D grid lines, dozens of audio tracks, video streams, or neural network channels).
+>
+> **The Classic Dilemma:**
+> * **Standard Multi-Threading (OpenMP / Threads)**: Parallelizes across CPU cores, but within each core, **compilers cannot vectorize across sequential dependencies**. Hardware SIMD execution units (AVX2, AVX-512, NEON) sit idle—wasting **75% to 93% of the CPU's theoretical compute capacity**.
+> * **Manual SIMD Intrinsics (`_mm256_...`, NEON)**: Attempting to vectorize manually across instances requires writing hundreds of lines of assembly-like intrinsics. The code becomes unreadable, non-portable, and a nightmare to maintain.
+>
+> **The Legolas++ Solution:**
+> 1. **100% Machine Utilization**: Fully utilizes all CPU cores *and* 100% of SIMD vector register widths simultaneously.
+> 2. **Natural Scalar Notation**: You write your core algorithm **once**, as a simple sequential loop in standard scalar math.
+> 3. **Hardware Vectorization by Construction**: Through **Data Layout Interleaving (DLI)**, vectorization is structural in memory and guaranteed—no reliance on fragile compiler heuristics.
+> 4. **Zero-Overhead Portability**: Pure header-only C++14 running with peak efficiency across Apple Silicon (NEON), Linux (x86_64 AVX2 / AVX-512), and Windows MSVC.
+
+### 🌐 An Ubiquitous Pattern Across Science & Industry
+
+This computing pattern appears everywhere across high-performance engineering. Legolas++ includes dedicated, self-contained examples and tutorials for each:
+
+| Domain | Intrinsically Sequential Kernel | Batch Dimension (Interleaved) | Live Example & Tutorial |
+| :--- | :--- | :--- | :--- |
+| **Scientific Computing & PDEs** | Tridiagonal Gaussian elimination (Thomas algorithm, ADI sweeps) | Thousands of 1D spatial lines in 2D/3D grids | 📄 [Tridiagonal Thomas Tutorial](https://laurentplagne.github.io/Legolas/tutorials/tridiagonal-thomas/) ([code](tst/MultiThomasExample/MultiThomasExample.cxx)) |
+| **Real-Time Audio Processing** | Recursive IIR Biquad filter (sample $t$ depends on $t-1$, $t-2$) | 64+ concurrent audio channels / DAW mixer tracks | 🎧 [Audio Biquad Showcase](https://laurentplagne.github.io/Legolas/tutorials/audio-biquad/) ([code](examples/AudioBiquad/AudioBiquad.cxx)) |
+| **Computer Vision & Video** | Temporal recursive motion differencing / spatial convolution | 32 concurrent 720p HD live camera streams | 🎥 [Video Pipeline Showcase](https://laurentplagne.github.io/Legolas/tutorials/video-pipeline/) ([code](examples/VideoPipeline/VideoPipeline.cxx)) |
+| **Deep Learning & Edge AI** | MobileNet depthwise 2D convolutions | 32–512 feature map channels | ⚡ [Depthwise Conv Showcase](https://laurentplagne.github.io/Legolas/tutorials/depthwise-conv/) ([code](examples/DepthwiseConv/DepthwiseConv.cxx)) |
+| **Quantitative Finance** | 1D finite-difference PDE time-stepping (Black-Scholes / Dupire) | Tens of thousands of independent option contracts | 📈 [Option Pricing Engine](examples/OptionPricing/OptionPricing.cxx) |
+
+---
+
 ## ⚡ 30-Second Quick Example
 
 Write your numerical solver **once** using natural scalar notation; Legolas++ auto-vectorizes it in hardware SIMD and scales across CPU cores simultaneously:
