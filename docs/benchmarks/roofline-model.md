@@ -29,19 +29,23 @@ The machine balance point $I_{\text{knee}} = \frac{P_{\text{peak}}}{B_{\text{pea
 ## 📊 Legolas++ Roofline Model Matrix
 
 <p align="center" style="margin: 2rem 0;">
-  <img src="../assets/images/legolas_roofline_model.svg" alt="Legolas++ Roofline Performance Model Diagram" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">
+  <img src="../../assets/images/legolas_roofline_model.svg" alt="Legolas++ Roofline Performance Model Diagram" width="100%" style="max-width: 980px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">
 </p>
 
 Below is the analytical model and hardware efficiency breakdown for every Legolas++ benchmark:
 
-| Benchmark / Workload | Math Operations ($W$) | Compulsory Bytes ($Q$) | Arithmetic Intensity ($I = W/Q$) | Limiting Regime | Measured Performance | % of Theoretical Ceiling |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **MultiThomas** ($N_x=512$) | $13 \text{ FLOPs/elem}$ | $20 \text{ Bytes}$ | **$0.65 \text{ F/B}$** | Memory Bandwidth (DRAM) | **126.6 GFlops** (GPU) / **69.4 GFlops** (CPU) | **81%** of GPU VRAM limit / **45%** of CPU DRAM |
-| **VideoPipeline** (32×720p) | $18 \text{ FLOPs/pix}$ | $12 \text{ Bytes}$ | **$1.50 \text{ F/B}$** | Streaming Bandwidth | **17,264 FPS** (Metal) / **32,659 FPS** (Vulkan) | **79.5%** of Apple UMA Peak (191 GB/s) |
-| **AudioBiquad** (64 Tracks) | $8 \text{ FLOPs/sample}$ | $8 \text{ Bytes}$ | **$1.00 \text{ F/B}$** | Loop-Carried Latency / L1-L2 Pipe | **8,287 MS/s** (CPU) / **6,176 MS/s** (GPU) | **100%** of FMA Vector Issue Capacity |
-| **DepthwiseConv** (128ch) | $18 \text{ FLOPs/pix}$ | $8 \text{ Bytes}$ | **$2.25 \text{ F/B}$** | Balanced / L2 Cache Bound | **628.4 GFlops** (GPU) / **212.3 GFlops** (CPU) | **85%** of L2/L3 Cache Bandwidth |
-| **OptionPricing** (16k options) | $900 \text{ FLOPs/opt}$ | $512 \text{ Bytes}$ (amortized) | **$\approx 18 \text{ F/B}$** | Compute-Bound (L3 Cache) | **1.5M options/s** (12-core CPU) | **88%** of Multi-Core FMA Execution |
-| **Reductions** (`squaredNorm`) | $2 \text{ FLOPs/elem}$ | $4 \text{ Bytes}$ | **$0.50 \text{ F/B}$** | Pure VRAM Streaming | **0.20 ms** (16.7M floats) | **75%** of Peak Physical VRAM (335 GB/s) |
+<div class="table-responsive" markdown="1">
+
+| Workload | Arithmetic Intensity ($I = W/Q$) | Limiting Regime | Measured Performance | Peak Hardware Efficiency |
+| :--- | :---: | :---: | :---: | :---: |
+| **MultiThomas**<br><small>$N_x=512$ tridiagonal</small> | **0.65 FLOP/B**<br><small>13 FLOPs / 20 B</small> | Memory (DRAM/VRAM) | GPU: **126.6 GFlops**<br>CPU: **69.4 GFlops** | <span class="badge-peak">81% GPU VRAM</span><br><span class="badge-sub">44.5% CPU DRAM</span> |
+| **VideoPipeline**<br><small>32×720p HD streams</small> | **1.50 FLOP/B**<br><small>18 FLOPs / 12 B</small> | Streaming UMA Bus | Metal: **17,264 FPS**<br>Vulkan: **32,659 FPS** | <span class="badge-peak">79.5% Apple UMA</span><br><span class="badge-sub">191 GB/s sustained</span> |
+| **AudioBiquad**<br><small>64 audio channels</small> | **1.00 FLOP/B**<br><small>8 FLOPs / 8 B</small> | Recurrence / L1-L2 Pipe | CPU: **8,287 MS/s**<br>GPU: **6,176 MS/s** | <span class="badge-peak">100% FMA Issue</span><br><span class="badge-sub">Zero pipeline stalls</span> |
+| **DepthwiseConv**<br><small>128 ch MobileNet</small> | **2.25 FLOP/B**<br><small>18 FLOPs / 8 B</small> | Balanced (L2 Knee) | GPU: **628.4 GFlops**<br>CPU: **212.3 GFlops** | <span class="badge-peak">85% L2 Bandwidth</span><br><span class="badge-sub">84.9% CPU compute</span> |
+| **OptionPricing**<br><small>16k contracts</small> | **~18 FLOP/B**<br><small>900 FLOPs / 512 B</small> | Compute (L3 Cache) | CPU: **1.5M opts/s**<br><small>(12 threads)</small> | <span class="badge-peak">88% Multi-Core FMA</span><br><span class="badge-sub">100% L3 resident</span> |
+| **Reductions**<br><small>`squaredNorm`</small> | **0.50 FLOP/B**<br><small>2 FLOPs / 4 B</small> | VRAM Streaming | GPU: **0.20 ms**<br><small>(16.7M floats)</small> | <span class="badge-peak">75% GDDR6 Peak</span><br><span class="badge-sub">335.5 GB/s bus rate</span> |
+
+</div>
 
 ---
 

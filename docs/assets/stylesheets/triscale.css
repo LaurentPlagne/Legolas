@@ -392,3 +392,73 @@
 [data-md-color-scheme="slate"] .logo-light-only {
   display: none !important;
 }
+
+/* ==========================================================================
+   Responsive Tables & Peak Hardware Badges
+   ========================================================================== */
+
+.md-typeset table:not([class]) {
+  display: table;
+  width: 100% !important;
+  font-size: 0.82rem !important;
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+}
+
+.md-typeset__table,
+.table-responsive {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.2rem 0;
+  border-radius: 8px;
+}
+
+.md-typeset table:not([class]) th {
+  background: #182230 !important;
+  color: #38bdf8 !important;
+  font-size: 0.78rem !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.65rem 0.75rem !important;
+  white-space: nowrap;
+  border-bottom: 2px solid #283a50 !important;
+}
+
+.md-typeset table:not([class]) td {
+  padding: 0.65rem 0.75rem !important;
+  font-size: 0.82rem !important;
+  border-bottom: 1px solid #1e2b3d !important;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+.md-typeset table:not([class]) td small {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 0.15rem;
+}
+
+.badge-peak {
+  display: inline-block;
+  padding: 0.22rem 0.55rem;
+  border-radius: 5px;
+  background: rgba(52, 211, 153, 0.16);
+  color: #34d399 !important;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-sub {
+  display: inline-block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
+  white-space: nowrap;
+}
+
