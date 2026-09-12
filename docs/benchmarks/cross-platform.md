@@ -2,6 +2,9 @@
 
 Legolas++ is designed for high portability across CPU microarchitectures and operating systems. Because performance characteristics vary significantly between vector engines (ARM NEON vs. x86 AVX2 vs. x86 AVX-512) and memory subsystems, this guide details how to benchmark Legolas++ on modern server architectures.
 
+> 📈 **Theoretical Performance Limits & Roofline Modeling**  
+> To understand how close these benchmark numbers operate to the absolute physical limits of the silicon (memory bandwidth saturation vs. peak FMA compute capacity), explore our dedicated [**Roofline Performance Model & Hardware Efficiency Guide**](roofline-model.md).
+
 ---
 
 ## 1. Architectural Matrix
