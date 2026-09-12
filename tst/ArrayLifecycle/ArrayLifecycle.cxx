@@ -79,10 +79,15 @@ void testMoveAssignment() {
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wself-move"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wself-move"
 #endif
         dest = std::move(dest);
 #if defined(__clang__)
 #pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
         TEST_ASSERT(dest.owner() == true);
         TEST_ASSERT(dest.realDataPtr() == src_ptr);

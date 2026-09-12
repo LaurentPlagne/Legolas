@@ -222,6 +222,9 @@ public:
         });
       }
     }
+
+    // Reset current_work_ to prevent workers or shutdown from accessing a stale stack frame
+    current_work_.store(nullptr, std::memory_order_release);
   }
 
 private:
@@ -242,7 +245,8 @@ private:
   }
 
   void shutdown() {
-    stop_.store(true, std::memory_order_relaxed);
+    stop_.store(true, std::memory_order_release);
+    current_work_.store(nullptr, std::memory_order_release);
     generation_.fetch_add(1, std::memory_order_release);
     {
       std::lock_guard<std::mutex> lock(cv_mutex_);
@@ -265,13 +269,14 @@ private:
       int spins = 0;
       bool got_work = false;
       while (spins < spin_count_) {
+        if (stop_.load(std::memory_order_relaxed)) return;
         uint64_t gen = generation_.load(std::memory_order_acquire);
         if (gen > local_gen) {
           local_gen = gen;
+          if (stop_.load(std::memory_order_relaxed)) return;
           got_work = true;
           break;
         }
-        if (stop_.load(std::memory_order_relaxed)) return;
         LEGOLAS_CPU_PAUSE();
         ++spins;
       }
@@ -289,6 +294,8 @@ private:
         if (stop_.load(std::memory_order_relaxed)) break;
         local_gen = generation_.load(std::memory_order_acquire);
       }
+
+      if (stop_.load(std::memory_order_acquire)) break;
 
       // 3. Execute work
       IWork* work = current_work_.load(std::memory_order_acquire);
