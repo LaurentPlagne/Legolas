@@ -12,7 +12,7 @@ Legolas++ is a **100% header-only, zero-dependency** C++14 template engine. It r
   - LLVM Clang $\ge 8.0$ (Linux / macOS)
   - Microsoft Visual C++ (MSVC) $\ge 2017$ (Windows)
 - **CMake**: Version $\ge 3.5$
-- **External Dependencies**: **None** (zero external dependencies). Both SIMD packing (`Legolas::NativeSimd`) and multi-core scheduling (`Legolas::StaticThreadPool` / work-stealing) are pure standard C++.
+- **External Dependencies**: **None** (zero external dependencies). Both SIMD packing (`Legolas::NativeSimd`) and multi-core scheduling (`Legolas::StaticThreadPool`) are pure standard C++.
 
 ---
 
@@ -94,7 +94,27 @@ target_link_libraries(my_solver PRIVATE Legolas)
 
 The `Legolas` target automatically propagates all required include directories and threading flags.
 
-### Method 3: Header-Only Include Path
+### Method 3: Install + `find_package` (Prefix / System-Wide)
+
+Install the headers and the CMake package files with a single command:
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --install build --prefix /path/to/legolas-install
+```
+
+Then consume the installed package from any project:
+
+```cmake
+find_package(Legolas CONFIG REQUIRED)
+
+add_executable(my_solver main.cpp)
+target_link_libraries(my_solver PRIVATE Legolas::Legolas)  # or `Legolas`
+```
+
+Set `CMAKE_PREFIX_PATH=/path/to/legolas-install` (or install to a standard prefix) so that `find_package` can locate `LegolasConfig.cmake`.
+
+### Method 4: Header-Only Include Path
 
 Simply pass the include paths directly to your compiler:
 

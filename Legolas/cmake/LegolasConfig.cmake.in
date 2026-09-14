@@ -1,0 +1,16 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(Threads)
+
+include("${CMAKE_CURRENT_LIST_DIR}/LegolasTargets.cmake")
+
+# Backward-compatible un-namespaced target: historical code and documentation
+# link against the bare `Legolas` target. Provide it as an IMPORTED interface
+# forwarding to the namespaced modern target.
+if(NOT TARGET Legolas AND TARGET Legolas::Legolas)
+  add_library(Legolas INTERFACE IMPORTED)
+  target_link_libraries(Legolas INTERFACE Legolas::Legolas)
+endif()
+
+check_required_components(Legolas)

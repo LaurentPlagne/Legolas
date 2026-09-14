@@ -1,8 +1,14 @@
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
 add_library(Legolas INTERFACE)
+add_library(Legolas::Legolas ALIAS Legolas)
+
 target_include_directories(Legolas INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/Legolas/include>
 )
 target_compile_definitions(Legolas INTERFACE
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:_GNU_SOURCE>
@@ -33,6 +39,49 @@ if (LEGOLAS_INTERFACE_OPTIMIZE)
     endif()
   endif()
 endif()
+
+# ---------------------------------------------------------------------------
+# Installation (100% header-only)
+#
+#   cmake --install build --prefix <prefix>
+#
+# Consumer side:
+#   find_package(Legolas CONFIG REQUIRED)
+#   target_link_libraries(app PRIVATE Legolas::Legolas)   # or `Legolas`
+# ---------------------------------------------------------------------------
+install(TARGETS Legolas EXPORT LegolasTargets)
+
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Legolas"
+  FILES_MATCHING PATTERN "*.hxx" PATTERN "*.h"
+  PATTERN "cmake" EXCLUDE
+  PATTERN "tst" EXCLUDE
+  PATTERN "shaders" EXCLUDE
+)
+
+install(EXPORT LegolasTargets
+  FILE LegolasTargets.cmake
+  NAMESPACE Legolas::
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Legolas"
+)
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/LegolasConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/LegolasConfig.cmake"
+  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Legolas"
+)
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/LegolasConfigVersion.cmake"
+  VERSION "${PROJECT_VERSION}"
+  COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/LegolasConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/LegolasConfigVersion.cmake"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Legolas"
+)
 
 
 
