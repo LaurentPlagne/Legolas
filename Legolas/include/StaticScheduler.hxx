@@ -195,10 +195,16 @@ public:
     remaining_workers_.store(bg_workers, std::memory_order_relaxed);
     current_work_.store(work, std::memory_order_release);
 
-    // Increment generation (lock-free)
+    // Publish the new generation, then decide whether sleeping workers must
+    // be woken. The seq_cst fence pairs with the one in workerLoop() to close
+    // the lost-wakeup window (store-buffer pattern): if this thread reads
+    // sleeping_workers_ == 0 below, then the worker about to sleep is
+    // guaranteed to observe the new generation and skip its wait; otherwise
+    // the worker's increment is visible here and it gets notified. Using only
+    // relaxed/acq-rel orderings on two different variables would leave a
+    // window where the caller misses the wake-up and waits forever.
     generation_.fetch_add(1, std::memory_order_release);
-
-    // Wake workers if any are sleeping
+    std::atomic_thread_fence(std::memory_order_seq_cst);
     if (sleeping_workers_.load(std::memory_order_acquire) > 0) {
       std::lock_guard<std::mutex> lock(cv_mutex_);
       cv_.notify_all();
@@ -284,7 +290,12 @@ private:
       // 2. Sleep on CV if no work arrived during spin window
       if (!got_work) {
         std::unique_lock<std::mutex> lock(cv_mutex_);
-        sleeping_workers_.fetch_add(1, std::memory_order_relaxed);
+        sleeping_workers_.fetch_add(1, std::memory_order_release);
+        // Paired with dispatch()'s seq_cst fence: either the dispatcher sees
+        // this increment (and notifies us), or this fence orders the
+        // generation load in cv_.wait()'s predicate after the dispatcher's
+        // generation increment, so we skip sleeping.
+        std::atomic_thread_fence(std::memory_order_seq_cst);
         cv_.wait(lock, [this, &local_gen] {
           return stop_.load(std::memory_order_relaxed) ||
                  generation_.load(std::memory_order_acquire) > local_gen;
