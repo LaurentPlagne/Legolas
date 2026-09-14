@@ -81,13 +81,14 @@ Every build validates 100% test passage across all test suites (`MultiThomasExam
 > 🔗 [View all benchmark runs on GitHub Actions](https://github.com/LaurentPlagne/Legolas/actions/workflows/benchmarks.yml)
 
 <!-- BEGIN_BENCHMARK_RESULTS -->
-| Workload | Metric | 🐧 **Linux x86_64** (AMD EPYC AVX2) | 🍏 **macOS Cloud** (Apple M1 NEON) |
+| Workload | Metric | **Host 1** | **Host 2** |
 | :--- | :--- | :---: | :---: |
-| **Hardware Target** | CPU / Arch | AMD EPYC 9V74 80-Core Processor | Apple M1 (Virtual, 3 vCPUs) |
-| **MultiThomas** ($N_x=64$) | Throughput | **13.3 GFlops** | **22.2 GFlops** |
-| **VideoPipeline (CPU)** | Throughput | **3,754 FPS** | **2,566 FPS** |
-| **AudioBiquad** (64ch) | Throughput | **5,017 MS/s** | **2,324 MS/s** |
-| **DepthwiseConv** (128ch) | Throughput | **161.4 GFlops** | **68.3 GFlops** |
-| **OptionPricing** (16k) | Throughput | — | **104,953 opt/s** |
+| **Hardware Target** | CPU / Arch | AMD EPYC 7763 64-Core Processor | Apple M1 (Virtual) |
+| **MultiThomas** ($N_x=64$) | Throughput | **15.1 GFlops** | **20.6 GFlops** |
+| **VideoPipeline (CPU)** | Throughput | **3,270 FPS** | **2,989 FPS** |
+| **VideoPipeline (Metal GPU)** | Throughput | — | — |
+| **AudioBiquad (64ch)** | Throughput | **4,399 MS/s** | **2,446 MS/s** |
+| **DepthwiseConv (128ch)** | Throughput | **165.7 GFlops** | **64.8 GFlops** |
+| **OptionPricing** (16k options) | Throughput | **483,453 opt/s** | **127,152 opt/s** |
 <!-- END_BENCHMARK_RESULTS -->
 
