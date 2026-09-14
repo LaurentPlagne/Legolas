@@ -81,12 +81,11 @@ Every build validates 100% test passage across all test suites (`MultiThomasExam
 > 🔗 [View all benchmark runs on GitHub Actions](https://github.com/LaurentPlagne/Legolas/actions/workflows/benchmarks.yml)
 
 <!-- BEGIN_BENCHMARK_RESULTS -->
-| Workload | Metric | **Host 1** | **Host 2** |
+| Workload | Metric | 🐧 **Linux x86_64** | 🍏 **macOS** |
 | :--- | :--- | :---: | :---: |
-| **Hardware Target** | CPU / Arch | AMD EPYC 7763 64-Core Processor | Apple M1 (Virtual) |
+| **Hardware Target** | CPU / Arch | AMD EPYC 7763 64-Core Processor | Apple M1 (Virtual) (3 cores) |
 | **MultiThomas** ($N_x=64$) | Throughput | **15.1 GFlops** | **20.6 GFlops** |
 | **VideoPipeline (CPU)** | Throughput | **3,270 FPS** | **2,989 FPS** |
-| **VideoPipeline (Metal GPU)** | Throughput | — | — |
 | **AudioBiquad (64ch)** | Throughput | **4,399 MS/s** | **2,446 MS/s** |
 | **DepthwiseConv (128ch)** | Throughput | **165.7 GFlops** | **64.8 GFlops** |
 | **OptionPricing** (16k options) | Throughput | **483,453 opt/s** | **127,152 opt/s** |

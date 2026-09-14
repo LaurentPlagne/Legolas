@@ -274,22 +274,36 @@ def generate_markdown(data):
 
     return "\n".join(lines)
 
+def platform_header(dataset):
+    system = dataset.get("host", {}).get("system", "")
+    if system == "Linux":
+        return "🐧 **Linux x86_64**"
+    if system == "Darwin":
+        return "🍏 **macOS**"
+    if system == "Windows":
+        return "🪟 **Windows**"
+    return f"**{system or 'Host'}**"
+
 def aggregate_reports(json_files, out_md):
     lines = []
     lines.append("## 🏆 Legolas++ Multi-Architecture Automated Benchmark Report\n")
-    lines.append("| Workload | Metric | " + " | ".join([f"**Host {i+1}**" for i in range(len(json_files))]) + " |")
-    lines.append("| :--- | :--- | " + " | ".join([":---:" for _ in json_files]) + " |")
 
     datasets = []
     for jf in json_files:
         with open(jf) as f:
             datasets.append(json.load(f))
 
+    lines.append("| Workload | Metric | " + " | ".join([platform_header(d) for d in datasets]) + " |")
+    lines.append("| :--- | :--- | " + " | ".join([":---:" for _ in json_files]) + " |")
+
     # CPU headers
     host_labels = []
     for d in datasets:
         h = d.get("host", {})
         label = h.get("cpu_model", f"{h.get('system')} {h.get('machine')}")
+        cores = h.get("cores")
+        if cores:
+            label = f"{label} ({cores} cores)"
         host_labels.append(label)
     lines.append("| **Hardware Target** | CPU / Arch | " + " | ".join(host_labels) + " |")
 
@@ -307,12 +321,14 @@ def aggregate_reports(json_files, out_md):
         vp_vals.append(f"**{val:,.0f} FPS**" if val > 0 else "—")
     lines.append("| **VideoPipeline (CPU)** | Throughput | " + " | ".join(vp_vals) + " |")
 
-    # VideoPipeline Metal GPU
+    # VideoPipeline Metal GPU (omitted when no runner exposes a Metal device,
+    # e.g. GitHub-hosted macOS runners)
     metal_vals = []
     for d in datasets:
         val = d.get("benchmarks", {}).get("VideoPipelineMetal", {}).get("metal_fps", 0.0)
         metal_vals.append(f"🔥 **{val:,.0f} FPS**" if val > 0 else "—")
-    lines.append("| **VideoPipeline (Metal GPU)** | Throughput | " + " | ".join(metal_vals) + " |")
+    if any(v != "—" for v in metal_vals):
+        lines.append("| **VideoPipeline (Metal GPU)** | Throughput | " + " | ".join(metal_vals) + " |")
 
     # AudioBiquad
     ab_vals = []
