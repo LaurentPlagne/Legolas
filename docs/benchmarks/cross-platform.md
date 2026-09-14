@@ -49,7 +49,7 @@ cd Legolas
 The script automatically:
 1. Configures standard build tools (`cmake`, `ninja`, modern C++14 compiler).
 2. Detects available vector instruction sets (`avx512f`, `avx2`, `neon`, `sve`).
-3. Compiles the native zero-dependency benchmarks (`Legolas::NativeSimd` and Work-Stealing scheduler).
+3. Compiles the native zero-dependency benchmarks (`Legolas::NativeSimd` and the header-only `StaticThreadPool` scheduler).
 4. Executes the full `MultiThomas` benchmark resolution sweep ($N_x \in [8, 512]$) and thread scaling benchmarks.
 5. Produces publication-grade SVG/PNG plots and interactive HTML reports.
 
@@ -57,7 +57,7 @@ The script automatically:
 
 ## 3. GitHub Actions CI Matrix
 
-Continuous integration is automated on every commit and pull request via [`.github/workflows/ci.yml`](file:///.github/workflows/ci.yml).
+Continuous integration is automated on every commit and pull request via [`.github/workflows/ci.yml`](https://github.com/LaurentPlagne/Legolas/blob/master/.github/workflows/ci.yml).
 
 The CI matrix verifies compilation and runs the complete test suite across:
 * **macOS 14 ARM64** (Apple Silicon Clang runner)

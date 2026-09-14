@@ -32,7 +32,7 @@ Write your core numerical algorithm **once** using standard, readable scalar C++
 * **Legolas++ DLI Engine**: Transforms your problem layout in memory via **Data Layout Interleaving (DLI)**, turning impossible loop-carried recurrences into contiguous vector streams.
 * **A Multitude of Hardware Targets**:
   * ⚡ **CPU SIMD Vectorized**: Full vector width utilization on **ARM NEON** (4 floats / 128-bit), **x86 AVX2** (8 floats / 256-bit), and **x86 AVX-512** (16 floats / 512-bit) at 100% hardware line-rate.
-  * 🚀 **Multi-Core Parallel**: Built-in, zero-dependency `StaticThreadPool` and work-stealing scheduler scaling across 4 to 128+ CPU cores, with vector SIMD active on every thread.
+  * 🚀 **Multi-Core Parallel**: Built-in, zero-dependency `StaticThreadPool` with dynamic chunk scheduling scaling across 4 to 128+ CPU cores, with vector SIMD active on every thread.
   * 🔥 **GPU Acceleration**: Optional header-only **Vulkan Compute** backend for Linux and Windows, and native **Apple Metal** backend for macOS with unified memory.
 
 ---
@@ -215,9 +215,9 @@ How close does Legolas++ operate to the physical limits of modern silicon? We mo
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                 Level 1: Multi-Core Scaling                 │
-│   Legolas::parmap(...) via Native Work-Stealing Loop Engine │
-│   Per-worker deque: LIFO local tasks (L1/L2 cache affinity) │
-│   FIFO work-stealing when idle (lock-minimized atomics)     │
+│   Legolas::parmap(...) via persistent StaticThreadPool      │
+│   Dynamic chunks claimed from an atomic counter (4/worker)  │
+│   Hybrid spin-then-sleep idle policy (no hot-path locks)    │
 └──────────────────────────────┬──────────────────────────────┘
                                │ (blocked ranges)
 ┌──────────────────────────────▼──────────────────────────────┐

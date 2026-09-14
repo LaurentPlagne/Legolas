@@ -38,7 +38,7 @@ Legolas::map(InvertElements(), In, Out);
 
 ## `Legolas::parmap` (Multi-Core + SIMD)
 
-Distributes problem instance ranges across worker threads using the native **Work-Stealing engine**, while executing packed SIMD vector instructions inside each chunk.
+Distributes problem instance ranges across worker threads using the native **`StaticThreadPool` engine**, while executing packed SIMD vector instructions inside each chunk.
 
 ```cpp
 template <class ALGO, typename... ARRAYS>
@@ -63,7 +63,7 @@ struct MyAlgorithm {
 
 ## Thread Pool Configuration
 
-When using the native Work-Stealing scheduler:
+When using the native `StaticThreadPool` scheduler:
 
 ### Automatic Sizing
 By default, Legolas++ sizes its worker thread pool to match `std::thread::hardware_concurrency()` (all available physical performance cores).
@@ -76,6 +76,10 @@ You can override the number of worker threads without recompiling by setting the
 export LEGOLAS_NUM_THREADS=4
 ./my_program
 ```
+
+Additional tuning knobs:
+- `LEGOLAS_SPIN_COUNT`: spin iterations before an idle worker sleeps (default `4000`).
+- `LEGOLAS_PARALLEL_THRESHOLD`: minimum element count for bulk operations (`fill`, assignment) to be distributed across workers (default `32768`).
 
 ### Programmatic Sizing
 You can also configure the number of threads programmatically:

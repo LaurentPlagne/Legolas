@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" style="background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 <rect width="800" height="500" fill="#0f172a" rx="12"/>
 <rect x="80" y="70" width="560" height="360" fill="#1e293b" rx="8" stroke="#334155" stroke-width="1.5"/>
-<text x="80" y="36" fill="#f8fafc" font-size="20" font-weight="700">Multi-Core Scaling: Legolas++ Work-Stealing</text>
+<text x="80" y="36" fill="#f8fafc" font-size="20" font-weight="700">Multi-Core Scaling: Legolas++ SIMD + Threads</text>
 <text x="80" y="56" fill="#94a3b8" font-size="13">Apple M1 Max (8 Performance Cores, NEON P=8)</text>
 <line x1="80" y1="430.0" x2="640" y2="430.0" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
 <text x="68" y="434.0" fill="#94a3b8" font-size="12" text-anchor="end">0x</text>

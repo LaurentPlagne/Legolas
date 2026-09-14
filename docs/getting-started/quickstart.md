@@ -91,7 +91,7 @@ When `Legolas::parmap` is invoked:
 3. Instead of passing scalar references, it automatically passes `.getPackedView()` to `MultiplyAccumulate`.
 4. In `a_row[i]`, the returned type is `Legolas::NativeSimd<float, 4>`.
 5. The compiler translates `alpha * a_row[i] + b_row[i]` directly into an ARM NEON `fmla.4s` or x86 AVX `_mm256_fmadd_ps` instruction.
-6. The outer instances are distributed dynamically across CPU cores by the lock-minimized **Work-Stealing scheduler**.
+6. The outer instances are distributed dynamically across CPU cores by the lock-free **`Legolas::StaticThreadPool`** scheduler.
 
 ---
 

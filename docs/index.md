@@ -30,7 +30,7 @@ Write your core numerical algorithm **once** using standard, readable scalar C++
 * **Legolas++ DLI Engine**: Transforms your memory layout via Data Layout Interleaving (DLI), turning impossible loop-carried recurrences into contiguous vector streams.
 * **A Multitude of Hardware Targets**:
     * ⚡ **CPU SIMD Vectorized**: Full vector register width utilization on **ARM NEON** (4s), **x86 AVX2** (8s), and **x86 AVX-512** (16s) at 100% hardware line-rate.
-    * 🚀 **Multi-Core Parallel**: Built-in thread pools and work-stealing scheduler scaling across 4 to 128+ CPU cores, with SIMD active on every thread.
+    * 🚀 **Multi-Core Parallel**: Built-in persistent thread pool with dynamic chunk scheduling scaling across 4 to 128+ CPU cores, with SIMD active on every thread.
     * 🔥 **GPU Acceleration**: Optional header-only **[Vulkan Compute](getting-started/install.md#gpu-acceleration-optional-vulkan-compute-backend-linux-windows)** backend for Linux and Windows, and native **[Apple Metal](getting-started/install.md#gpu-acceleration-native-apple-metal-backend-macos)** backend for macOS.
     * 📐 **Physical Hardware Ceilings**: Operates at **75% to 100% of theoretical peak limits** across memory bandwidth and FMA compute pipelines (see the [Roofline Performance Model](benchmarks/roofline-model/)).
 

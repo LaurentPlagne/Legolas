@@ -24,7 +24,7 @@ The benchmark evaluates the Thomas elimination algorithm solving $N_y = N_x^2$ t
 | **Legolas NEON Unrolled** | $P=8$ | 1 Core | 9.58 GFlops | 16.64 GFlops | **4.75x** |
 | **Scalar Multi-Thread** | $P=1$ | 8 Cores | 16.48 GFlops | 18.43 GFlops | **7.85x** |
 | **Legolas NEON Multi-Thread** | $P=4$ | 8 Cores | 51.72 GFlops | 52.40 GFlops | **24.63x** |
-| **Legolas Hybrid SIMD + Work-Stealing** | $P=8$ | 8 Cores | **69.15 GFlops** | **69.40 GFlops** | **33.05x** |
+| **Legolas Hybrid SIMD + Threads** | $P=8$ | 8 Cores | **69.15 GFlops** | **69.40 GFlops** | **33.05x** |
 
 ---
 

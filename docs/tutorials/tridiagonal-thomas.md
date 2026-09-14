@@ -101,7 +101,7 @@ int main() {
     Array2D D(ny, nx), U(ny, nx), L(ny, nx), B(ny, nx), X(ny, nx);
     D.fill(2.0f); U.fill(-1.0f); L.fill(-1.0f); B.fill(1.0f); X.fill(0.0f);
 
-    // Solve in parallel using SIMD vector units and Work-Stealing:
+    // Solve in parallel using SIMD vector units and the thread pool:
     Legolas::parmap(ThomasSolver(), D, U, L, B, X);
 
     return 0;
