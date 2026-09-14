@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 110" width="540" height="110">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&amp;family=JetBrains+Mono:wght@600&amp;display=swap');
+      .brand-title-dark { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 42px; fill: #f8fafc; letter-spacing: -0.5px; }
+      .brand-plus-w { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 44px; fill: #ffffff; }
+      .brand-plus-m { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 44px; fill: #34d399; }
+      .brand-sub-dark { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 700; font-size: 10.5px; fill: #2dd4bf; letter-spacing: 2px; text-transform: uppercase; }
+      .brand-mono-dark { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; fill: #94a3b8; font-weight: 600; }
+    </style>
+  </defs>
+
+  <!-- EMBLEM: Option 1 Matrix Stream & SIMD Vector Arrow -->
+  <g transform="translate(10, 4) scale(0.92)">
+    <!-- Container -->
+    <rect width="112" height="112" rx="24" fill="#0f1722" stroke="#1e293b" stroke-width="2" />
+
+    <g transform="translate(2, 6)">
+      <!-- Top Lane (Teal straight bar) -->
+      <path d="M 12,42 L 46,42" fill="none" stroke="#177272" stroke-width="5.5" stroke-linecap="round" />
+
+      <!-- Upper Orange/Coral Chevron -->
+      <path d="M 48,44 L 63,29 L 54,21" fill="none" stroke="#ee6f40" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- Lane 2 (Teal curving into arrow) -->
+      <path d="M 12,53 L 48,53 C 56,53 62,48 68,42 L 78,32" fill="none" stroke="#1a8080" stroke-width="5.5" stroke-linecap="round" />
+
+      <!-- Lane 3 (Teal curving into arrow) -->
+      <path d="M 12,64 L 50,64 C 59,64 67,58 74,51 L 84,41" fill="none" stroke="#1f9393" stroke-width="5.5" stroke-linecap="round" />
+
+      <!-- Lane 4 (Bottom Teal curve) -->
+      <path d="M 12,75 L 52,75 C 63,75 72,67 80,59 L 88,51" fill="none" stroke="#26a5a5" stroke-width="5.5" stroke-linecap="round" />
+
+      <!-- Lower Orange/Coral Chevron -->
+      <path d="M 66,76 L 80,62 L 87,68" fill="none" stroke="#ee6f40" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- Big Mint Green Arrowhead -->
+      <polygon points="88,11 60,22 70,29 77,40" fill="#34d399" stroke="#34d399" stroke-width="1.2" stroke-linejoin="round" />
+      <polygon points="74,25 68,27 70,29 72,32" fill="#177272" />
+    </g>
+  </g>
+
+  <!-- TYPOGRAPHY & BRANDING (Dark Mode) -->
+  <g transform="translate(140, 22)">
+    <text x="0" y="38" class="brand-title-dark">Legolas<tspan class="brand-plus-w">+</tspan><tspan class="brand-plus-m">+</tspan></text>
+    <text x="2" y="60" class="brand-sub-dark">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
+    <text x="2" y="76" class="brand-mono-dark">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
+  </g>
+</svg>

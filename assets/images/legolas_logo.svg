@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 110" width="540" height="110">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&amp;family=JetBrains+Mono:wght@600&amp;display=swap');
+      .brand-title { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 800; font-size: 40px; fill: #f8fafc; letter-spacing: -0.5px; }
+      .brand-plus { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 900; font-size: 44px; fill: #ee6f40; }
+      .brand-sub { font-family: 'Outfit', -apple-system, sans-serif; font-weight: 700; font-size: 10.5px; fill: #2dd4bf; letter-spacing: 2px; text-transform: uppercase; }
+      .brand-mono { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; fill: #94a3b8; font-weight: 600; }
+    </style>
+
+    <linearGradient id="logoArrowGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ee6f40" />
+      <stop offset="50%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <linearGradient id="logoLane0" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#177272" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <linearGradient id="logoLane1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#177272" />
+      <stop offset="100%" stop-color="#2dd4bf" />
+    </linearGradient>
+
+    <linearGradient id="logoLane2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#fb923c" />
+    </linearGradient>
+
+    <linearGradient id="logoLane3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#ee6f40" />
+    </linearGradient>
+  </defs>
+
+  <!-- EMBLEM: Option 1 Matrix Stream & SIMD Vector Arrow -->
+  <g transform="translate(10, 4) scale(0.92)">
+    <!-- Container -->
+    <rect x="4" y="4" width="112" height="112" rx="24" fill="#0f1722" stroke="#253549" stroke-width="2" />
+
+    <!-- Matrix Memory Blocks & SIMD Streaming Lanes -->
+    <!-- Lane 0 -->
+    <rect x="16" y="42" width="7" height="4.5" rx="1.5" fill="#177272" opacity="0.75" />
+    <rect x="25" y="42" width="10" height="4.5" rx="1.5" fill="#2dd4bf" opacity="0.9" />
+    <path d="M 37,44.25 L 48,44.25 C 58,44.25 66,40 72,32 L 78,26" fill="none" stroke="url(#logoLane0)" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Lane 1 -->
+    <rect x="16" y="53" width="10" height="4.5" rx="1.5" fill="#177272" opacity="0.65" />
+    <rect x="29" y="53" width="8" height="4.5" rx="1.5" fill="#2dd4bf" opacity="0.9" />
+    <path d="M 39,55.25 L 52,55.25 C 63,55.25 72,49 79,40 L 85,33" fill="none" stroke="url(#logoLane1)" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Lane 2 -->
+    <rect x="16" y="64" width="7" height="4.5" rx="1.5" fill="#2dd4bf" opacity="0.65" />
+    <rect x="26" y="64" width="12" height="4.5" rx="1.5" fill="#fb923c" opacity="0.9" />
+    <path d="M 40,66.25 L 56,66.25 C 68,66.25 78,58 86,48 L 92,41" fill="none" stroke="url(#logoLane2)" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Lane 3 -->
+    <rect x="16" y="75" width="12" height="4.5" rx="1.5" fill="#fb923c" opacity="0.65" />
+    <rect x="31" y="75" width="8" height="4.5" rx="1.5" fill="#ee6f40" opacity="0.9" />
+    <path d="M 41,77.25 L 60,77.25 C 74,77.25 85,67 93,56 L 98,49" fill="none" stroke="url(#logoLane3)" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Supersonic Vector Arrowhead -->
+    <polygon points="110,12 72,25 89,33 97,51" fill="url(#logoArrowGrad)" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round" />
+    <polygon points="106,16 83,26 90,31 95,40" fill="#ffffff" opacity="0.85" />
+    <circle cx="89" cy="33" r="2.2" fill="#34d399" />
+
+    <!-- C++ Plus Pluses -->
+    <g transform="translate(16, 18)">
+      <line x1="5" y1="2" x2="5" y2="10" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="1" y1="6" x2="9" y2="6" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="15" y1="2" x2="15" y2="10" stroke="#ee6f40" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="11" y1="6" x2="19" y2="6" stroke="#ee6f40" stroke-width="2.5" stroke-linecap="round" />
+    </g>
+  </g>
+
+  <!-- TYPOGRAPHY & BRANDING -->
+  <g transform="translate(145, 22)">
+    <text x="0" y="38" class="brand-title">Legolas<tspan class="brand-plus">++</tspan></text>
+    <text x="2" y="60" class="brand-sub">DATA LAYOUT INTERLEAVING • SIMD TENSOR ENGINE</text>
+    <text x="2" y="76" class="brand-mono">C++14/20 // PURE HEADER-ONLY // MIT LICENSE</text>
+  </g>
+</svg>

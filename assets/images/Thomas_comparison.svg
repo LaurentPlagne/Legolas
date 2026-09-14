@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="1000" height="600" style="background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+
+    <defs>
+      <linearGradient id="gridGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#334155" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#1e293b" stop-opacity="0.1"/>
+      </linearGradient>
+      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+    
+<rect width="1000" height="600" fill="#0f172a" rx="12"/>
+<rect x="90" y="80" width="670" height="440" fill="#1e293b" rx="8" stroke="#334155" stroke-width="1.5"/>
+<text x="90" y="36" fill="#f8fafc" font-size="20" font-weight="700">Legolas++ Performance: MultiThomas (Apple M1 Max ARM64)</text>
+<text x="90" y="58" fill="#94a3b8" font-size="13">Tridiagonal Recurrence Systems (nx = system size, ny = nx² systems solved)</text>
+<line x1="90" y1="520.0" x2="760" y2="520.0" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="78" y="524.0" fill="#94a3b8" font-size="12" text-anchor="end">0</text>
+<line x1="90" y1="446.66666666666663" x2="760" y2="446.66666666666663" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="78" y="450.66666666666663" fill="#94a3b8" font-size="12" text-anchor="end">13</text>
+<line x1="90" y1="373.3333333333333" x2="760" y2="373.3333333333333" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="78" y="377.3333333333333" fill="#94a3b8" font-size="12" text-anchor="end">27</text>
+<line x1="90" y1="300.0" x2="760" y2="300.0" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="78" y="304.0" fill="#94a3b8" font-size="12" text-anchor="end">40</text>
+<line x1="90" y1="226.66666666666663" x2="760" y2="226.66666666666663" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="78" y="230.66666666666663" fill="#94a3b8" font-size="12" text-anchor="end">53</text>
+<line x1="90" y1="153.33333333333331" x2="760" y2="153.33333333333331" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="78" y="157.33333333333331" fill="#94a3b8" font-size="12" text-anchor="end">67</text>
+<line x1="90" y1="80.0" x2="760" y2="80.0" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="78" y="84.0" fill="#94a3b8" font-size="12" text-anchor="end">80</text>
+<line x1="90.0" y1="80" x2="90.0" y2="520" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="90.0" y="544" fill="#94a3b8" font-size="12" text-anchor="middle">8</text>
+<line x1="201.66666666666666" y1="80" x2="201.66666666666666" y2="520" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="201.66666666666666" y="544" fill="#94a3b8" font-size="12" text-anchor="middle">16</text>
+<line x1="313.3333333333333" y1="80" x2="313.3333333333333" y2="520" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="313.3333333333333" y="544" fill="#94a3b8" font-size="12" text-anchor="middle">32</text>
+<line x1="425.0" y1="80" x2="425.0" y2="520" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="425.0" y="544" fill="#94a3b8" font-size="12" text-anchor="middle">64</text>
+<line x1="536.6666666666666" y1="80" x2="536.6666666666666" y2="520" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="536.6666666666666" y="544" fill="#94a3b8" font-size="12" text-anchor="middle">128</text>
+<line x1="648.3333333333334" y1="80" x2="648.3333333333334" y2="520" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="648.3333333333334" y="544" fill="#94a3b8" font-size="12" text-anchor="middle">256</text>
+<line x1="760.0" y1="80" x2="760.0" y2="520" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="760.0" y="544" fill="#94a3b8" font-size="12" text-anchor="middle">512</text>
+<text x="425.0" y="576" fill="#cbd5e1" font-size="14" font-weight="600" text-anchor="middle">System Size nx (Total Elements = nx³)</text>
+<text x="28" y="300.0" fill="#cbd5e1" font-size="14" font-weight="600" text-anchor="middle" transform="rotate(-90, 28, 300.0)">Throughput (GFlops)</text>
+<polyline points="90.0,483.4 109.0,491.0 125.9,490.2 141.3,493.6 155.3,495.3 168.2,496.9 201.7,499.1 220.6,502.0 237.6,503.4 253.0,505.9 267.0,506.0 279.9,506.3 313.3,506.1 332.3,506.2 349.3,506.6 364.6,506.2 378.7,506.3 391.5,506.4 425.0,506.9 446.2,507.1 464.9,507.2 481.7,507.4 496.9,507.5 510.8,507.6 536.7,507.9 557.9,507.9 576.6,507.9 593.4,508.0 608.6,508.1 622.4,508.2 648.3,508.1 669.5,508.3 688.3,508.2 705.0,508.3 720.2,508.4 734.1,508.4 760.0,508.4" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="90.0" cy="483.4" r="4" fill="#64748b" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="201.7" cy="499.1" r="4" fill="#64748b" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="313.3" cy="506.1" r="4" fill="#64748b" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="425.0" cy="506.9" r="4" fill="#64748b" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="536.7" cy="507.9" r="4" fill="#64748b" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="648.3" cy="508.1" r="4" fill="#64748b" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="760.0" cy="508.4" r="4" fill="#64748b" stroke="#0f172a" stroke-width="1.5"/>
+<polyline points="90.0,428.5 109.0,433.1 125.9,430.6 141.3,440.7 155.3,431.7 168.2,441.5 201.7,453.4 220.6,458.7 237.6,466.0 253.0,472.4 267.0,474.7 279.9,473.1 313.3,472.6 332.3,472.9 349.3,473.0 364.6,473.1 378.7,473.8 391.5,475.9 425.0,476.8 446.2,478.0 464.9,478.8 481.7,479.4 496.9,480.0 510.8,480.5 536.7,481.2 557.9,481.6 576.6,482.3 593.4,482.2 608.6,482.5 622.4,482.6 648.3,483.0 669.5,483.3 688.3,483.3 705.0,483.9 720.2,483.8 734.1,483.9 760.0,484.2" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="90.0" cy="428.5" r="4" fill="#0284c7" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="201.7" cy="453.4" r="4" fill="#0284c7" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="313.3" cy="472.6" r="4" fill="#0284c7" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="425.0" cy="476.8" r="4" fill="#0284c7" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="536.7" cy="481.2" r="4" fill="#0284c7" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="648.3" cy="483.0" r="4" fill="#0284c7" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="760.0" cy="484.2" r="4" fill="#0284c7" stroke="#0f172a" stroke-width="1.5"/>
+<polyline points="90.0,428.5 109.0,433.1 125.9,448.5 141.3,440.7 155.3,431.7 168.2,441.5 201.7,446.8 220.6,452.7 237.6,453.5 253.0,457.6 267.0,456.6 279.9,459.6 313.3,459.9 332.3,460.9 349.3,462.7 364.6,485.3 378.7,485.4 391.5,464.5 425.0,464.3 446.2,462.6 464.9,463.8 481.7,463.9 496.9,464.2 510.8,464.1 536.7,465.0 557.9,465.4 576.6,466.1 593.4,466.1 608.6,466.0 622.4,466.2 648.3,466.4 669.5,466.4 688.3,466.3 705.0,466.4 720.2,466.4 734.1,466.7 760.0,466.7" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="90.0" cy="428.5" r="4" fill="#6366f1" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="201.7" cy="446.8" r="4" fill="#6366f1" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="313.3" cy="459.9" r="4" fill="#6366f1" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="425.0" cy="464.3" r="4" fill="#6366f1" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="536.7" cy="465.0" r="4" fill="#6366f1" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="648.3" cy="466.4" r="4" fill="#6366f1" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="760.0" cy="466.7" r="4" fill="#6366f1" stroke="#0f172a" stroke-width="1.5"/>
+<polyline points="90.0,514.1 109.0,514.1 125.9,512.2 141.3,512.3 155.3,510.8 168.2,512.8 201.7,502.4 220.6,501.7 237.6,488.6 253.0,486.6 267.0,490.4 279.9,477.0 313.3,467.2 332.3,462.7 349.3,462.7 364.6,450.5 378.7,449.9 391.5,439.8 425.0,435.0 446.2,431.2 464.9,424.2 481.7,418.6 496.9,422.1 510.8,420.5 536.7,420.8 557.9,422.8 576.6,424.1 593.4,424.4 608.6,423.3 622.4,423.9 648.3,424.3 669.5,424.3 688.3,426.3 705.0,425.1 720.2,425.8 734.1,425.6 760.0,426.5" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="5,5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="90.0" cy="514.1" r="4" fill="#d97706" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="201.7" cy="502.4" r="4" fill="#d97706" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="313.3" cy="467.2" r="4" fill="#d97706" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="425.0" cy="435.0" r="4" fill="#d97706" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="536.7" cy="420.8" r="4" fill="#d97706" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="648.3" cy="424.3" r="4" fill="#d97706" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="760.0" cy="426.5" r="4" fill="#d97706" stroke="#0f172a" stroke-width="1.5"/>
+<polyline points="90.0,509.8 109.0,510.0 125.9,508.1 141.3,507.1 155.3,505.6 168.2,502.1 201.7,491.8 220.6,497.1 237.6,463.9 253.0,456.6 267.0,450.4 279.9,433.9 313.3,428.5 332.3,397.4 349.3,405.6 364.6,384.0 378.7,347.4 391.5,366.7 425.0,329.9 446.2,293.5 464.9,266.3 481.7,264.2 496.9,278.8 510.8,273.3 536.7,244.2 557.9,249.3 576.6,253.7 593.4,241.3 608.6,242.7 622.4,231.8 648.3,236.0 669.5,236.0 688.3,236.4 705.0,236.1 720.2,240.2 734.1,236.4 760.0,235.1" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="90.0" cy="509.8" r="4" fill="#059669" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="201.7" cy="491.8" r="4" fill="#059669" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="313.3" cy="428.5" r="4" fill="#059669" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="425.0" cy="329.9" r="4" fill="#059669" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="536.7" cy="244.2" r="4" fill="#059669" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="648.3" cy="236.0" r="4" fill="#059669" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="760.0" cy="235.1" r="4" fill="#059669" stroke="#0f172a" stroke-width="1.5"/>
+<polyline points="90.0,508.6 109.0,491.0 125.9,500.1 141.3,486.0 155.3,468.5 168.2,500.8 201.7,501.7 220.6,485.3 237.6,468.0 253.0,465.6 267.0,441.6 279.9,468.9 313.3,412.5 332.3,386.6 349.3,379.6 364.6,335.4 378.7,368.5 391.5,315.7 425.0,255.3 446.2,227.8 464.9,208.6 481.7,221.3 496.9,205.9 510.8,139.6 536.7,144.9 557.9,156.8 576.6,151.8 593.4,166.9 608.6,160.3 622.4,166.3 648.3,160.7 669.5,138.3 688.3,143.6 705.0,140.3 720.2,144.1 734.1,145.2 760.0,139.7" fill="none" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="90.0" cy="508.6" r="4" fill="#dc2626" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="201.7" cy="501.7" r="4" fill="#dc2626" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="313.3" cy="412.5" r="4" fill="#dc2626" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="425.0" cy="255.3" r="4" fill="#dc2626" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="536.7" cy="144.9" r="4" fill="#dc2626" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="648.3" cy="160.7" r="4" fill="#dc2626" stroke="#0f172a" stroke-width="1.5"/>
+<circle cx="760.0" cy="139.7" r="4" fill="#dc2626" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="780" y1="90" x2="808" y2="90" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5"/><circle cx="794" cy="90" r="3.5" fill="#64748b"/><text x="816" y="94" fill="#e2e8f0" font-size="12">Scalar P=1 (Seq)</text><text x="816" y="108" fill="#64748b" font-size="11" font-weight="600">Peak: 6.7 GFlops</text>
+<line x1="780" y1="132" x2="808" y2="132" stroke="#0284c7" stroke-width="2.5"/><circle cx="794" cy="132" r="3.5" fill="#0284c7"/><text x="816" y="136" fill="#e2e8f0" font-size="12">NEON P=4 (Seq)</text><text x="816" y="150" fill="#0284c7" font-size="11" font-weight="600">Peak: 16.6 GFlops</text>
+<line x1="780" y1="174" x2="808" y2="174" stroke="#6366f1" stroke-width="2.5"/><circle cx="794" cy="174" r="3.5" fill="#6366f1"/><text x="816" y="178" fill="#e2e8f0" font-size="12">NEON P=8 unrolled (Seq)</text><text x="816" y="192" fill="#6366f1" font-size="11" font-weight="600">Peak: 16.6 GFlops</text>
+<line x1="780" y1="216" x2="808" y2="216" stroke="#d97706" stroke-width="2" stroke-dasharray="5,5"/><circle cx="794" cy="216" r="3.5" fill="#d97706"/><text x="816" y="220" fill="#e2e8f0" font-size="12">Scalar P=1 (8 Threads)</text><text x="816" y="234" fill="#d97706" font-size="11" font-weight="600">Peak: 18.4 GFlops</text>
+<line x1="780" y1="258" x2="808" y2="258" stroke="#059669" stroke-width="3"/><circle cx="794" cy="258" r="3.5" fill="#059669"/><text x="816" y="262" fill="#e2e8f0" font-size="12">NEON P=4 (8 Threads)</text><text x="816" y="276" fill="#059669" font-size="11" font-weight="600">Peak: 52.4 GFlops</text>
+<line x1="780" y1="300" x2="808" y2="300" stroke="#dc2626" stroke-width="3.5"/><circle cx="794" cy="300" r="3.5" fill="#dc2626"/><text x="816" y="304" fill="#e2e8f0" font-size="12">NEON P=8 unrolled (8 Threads)</text><text x="816" y="318" fill="#dc2626" font-size="11" font-weight="600">Peak: 69.4 GFlops</text>
+
+        <g transform="translate(529.5304090749353, 93.2901)">
+          <rect width="135" height="36" rx="6" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5"/>
+          <text x="67" y="16" fill="#e0e7ff" font-size="11" font-weight="700" text-anchor="middle">PEAK: 69.4 GFlops</text>
+          <text x="67" y="29" fill="#a5b4fc" font-size="10" text-anchor="middle">10.4x Speedup vs Scalar</text>
+          <polygon points="125,36 135,36 130,42" fill="#818cf8"/>
+        </g>
+        
+</svg>
