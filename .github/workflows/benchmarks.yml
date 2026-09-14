@@ -15,6 +15,7 @@ jobs:
   bench-linux:
     name: "Benchmark: Linux x86_64 (AVX2)"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -62,6 +63,7 @@ jobs:
   bench-macos:
     name: "Benchmark: macOS Apple Silicon (NEON + Metal GPU)"
     runs-on: macos-14
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
