@@ -3,6 +3,7 @@
 #include "Legolas/Vulkan/VulkanLoader.hxx"
 
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -195,6 +196,10 @@ private:
   Context& operator=(const Context&) = delete;
 
   void init() {
+    // Deterministic CPU-only mode: lets tests and CI exercise the fallback
+    // path on machines that do have a Vulkan driver.
+    if (std::getenv("LEGOLAS_DISABLE_VULKAN") != nullptr) return;
+
     if (!api_.loadLibrary()) return;
 
     VkApplicationInfo app{};
@@ -380,7 +385,7 @@ public:
     ctx_->copyBuffer(staging.buffer, buffer_, bytes);
   }
 
-  void download(void* data, VkDeviceSize bytes) {
+  void download(void* data, VkDeviceSize bytes) const {
     if (!valid() || bytes == 0) return;
     if (bytes > size_) bytes = size_;
     if (hostVisible_) {

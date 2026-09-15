@@ -16,6 +16,34 @@ target_compile_definitions(Legolas INTERFACE
 )
 target_link_libraries(Legolas INTERFACE Threads::Threads)
 
+# Optional Vulkan compute backend. Header-only and runtime-loaded: only the
+# Vulkan C headers are needed at build time and nothing is linked, so the core
+# stays dependency-free. Consumers opt in by linking Legolas::Vulkan, which
+# also defines LEGOLAS_HAS_VULKAN for conditional integration.
+option(LEGOLAS_ENABLE_VULKAN
+  "Build the optional Vulkan compute backend (Linux/Windows, header-only, runtime-loaded)" OFF)
+
+if (LEGOLAS_ENABLE_VULKAN AND NOT APPLE)
+  find_package(Vulkan QUIET)
+  if (Vulkan_FOUND)
+    add_library(LegolasVulkan INTERFACE)
+    target_link_libraries(LegolasVulkan INTERFACE Legolas ${CMAKE_DL_LIBS})
+    target_include_directories(LegolasVulkan INTERFACE ${VULKAN_INCLUDE_DIRS})
+    target_compile_definitions(LegolasVulkan INTERFACE
+      VK_NO_PROTOTYPES=1
+      LEGOLAS_HAS_VULKAN=1
+    )
+    add_library(Legolas::Vulkan ALIAS LegolasVulkan)
+    message(STATUS "Legolas: Vulkan backend enabled")
+  else()
+    message(WARNING
+      "LEGOLAS_ENABLE_VULKAN=ON but the Vulkan headers were not found: "
+      "Legolas::Vulkan is not available.")
+  endif()
+elseif (LEGOLAS_ENABLE_VULKAN AND APPLE)
+  message(STATUS "Legolas: Vulkan backend skipped on Apple (native Metal path)")
+endif()
+
 # Header-only libraries carry no build flags of their own. When the library is
 # consumed through FetchContent/add_subdirectory, the consumer's configuration
 # may be a default (non optimized) one and silently produce scalar code.

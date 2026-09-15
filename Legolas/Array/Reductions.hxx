@@ -2,6 +2,19 @@
 
 #include "Legolas/Array/NativeSimd.hxx"
 
+#include <cstddef>
+#include <type_traits>
+#include <utility>
+
+#ifdef LEGOLAS_HAS_VULKAN
+// Automatic GPU dispatch: when the Vulkan backend is enabled (link
+// Legolas::Vulkan), the public squaredNorm/dot route eligible flat float
+// arrays through the device. LEGOLAS_DISABLE_VULKAN=1 forces the CPU path and
+// LEGOLAS_VULKAN_MIN_ELEMENTS tunes the minimum size (default 2^20 elements).
+#  include "Legolas/Vulkan/Backend.hxx"
+#  include "Legolas/Vulkan/Reductions.hxx"
+#endif
+
 namespace Legolas{
 
 //*************************************** Begin Accumulate ****************************************//
@@ -256,8 +269,13 @@ struct AddFunctor{
 
 
 
+namespace detail{
+
+// CPU reference implementations (double accumulation). The public
+// squaredNorm/dot below either call these directly or fall back to them when
+// the optional GPU backend is not usable.
 template <class DERIVED>
-inline double squaredNorm(const BaseArray<DERIVED> & ba){
+inline double squaredNormCpu(const BaseArray<DERIVED> & ba){
 
   const DERIVED & a=ba.getArrayRef();
 
@@ -270,10 +288,8 @@ inline double squaredNorm(const BaseArray<DERIVED> & ba){
 
 }
 
-
-
 template <class DERIVED>
-inline double dot(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & baRight){
+inline double dotCpu(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & baRight){
   const DERIVED & left=baLeft.getArrayRef();
   const DERIVED & right=baRight.getArrayRef();
 
@@ -282,6 +298,101 @@ inline double dot(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & 
   Accumulate<AddFunctor,DERIVED::packLevel,DERIVED::level>::apply(left*right,result);
   return result;
 
+}
+
+template <class...>
+struct MakeVoid { typedef void Type; };
+template <class... Ts>
+using VoidT = typename MakeVoid<Ts...>::Type;
+
+// The GPU reduction kernels consume a flat float buffer. Only concrete
+// level-1 float arrays match that layout without a repacking pass; lazy
+// expressions and packed arrays have no scalar data pointer and stay on CPU.
+template <class DERIVED, class = void>
+struct GpuReductionEligible : std::false_type {};
+
+template <class DERIVED>
+struct GpuReductionEligible<
+    DERIVED, VoidT<typename DERIVED::RealType,
+                   decltype(std::declval<const DERIVED&>().realDataPtr())>>
+    : std::integral_constant<bool, (DERIVED::level == 1) &&
+                                       std::is_same<typename DERIVED::RealType,
+                                                    float>::value> {};
+
+#ifdef LEGOLAS_HAS_VULKAN
+template <class DERIVED>
+inline double squaredNormDispatch(const BaseArray<DERIVED> & ba,
+                                  Vulkan::Backend backend, std::true_type){
+  const DERIVED & a=ba.getArrayRef();
+  const size_t n=static_cast<size_t>(a.size());
+  if (Vulkan::shouldUseGpu(backend,n)){
+    double gpuResult=0.0;
+    if (Vulkan::squaredNorm(Vulkan::Context::instance(),a.realDataPtr(),n,&gpuResult)){
+      return gpuResult;
+    }
+  }
+  return squaredNormCpu(ba);
+}
+
+template <class DERIVED>
+inline double squaredNormDispatch(const BaseArray<DERIVED> & ba,
+                                  Vulkan::Backend, std::false_type){
+  return squaredNormCpu(ba);
+}
+
+template <class DERIVED>
+inline double dotDispatch(const BaseArray<DERIVED> & baLeft,
+                          const BaseArray<DERIVED> & baRight,
+                          Vulkan::Backend backend, std::true_type){
+  const DERIVED & a=baLeft.getArrayRef();
+  const DERIVED & b=baRight.getArrayRef();
+  const size_t n=static_cast<size_t>(a.size());
+  if (a.size()==b.size() && Vulkan::shouldUseGpu(backend,n)){
+    double gpuResult=0.0;
+    if (Vulkan::dot(Vulkan::Context::instance(),a.realDataPtr(),b.realDataPtr(),n,&gpuResult)){
+      return gpuResult;
+    }
+  }
+  return dotCpu(baLeft,baRight);
+}
+
+template <class DERIVED>
+inline double dotDispatch(const BaseArray<DERIVED> & baLeft,
+                          const BaseArray<DERIVED> & baRight,
+                          Vulkan::Backend, std::false_type){
+  return dotCpu(baLeft,baRight);
+}
+#endif
+
+}//end of namespace detail
+
+
+
+// Public reductions. With LEGOLAS_HAS_VULKAN the backend policy is
+// Backend::Auto: the device is used when available and the workload is large
+// enough, and every failure falls back to the CPU implementation.
+template <class DERIVED>
+inline double squaredNorm(const BaseArray<DERIVED> & ba){
+#ifdef LEGOLAS_HAS_VULKAN
+  return detail::squaredNormDispatch(
+      ba,Vulkan::Backend::Auto,
+      std::integral_constant<bool,detail::GpuReductionEligible<DERIVED>::value>());
+#else
+  return detail::squaredNormCpu(ba);
+#endif
+}
+
+
+
+template <class DERIVED>
+inline double dot(const BaseArray<DERIVED> & baLeft, const BaseArray<DERIVED> & baRight){
+#ifdef LEGOLAS_HAS_VULKAN
+  return detail::dotDispatch(
+      baLeft,baRight,Vulkan::Backend::Auto,
+      std::integral_constant<bool,detail::GpuReductionEligible<DERIVED>::value>());
+#else
+  return detail::dotCpu(baLeft,baRight);
+#endif
 }
 
 template <class DERIVED>

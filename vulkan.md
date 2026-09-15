@@ -73,18 +73,28 @@ ctest --test-dir build --output-on-failure
 ./build/examples/VulkanBench --skip-heavy
 ```
 
-The complete CTest suite is green: **8/8 tests pass** (7 historical + `VulkanBench`).
+The complete CTest suite is green: **11/11 tests pass** (7 historical + `VulkanBench` +
+`VulkanBackend`, plus a `VulkanBackendFallback` run with `LEGOLAS_DISABLE_VULKAN=1` that
+exercises the CPU fallback).
 
 ---
 
 ## 3. Backend architecture
 
 ```
-Legolas/Vulkan/
+Legolas/Vulkan/                      # generic backend (part of the core tree)
   VulkanLoader.hxx      # dlopen/LoadLibrary + vkGetInstanceProcAddr; ~45 function pointers
   VulkanContext.hxx     # Context singleton (device, queue, command pool) + Buffer + staging cache
   VulkanKernel.hxx      # shader module, descriptor sets, pipeline, push constants, dispatch
-  Vulkan.hxx            # umbrella include + GPU reduction helpers
+  Backend.hxx           # Backend policy (CPU/Vulkan/Auto) + minGpuElements()
+  DeviceArray.hxx       # RAII device array; bridges Legolas::Array / std::vector
+  Reductions.hxx        # generic squaredNorm/dot (raw pointers + resident DeviceArray)
+  ArrayBridge.hxx       # Legolas::Array overloads with explicit policy
+  GlslEmitter.hxx       # expression templates -> GLSL source
+  SpirVCompiler.hxx     # runtime glslc/glslangValidator + in-memory cache
+  Evaluate.hxx          # evaluate(expression, output) with CPU fallback
+  Vulkan.hxx            # umbrella: generic backend only, no workload kernels
+  Kernels.hxx           # benchmark/workload SPIR-V blobs (isolated from the core API)
   shaders/*.comp        # GLSL reference sources
   shaders/build_shaders.sh, shaders/embed_spirv.py
   spv/*.hxx             # generated, versioned SPIR-V (const uint32_t[])
@@ -109,9 +119,25 @@ Design decisions:
    `[step][system]` (SoA) so that neighbouring threads read contiguous addresses. For the
    tridiagonal kernels each thread processes **4 systems at once via `vec4`**, amortizing address
    arithmetic and providing instruction-level parallelism.
-6. **CMake.** `option(LEGOLAS_ENABLE_VULKAN ...)` defaults to `OFF`. When enabled on
-   non-Apple platforms, `find_package(Vulkan QUIET)` locates the headers; the `VulkanBench`
-   target links only `${CMAKE_DL_LIBS}` and registers a light CTest (`--skip-heavy`).
+6. **CMake.** `option(LEGOLAS_ENABLE_VULKAN ...)` defaults to `OFF` and is consumed by the core:
+   when enabled on non-Apple platforms, `find_package(Vulkan QUIET)` locates the headers and the
+   core exports a `Legolas::Vulkan` interface target (include dirs, `VK_NO_PROTOTYPES`,
+   `LEGOLAS_HAS_VULKAN`, `${CMAKE_DL_LIBS}`). The plain `Legolas` target remains dependency-free.
+   `VulkanBench` and the `VulkanBackend` CTest only build when that target exists.
+7. **Generic core API.** `DeviceArray<T>` is the RAII bridge between device memory and host
+   containers (`Legolas::Array`, `std::vector`); `Backend` selects CPU, Vulkan or Auto. Linking
+   `Legolas::Vulkan` defines `LEGOLAS_HAS_VULKAN`, which makes the *core* reductions
+   (`Legolas::squaredNorm` / `Legolas::dot` in `Legolas/Array/Reductions.hxx`) dispatch
+   automatically through the backend and fall back to the CPU on failure. `LEGOLAS_DISABLE_VULKAN=1`
+   forces the CPU path and `LEGOLAS_VULKAN_MIN_ELEMENTS` tunes the `Auto` threshold (default
+   `2^20`). Workload shaders live in `Kernels.hxx`, so core code can include `Vulkan.hxx` without
+   pulling in the benchmark blobs.
+8. **Expression shaders at runtime.** `GlslEmitter.hxx` walks the expression tree
+   (`ArrayExpression<L,OP,R>`, `ScaledArray<A>`) and emits a compute shader whose leaves become
+   storage-buffer bindings (deduplicated by data pointer). `SpirVCompiler.hxx` compiles the
+   source with `glslc`/`glslangValidator` (override: `LEGOLAS_VULKAN_GLSLC`), caching results per
+   process; `evaluate()` dispatches it or falls back to the CPU assignment. Unlike the committed
+   kernels, this opt-in path needs a shader compiler on the machine.
 
 ---
 
@@ -369,8 +395,8 @@ regressions.
 
 1. **CI (lavapipe).** Add a `LEGOLAS_ENABLE_VULKAN=ON` job with `mesa-vulkan-drivers`, run
    `VulkanBench --skip-heavy`, assert accuracy only (no performance assertions).
-2. **Async streaming.** Double-buffered staging + fences to overlap PCIe with compute, plus a
-   `DeviceArray` RAII helper for resident data.
+2. **Async streaming.** Double-buffered staging + fences to overlap PCIe with compute
+   (`DeviceArray` already provides resident data and is reused across calls).
 3. **Subgroup Thomas.** Optional `VK_KHR_shader_subgroup` kernels for small systems.
 4. **Fusion.** Merge pass 1 and pass 3 of the biquad scan by storing per-block impulse responses
    instead of re-reading the input.
@@ -383,13 +409,23 @@ regressions.
 ## 10. Files added
 
 ```
-CMakeLists.txt                                  (LEGOLAS_ENABLE_VULKAN option)
-examples/CMakeLists.txt                         (VulkanBench target + CTest)
+Legolas/CMakeLists.txt                          (LEGOLAS_ENABLE_VULKAN option + Legolas::Vulkan target)
+examples/CMakeLists.txt                         (VulkanBench target + CTest, gated on Legolas::Vulkan)
 examples/VulkanBench/VulkanBench.cxx            (benchmark suite)
-Legolas/Vulkan/Vulkan.hxx
+tst/VulkanBackend/VulkanBackend.cxx             (generic backend + fallback tests)
+Legolas/Vulkan/Vulkan.hxx                       (generic umbrella)
 Legolas/Vulkan/VulkanLoader.hxx
 Legolas/Vulkan/VulkanContext.hxx
 Legolas/Vulkan/VulkanKernel.hxx
+Legolas/Vulkan/Backend.hxx                      (CPU/Vulkan/Auto policy)
+Legolas/Vulkan/DeviceArray.hxx                  (host <-> device bridge)
+Legolas/Vulkan/Reductions.hxx                   (generic squaredNorm/dot)
+Legolas/Vulkan/ArrayBridge.hxx                  (Legolas::Array dispatch + fallback)
+Legolas/Vulkan/GlslEmitter.hxx                  (expression templates -> GLSL)
+Legolas/Vulkan/SpirVCompiler.hxx                (runtime GLSL -> SPIR-V + cache)
+Legolas/Vulkan/Evaluate.hxx                     (evaluate + CPU fallback)
+Legolas/Array/Reductions.hxx                    (modified: automatic dispatch under LEGOLAS_HAS_VULKAN)
+Legolas/Vulkan/Kernels.hxx                      (workload SPIR-V, isolated from the core API)
 Legolas/Vulkan/shaders/*.comp                   (8 GLSL compute shaders)
 Legolas/Vulkan/shaders/build_shaders.sh
 Legolas/Vulkan/shaders/embed_spirv.py
