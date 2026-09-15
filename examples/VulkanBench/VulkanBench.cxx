@@ -26,6 +26,7 @@
 #include "Legolas/Array/Array.hxx"
 #include "Legolas/Array/Map.hxx"
 #include "Legolas/Vulkan/Vulkan.hxx"
+#include "Legolas/Vulkan/Kernels.hxx"
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -919,10 +920,13 @@ static void benchReductions() {
     b[i] = std::cos(0.002f * float(i));
   }
 
-  double cpuNorm = Legolas::squaredNorm(a);
-  double cpuDot = Legolas::dot(a, b);
-  double tNormCpu = cpuTimeMinMs([&] { volatile double r = Legolas::squaredNorm(a); (void)r; }, 5, 3);
-  double tDotCpu = cpuTimeMinMs([&] { volatile double r = Legolas::dot(a, b); (void)r; }, 5, 3);
+  // The core reductions auto-dispatch to the GPU when the backend is linked
+  // (Backend::Auto); force CPU here so the CPU baseline stays CPU.
+  using Legolas::Vulkan::Backend;
+  double cpuNorm = Legolas::Vulkan::squaredNorm(a, Backend::CPU);
+  double cpuDot = Legolas::Vulkan::dot(a, b, Backend::CPU);
+  double tNormCpu = cpuTimeMinMs([&] { volatile double r = Legolas::Vulkan::squaredNorm(a, Backend::CPU); (void)r; }, 5, 3);
+  double tDotCpu = cpuTimeMinMs([&] { volatile double r = Legolas::Vulkan::dot(a, b, Backend::CPU); (void)r; }, 5, 3);
 
   double gpuNorm = 0.0, gpuDot = 0.0, tNormGpu = -1.0, tDotGpu = -1.0;
   bool gpuOk = false;

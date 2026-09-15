@@ -79,8 +79,6 @@ else()
   add_definitions(-D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L)
 endif()
 
-option(LEGOLAS_ENABLE_VULKAN "Build the optional Vulkan GPU backend benchmark (Linux/Windows, header-only, runtime-loaded)" OFF)
-
 find_package(Threads REQUIRED)
 
 enable_testing()

@@ -272,7 +272,6 @@ c++ -O3 -std=c++14 -I/path/to/Legolas -I/path/to/Legolas/Legolas/include main.cp
 ```
 
 ### Standard Build & Testing
-
 ```bash
 # Configure Release build
 cmake -B build -DCMAKE_BUILD_TYPE=Release
@@ -335,6 +334,37 @@ ctest --test-dir build --output-on-failure
 ```
 
 For complete implementation notes, architectural details, and regression logs, see [vulkan.md](vulkan.md).
+
+### Generic Core Backend, Automatic Dispatch & Expression Shaders
+
+The backend is exposed to the core as the `Legolas::Vulkan` interface target
+(link it instead of `Legolas`); the plain core target stays dependency-free:
+
+```cpp
+#include "Legolas/Vulkan/Vulkan.hxx"   // generic backend (no workload kernels)
+
+Legolas::Array<float, 1> a(n);
+auto devA = Legolas::Vulkan::toDevice(Legolas::Vulkan::Context::instance(), a);
+
+// Automatic dispatch: linking Legolas::Vulkan defines LEGOLAS_HAS_VULKAN and
+// the core reductions route eligible flat float arrays to the GPU.
+double norm = Legolas::squaredNorm(a);
+double dotValue = Legolas::dot(a, b);
+
+// Explicit policy: CPU (never GPU), Vulkan (forced, CPU fallback) or Auto.
+double forced = Legolas::Vulkan::squaredNorm(a, Legolas::Vulkan::Backend::CPU);
+```
+
+* **Expression shaders at runtime.** `Legolas::Vulkan::evaluate(a * b + c, out)`
+  generates GLSL from the expression templates (`+`, `-`, `*`, scalar scaling,
+  repeated leaves deduplicated) and compiles it with `glslc`/`glslangValidator`
+  (override: `LEGOLAS_VULKAN_GLSLC`), caching the result; without a compiler or
+  device it falls back to the regular CPU assignment.
+* **Environment knobs.** `LEGOLAS_DISABLE_VULKAN=1` forces the CPU path and
+  `LEGOLAS_VULKAN_MIN_ELEMENTS` tunes the `Auto` threshold (default `2^20`).
+* `DeviceArray<T>` also bridges `std::vector`, and `Legolas::Vulkan::Kernel`
+  accepts any precompiled SPIR-V blob; workload shaders stay isolated in
+  `Legolas/Vulkan/Kernels.hxx`.
 
 ---
 

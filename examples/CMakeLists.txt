@@ -21,17 +21,12 @@ if (APPLE)
     add_test(NAME VideoPipelineMetal COMMAND VideoPipelineMetal)
 endif()
 
-# Optional Vulkan GPU benchmark. The backend is header-only and loads
-# libvulkan at runtime: only the Vulkan C headers are needed at build time.
-# macOS keeps its native Metal path and is excluded here.
-if (LEGOLAS_ENABLE_VULKAN AND NOT APPLE)
-    find_package(Vulkan QUIET)
-    if (Vulkan_FOUND)
-        add_executable(VulkanBench VulkanBench/VulkanBench.cxx)
-        target_link_libraries(VulkanBench Legolas ${CMAKE_DL_LIBS})
-        target_include_directories(VulkanBench PRIVATE ${VULKAN_INCLUDE_DIRS})
-        add_test(NAME VulkanBench COMMAND VulkanBench --skip-heavy)
-    else()
-        message(WARNING "LEGOLAS_ENABLE_VULKAN=ON but Vulkan headers were not found: VulkanBench skipped.")
-    endif()
+# Optional Vulkan GPU benchmark. The core exposes Legolas::Vulkan only when
+# LEGOLAS_ENABLE_VULKAN is ON and the Vulkan headers were found; the backend
+# itself is header-only and loads libvulkan at runtime. macOS keeps its native
+# Metal path and is excluded there.
+if (TARGET LegolasVulkan)
+    add_executable(VulkanBench VulkanBench/VulkanBench.cxx)
+    target_link_libraries(VulkanBench Legolas::Vulkan)
+    add_test(NAME VulkanBench COMMAND VulkanBench --skip-heavy)
 endif()

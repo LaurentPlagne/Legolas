@@ -8,6 +8,11 @@ add_subdirectory(MultiPrec)
 
 add_subdirectory(ArrayLifecycle)
 
+# Generic Vulkan backend tests (only built when the core exposes the target).
+if (TARGET LegolasVulkan)
+  add_subdirectory(VulkanBackend)
+endif()
+
 add_test(NAME MultiThomasExample COMMAND MultiThomasExample)
 add_test(NAME StaticArrays COMMAND StaticArrays)
 add_test(NAME MultiPrec COMMAND MultiPrec)
